@@ -1,0 +1,114 @@
+# ========================================
+# PYTHON
+# ========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# ========================================
+# ENVIRONMENT VARIABLES
+# ========================================
+.env
+.env.*
+*.env
+!.env.example
+
+# ========================================
+# DATABASE
+# ========================================
+*.db
+*.sqlite
+*.sqlite3
+
+# ========================================
+# NODE.JS / FRONTEND
+# ========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Build output
+batik-frontend/dist/
+batik-frontend/build/
+
+# ========================================
+# MACHINE LEARNING MODELS (File Besar)
+# ========================================
+*.keras
+*.h5
+*.pt
+*.pth
+*.onnx
+*.pb
+*.tflite
+
+# ========================================
+# DATASET & FILE BESAR
+# ========================================
+train.zip
+*.zip
+*.tar.gz
+*.tar
+train/dataset/
+batik-backend/uploads/
+
+# ========================================
+# LOG & LAPORAN SEMENTARA
+# ========================================
+*.log
+logs/
+
+# ========================================
+# IDE & EDITOR
+# ========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ========================================
+# JUPYTER NOTEBOOK
+# ========================================
+.ipynb_checkpoints/
+*.ipynb
+
+# ========================================
+# TESTING & COVERAGE
+# ========================================
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# ========================================
+# OS GENERATED
+# ========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
