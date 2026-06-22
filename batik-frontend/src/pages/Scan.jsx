@@ -1,6 +1,7 @@
 import { useState } from "react";
 import CardBatik from "../components/CardBatik";
 import { BASE_URL } from "../services/api";
+import VtonModal from "../components/VtonModal";
 
 const CrownIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: "8px", verticalAlign: "middle", color: "#d4af37" }}>
@@ -15,6 +16,7 @@ export default function Scan() {
   const [loading, setLoading] = useState(false);
   const [selectedBatik, setSelectedBatik] = useState(null);
   const [showResultModal, setShowResultModal] = useState(false);
+  const [showVtonModal, setShowVtonModal] = useState(false);
 
   const closeModal = () => setSelectedBatik(null);
   const closeResultModal = () => setShowResultModal(false);
@@ -228,7 +230,17 @@ export default function Scan() {
             </ul>
           </div>
         )}
-        <button onClick={closeResultModal} style={styles.okButton}>Lihat Detail Katalog</button>
+        <div style={{display: "flex", gap: "10px", marginTop: "15px"}}>
+          <button 
+            onClick={() => setShowVtonModal(true)} 
+            style={{...styles.okButton, background: "linear-gradient(135deg, #D4AF37, #AA8120)"}}
+          >
+            Coba Virtual Try-On ✨
+          </button>
+          <button onClick={closeResultModal} style={{...styles.okButton, background: "rgba(255,255,255,0.1)", color: "#D4AF37", border: "1px solid #D4AF37"}}>
+            Lihat Katalog Lengkap
+          </button>
+        </div>
             </div>
           </div>
         </div>
@@ -310,6 +322,14 @@ export default function Scan() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* VTON Modal for Scanned Image */}
+      {showVtonModal && result && preview && (
+        <VtonModal 
+          batik={{ nama: result.predicted_label, gambar: preview }} 
+          onClose={() => setShowVtonModal(false)} 
+        />
       )}
     </div>
   );

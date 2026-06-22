@@ -13,6 +13,8 @@ passlib[bcrypt]
 python-jose[cryptography]
 python-multipart
 psycopg2-binary
-framer-motion
 scikit-learn
 seaborn
+replicate
+httpx
+python-dotenv

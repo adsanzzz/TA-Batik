@@ -246,4 +246,34 @@ export const deleteModel = async (id, token) => {
 
   return res.json();
 };
+
+// --- VTON API SERVICE ---
+
+export const generateGarment = async (formData) => {
+  const res = await fetch(`${BASE_URL}/vton/generate-garment`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `HTTP Error ${res.status}`);
+  }
+
+  return res.json();
+};
+
+export const executeVton = async (formData) => {
+  const res = await fetch(`${BASE_URL}/vton/try-on`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `HTTP Error ${res.status}`);
+  }
+
+  return res.json();
+};
 

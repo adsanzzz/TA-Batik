@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { getBatik, BASE_URL } from "@/services/api";
 import CardBatik from "@/components/CardBatik";
+import VtonModal from "@/components/VtonModal";
 
 const CrownIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: "8px", verticalAlign: "middle", color: "#d4af37" }}>
@@ -14,6 +15,7 @@ export default function Katalog() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBatik, setSelectedBatik] = useState(null);
+  const [showVtonModal, setShowVtonModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -39,7 +41,10 @@ export default function Katalog() {
       .finally(() => setLoading(false));
   }, []);
 
-  const closeModal = () => setSelectedBatik(null);
+  const closeModal = () => {
+    setSelectedBatik(null);
+    setShowVtonModal(false);
+  };
 
   const filteredData = data.filter((item) => {
     const matchesSearch = 
@@ -248,6 +253,27 @@ export default function Katalog() {
                     <span style={styles.modalBadge}>{selectedBatik.jenis_batik}</span>
                   </div>
                 </div>
+
+                {/* VTON Button */}
+                <button 
+                  style={{
+                    background: "linear-gradient(90deg, #D4AF37 0%, #AA8120 100%)",
+                    color: "#1E1A17",
+                    border: "none",
+                    padding: "12px 24px",
+                    borderRadius: "30px",
+                    fontSize: "1rem",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                    boxShadow: "0 4px 15px rgba(212, 175, 55, 0.3)",
+                    marginBottom: "20px",
+                    width: "fit-content",
+                    fontFamily: "Poppins, sans-serif"
+                  }}
+                  onClick={() => setShowVtonModal(true)}
+                >
+                  Coba Virtual Try-On ✨
+                </button>
                 
                 {selectedBatik.jenis_acara === "Batik Keraton" && (
                   <div style={styles.warningBox}>
@@ -273,6 +299,14 @@ export default function Katalog() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* VTON Modal */}
+      {showVtonModal && selectedBatik && (
+        <VtonModal 
+          batik={selectedBatik} 
+          onClose={() => setShowVtonModal(false)} 
+        />
       )}
     </div>
   );
