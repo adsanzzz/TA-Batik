@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { login } from "../services/auth";
+import Footer from "../components/Footer";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -31,6 +32,7 @@ export default function Login() {
   };
 
   return (
+    <>
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>Login</h2>
@@ -90,37 +92,42 @@ export default function Login() {
         </div>
       </div>
     </div>
+    <Footer />
+    </>
   );
 }
 
 const styles = {
   container: {
     display: "flex",
+    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
     minHeight: "calc(100vh - 75px)",
-    background: "#fafafa",
-    padding: "20px",
+    padding: "60px 20px",
+    fontFamily: "Poppins, sans-serif",
   },
   card: {
-    background: "#ffffff",
+    background: "#0122B4",
     padding: "40px",
     borderRadius: "20px",
-    boxShadow: "0 15px 40px rgba(139, 94, 52, 0.08)",
-    border: "1px solid rgba(139, 94, 52, 0.1)",
+    boxShadow: "0 15px 40px rgba(0,0,0,0.3)",
+    border: "1px solid rgba(200, 255, 1, 0.2)",
     width: "100%",
     maxWidth: "400px",
     textAlign: "center",
   },
   title: {
-    fontSize: "2rem",
+    fontSize: "2.3rem",
     fontWeight: "800",
-    color: "#2C1E16",
+    background: "linear-gradient(to bottom, #FFFFFF, #D0DBFF)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
     marginBottom: "10px",
     fontFamily: "'Playfair Display', serif",
   },
   subtitle: {
-    color: "#636e72",
+    color: "#D0E0FF",
     marginBottom: "30px",
     fontSize: "0.9rem",
   },
@@ -137,7 +144,7 @@ const styles = {
     marginBottom: "8px",
     fontSize: "0.85rem",
     fontWeight: "700",
-    color: "#2C1E16",
+    color: "#C8FF01",
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
@@ -145,21 +152,21 @@ const styles = {
     width: "100%",
     padding: "12px 15px",
     borderRadius: "10px",
-    border: "2px solid rgba(139, 94, 52, 0.1)",
+    border: "2px solid rgba(255, 255, 255, 0.15)",
     outline: "none",
     fontSize: "1rem",
-    color: "#2C1E16",
+    color: "#fff",
     transition: "all 0.3s ease",
     boxSizing: "border-box",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   inputFocus: {
-    borderColor: "#B98751",
-    boxShadow: "0 0 0 4px rgba(185, 135, 81, 0.1)",
+    borderColor: "#C8FF01",
+    boxShadow: "0 0 0 4px rgba(200, 255, 1, 0.15)",
   },
   button: {
-    background: "#B98751",
-    color: "white",
+    background: "linear-gradient(135deg, #C8FF01, #AEE600)",
+    color: "#00117D",
     padding: "14px",
     borderRadius: "10px",
     border: "none",
@@ -167,12 +174,12 @@ const styles = {
     fontWeight: "700",
     cursor: "pointer",
     transition: "transform 0.2s, background 0.2s",
-    boxShadow: "0 4px 15px rgba(185, 135, 81, 0.3)",
+    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.3)",
     marginTop: "10px",
   },
   error: {
     background: "#ff767522",
-    color: "#d63031",
+    color: "#ff7675",
     padding: "10px",
     borderRadius: "8px",
     marginBottom: "20px",
@@ -182,18 +189,36 @@ const styles = {
   registerSection: {
     marginTop: "24px",
     paddingTop: "20px",
-    borderTop: "1px solid rgba(139, 94, 52, 0.1)",
+    borderTop: "1px solid rgba(255, 255, 255, 0.15)",
     textAlign: "center",
   },
   registerText: {
-    color: "#636e72",
+    color: "#D0E0FF",
     fontSize: "0.85rem",
     marginBottom: "8px",
   },
   registerLink: {
-    color: "#B98751",
+    color: "#C8FF01",
     fontWeight: "700",
     fontSize: "0.9rem",
     textDecoration: "none",
   },
+  footerContainer: {
+    width: "100%",
+    maxWidth: "850px",
+    margin: "50px auto 10px auto",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderTop: "1px solid rgba(255, 255, 255, 0.15)",
+    paddingTop: "30px"
+  },
+  footerImage: {
+    width: "100%",
+    maxWidth: "100%",
+    height: "auto",
+    borderRadius: "16px",
+    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.35)",
+    border: "1px solid rgba(255, 255, 255, 0.1)"
+  }
 };

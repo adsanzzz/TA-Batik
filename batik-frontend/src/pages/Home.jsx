@@ -1,10 +1,11 @@
-import heroImage from "../assets/depan.png";
+import heroImage from '../assets/depan.png';
+import Footer from '../components/Footer';
 
 export default function Home() {
   return (
     <section style={styles.hero}>
       {/* Background Pattern */}
-      <div style={styles.pattern}></div>
+
 
       <div style={styles.content}>
         {/* LEFT */}
@@ -36,24 +37,6 @@ export default function Home() {
               Jelajahi Katalog
             </a>
           </div>
-
-          {/* Stats */}
-          <div style={styles.stats}>
-            <div>
-              <h2>95%</h2>
-              <span>Akurasi AI</span>
-            </div>
-
-            <div>
-              <h2>20+</h2>
-              <span>Motif Batik</span>
-            </div>
-
-            <div>
-              <h2>1000+</h2>
-              <span>Dataset</span>
-            </div>
-          </div>
         </div>
 
         {/* RIGHT */}
@@ -71,147 +54,154 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <Footer />
     </section>
   );
 }
 
 const styles = {
   hero: {
-    minHeight: "100vh",
-    background:
-      "linear-gradient(135deg, #1E1A17 0%, #3E2723 50%, #5D4037 100%)",
-    position: "relative",
-    overflow: "hidden",
-    fontFamily: "Poppins, sans-serif",
+    minHeight: '100vh',
+    position: 'relative',
+    overflow: 'hidden',
+    fontFamily: 'Poppins, sans-serif',
   },
 
   pattern: {
-    position: "absolute",
+    position: 'absolute',
     inset: 0,
-    opacity: 0.08,
+    opacity: 0.18,
     backgroundImage: `
       radial-gradient(circle at center,
-      #D4AF37 2px,
-      transparent 2px)
+      #C8FF01 2.5px,
+      transparent 2.5px)
     `,
-    backgroundSize: "40px 40px",
+    backgroundSize: '40px 40px',
+    pointerEvents: 'none',
+    zIndex: 0,
   },
 
   content: {
-    display: "flex",
-    minHeight: "100vh",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "0 8%",
-    position: "relative",
+    display: 'flex',
+    minHeight: '100vh',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '0 8%',
+    position: 'relative',
     zIndex: 2,
   },
 
   left: {
     flex: 1,
-    color: "white",
+    color: 'white',
   },
 
   badge: {
-    display: "inline-block",
-    padding: "10px 18px",
-    border: "1px solid rgba(212,175,55,0.3)",
-    borderRadius: "999px",
-    color: "#D4AF37",
-    background: "rgba(212,175,55,0.08)",
-    marginBottom: "30px",
-    backdropFilter: "blur(10px)",
+    display: 'inline-block',
+    padding: '10px 18px',
+    border: '1px solid rgba(200, 255, 1, 0.3)',
+    borderRadius: '999px',
+    color: '#C8FF01',
+    background: 'rgba(200, 255, 1, 0.08)',
+    marginBottom: '30px',
+    backdropFilter: 'blur(10px)',
   },
 
   title: {
-    fontFamily: "Playfair Display, serif",
-    fontSize: "4.5rem",
-    lineHeight: 1.1,
-    marginBottom: "25px",
+    fontFamily: 'Playfair Display, serif',
+    fontSize: '4.5rem',
+    lineHeight: '1.3',
+    marginBottom: '25px',
     fontWeight: 700,
+    background: 'linear-gradient(to bottom, #FFFFFF, #D0DBFF)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    paddingTop: '10px',
+    paddingBottom: '10px',
   },
 
   gold: {
-    color: "#D4AF37",
+    color: '#C8FF01',
+    WebkitTextFillColor: '#C8FF01',
   },
 
   subtitle: {
-    maxWidth: "650px",
-    color: "#E0E0E0",
-    fontSize: "1.1rem",
+    maxWidth: '650px',
+    color: '#D0DBFF',
+    fontSize: '1.1rem',
     lineHeight: 1.8,
-    marginBottom: "40px",
+    marginBottom: '40px',
   },
 
   buttons: {
-    display: "flex",
-    gap: "16px",
-    marginBottom: "60px",
+    display: 'flex',
+    gap: '16px',
+    marginBottom: '60px',
   },
 
   primaryBtn: {
-    textDecoration: "none",
-    background: "#D4AF37",
-    color: "#1E1A17",
-    padding: "16px 34px",
-    borderRadius: "50px",
-    fontWeight: "700",
-    boxShadow: "0 10px 30px rgba(212,175,55,0.3)",
-    transition: "0.3s",
+    textDecoration: 'none',
+    background: '#C8FF01',
+    color: '#00117D',
+    padding: '16px 34px',
+    borderRadius: '50px',
+    fontWeight: '700',
+    boxShadow: '0 10px 30px rgba(200, 255, 1, 0.25)',
+    transition: '0.3s',
   },
 
   secondaryBtn: {
-    textDecoration: "none",
-    border: "1px solid rgba(255,255,255,0.2)",
-    color: "#fff",
-    padding: "16px 34px",
-    borderRadius: "50px",
-    backdropFilter: "blur(10px)",
-    background: "rgba(255,255,255,0.05)",
+    textDecoration: 'none',
+    border: '1px solid rgba(255,255,255,0.2)',
+    color: '#fff',
+    padding: '16px 34px',
+    borderRadius: '50px',
+    backdropFilter: 'blur(10px)',
+    background: 'rgba(255,255,255,0.05)',
   },
 
   stats: {
-    display: "flex",
-    gap: "60px",
-    color: "white",
+    display: 'flex',
+    gap: '60px',
+    color: 'white',
   },
 
   right: {
     flex: 1,
-    display: "flex",
-    justifyContent: "center",
+    display: 'flex',
+    justifyContent: 'center',
   },
 
   imageContainer: {
-    position: "relative",
-    width: "550px",
+    position: 'relative',
+    width: '550px',
   },
 
   goldBorder: {
-    position: "absolute",
-    inset: "-15px",
-    border: "2px solid rgba(212,175,55,0.5)",
-    borderRadius: "30px",
+    position: 'absolute',
+    inset: '-15px',
+    border: '2px solid rgba(200, 255, 1, 0.5)',
+    borderRadius: '30px',
   },
 
   image: {
-    width: "100%",
-    borderRadius: "25px",
-    display: "block",
-    boxShadow: "0 30px 80px rgba(0,0,0,0.4)",
-    position: "relative",
+    width: '100%',
+    borderRadius: '25px',
+    display: 'block',
+    boxShadow: '0 30px 80px rgba(0,0,0,0.4)',
+    position: 'relative',
     zIndex: 2,
   },
 
   glow: {
-    position: "absolute",
-    width: "300px",
-    height: "300px",
-    background: "#D4AF37",
-    filter: "blur(120px)",
+    position: 'absolute',
+    width: '300px',
+    height: '300px',
+    background: '#C8FF01',
+    filter: 'blur(120px)',
     opacity: 0.25,
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
   },
 };

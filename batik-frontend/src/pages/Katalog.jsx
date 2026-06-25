@@ -2,14 +2,24 @@ import { useEffect, useState, useRef } from "react";
 import { getBatik, BASE_URL } from "@/services/api";
 import CardBatik from "@/components/CardBatik";
 import VtonModal from "@/components/VtonModal";
+import Footer from "@/components/Footer";
+import LoadingLogo from "@/components/LoadingLogo";
 
 const CrownIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: "8px", verticalAlign: "middle", color: "#d4af37" }}>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: "8px", verticalAlign: "middle", color: "#C8FF01" }}>
     <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"></path>
   </svg>
 );
 
 const CATEGORIES = ["Semua", "Bali", "Betawi", "Celup", "Cendrawasih", "Kawung", "Mega Mendung", "Parang", "Sekar", "Sidoluhur", "Sidomukti", "Tambal"];
+
+const SparklesIcon = ({ size = 20, color = "currentColor" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: "8px" }}>
+    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+    <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5 5 3Z" opacity="0.6"/>
+    <path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1 1-2.5Z" opacity="0.6"/>
+  </svg>
+);
 
 export default function Katalog() {
   const [data, setData] = useState([]);
@@ -61,7 +71,10 @@ export default function Katalog() {
   });
 
   return (
+    <>
     <div style={styles.container}>
+      {/* Background Pattern */}
+
       <style>{`
         @keyframes modalSlideUp {
           from { transform: translateY(30px); opacity: 0; }
@@ -71,33 +84,37 @@ export default function Katalog() {
           width: 8px;
         }
         .modal-scroll-area::-webkit-scrollbar-track {
-          background: #1E1A17;
+          background: #00117D;
           border-radius: 10px;
         }
         .modal-scroll-area::-webkit-scrollbar-thumb {
-          background: #D4AF37;
+          background: #C8FF01;
           border-radius: 10px;
         }
         .modal-scroll-area::-webkit-scrollbar-thumb:hover {
-          background: #EED786;
+          background: #D9FF40;
+          border-radius: 10px;
         }
         .search-input-focus:focus {
-          border-color: #D4AF37 !important;
-          box-shadow: 0 8px 30px rgba(212, 175, 55, 0.15) !important;
+          border-color: #C8FF01 !important;
+          box-shadow: 0 8px 30px rgba(200, 255, 1, 0.15) !important;
           background: rgba(255, 255, 255, 0.1) !important;
         }
         .filter-pill-hover:hover {
-          border-color: #D4AF37 !important;
-          color: #D4AF37 !important;
+          border-color: #C8FF01 !important;
+          color: #C8FF01 !important;
           transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(212, 175, 55, 0.12) !important;
+          box-shadow: 0 4px 12px rgba(200, 255, 1, 0.12) !important;
         }
         .pills-container-scroll::-webkit-scrollbar {
           display: none;
         }
       `}</style>
       <div style={styles.header}>
-        <h1 style={styles.title}>Koleksi <span style={styles.gold}>Batik Nusantara</span></h1>
+        <img src="/logo.png" alt="Logo" style={styles.logoImage} />
+        <h1 style={styles.title}>
+          <SparklesIcon size={28} color="#C8FF01" /> Koleksi <span style={styles.gold}>Batik Nusantara</span>
+        </h1>
         <p style={styles.subtitle}>Jelajahi berbagai motif batik dari seluruh penjuru Indonesia</p>
       </div>
 
@@ -193,7 +210,7 @@ export default function Katalog() {
       )}
 
       {loading ? (
-        <div style={styles.loading}>Memuat koleksi...</div>
+        <LoadingLogo text="Memuat koleksi..." />
       ) : filteredData.length > 0 ? (
         <div style={styles.grid}>
           {filteredData.map((item) => (
@@ -206,12 +223,12 @@ export default function Katalog() {
         </div>
       ) : (
         <div style={{ ...styles.empty, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 20px" }}>
-          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "15px", opacity: 0.7 }}>
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#C8FF01" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "15px", opacity: 0.7 }}>
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             <line x1="8" y1="11" x2="14" y2="11"></line>
           </svg>
-          <p style={{ margin: 0, fontSize: "1.1rem", fontWeight: "600", color: "#D4AF37", fontStyle: "normal" }}>Tidak menemukan batik yang cocok.</p>
+          <p style={{ margin: 0, fontSize: "1.1rem", fontWeight: "600", color: "#C8FF01", fontStyle: "normal" }}>Tidak menemukan batik yang cocok.</p>
           <p style={{ margin: "5px 0 15px 0", fontSize: "0.9rem", color: "#E0E0E0" }}>Cobalah menggunakan kata kunci lain atau setel ulang filter.</p>
           <button 
             onClick={() => {
@@ -257,8 +274,8 @@ export default function Katalog() {
                 {/* VTON Button */}
                 <button 
                   style={{
-                    background: "linear-gradient(90deg, #D4AF37 0%, #AA8120 100%)",
-                    color: "#1E1A17",
+                    background: "linear-gradient(90deg, #C8FF01 0%, #AEE600 100%)",
+                    color: "#00117D",
                     border: "none",
                     padding: "12px 24px",
                     borderRadius: "30px",
@@ -309,31 +326,64 @@ export default function Katalog() {
         />
       )}
     </div>
+    <Footer />
+    </>
   );
 }
 
 const styles = {
   container: {
     padding: "60px 40px",
-    background: "linear-gradient(135deg, #1E1A17 0%, #3E2723 50%, #5D4037 100%)",
     minHeight: "100vh",
     fontFamily: "Poppins, sans-serif",
+    position: "relative",
+    overflow: "hidden",
+  },
+  pattern: {
+    position: "absolute",
+    inset: 0,
+    opacity: 0.18,
+    backgroundImage: `
+      radial-gradient(circle at center,
+      #C8FF01 2.5px,
+      transparent 2.5px)
+    `,
+    backgroundSize: "40px 40px",
+    pointerEvents: "none",
+    zIndex: 0,
   },
   header: {
     textAlign: "center",
-    marginBottom: "50px",
+    marginBottom: "40px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    position: "relative",
+    zIndex: 1
+  },
+  logoImage: {
+    height: "55px",
+    width: "auto",
+    marginBottom: "15px",
+    filter: "drop-shadow(0px 4px 10px rgba(0,0,0,0.25))"
   },
   title: {
     fontSize: "2.8rem",
     fontWeight: "700",
-    color: "#fff",
     fontFamily: "'Playfair Display', serif",
+    background: "linear-gradient(to bottom, #FFFFFF, #D0DBFF)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    paddingTop: "10px",
+    paddingBottom: "10px",
+    lineHeight: "1.3",
   },
   gold: {
-    color: "#D4AF37",
+    color: "#C8FF01",
+    WebkitTextFillColor: "#C8FF01",
   },
   subtitle: {
-    color: "#E0E0E0",
+    color: "#D0DBFF",
     fontSize: "1.1rem",
     marginTop: "10px",
   },
@@ -343,17 +393,19 @@ const styles = {
     gap: "35px",
     maxWidth: "1200px",
     margin: "0 auto",
+    position: "relative",
+    zIndex: 1,
   },
   loading: {
     textAlign: "center",
     fontSize: "1.2rem",
-    color: "#D4AF37",
+    color: "#C8FF01",
     marginTop: "100px",
   },
   empty: {
     textAlign: "center",
     marginTop: "100px",
-    color: "#D4AF37",
+    color: "#C8FF01",
     fontStyle: "italic",
   },
   modalOverlay: {
@@ -371,7 +423,7 @@ const styles = {
     backdropFilter: "blur(8px)",
   },
   modalContent: {
-    background: "#1E1A17",
+    background: "#0122B4",
     borderRadius: "24px",
     width: "100%",
     maxWidth: "1000px",
@@ -382,7 +434,7 @@ const styles = {
     boxShadow: "0 25px 60px rgba(0,0,0,0.6)",
     overflow: "hidden", 
     animation: "modalSlideUp 0.4s ease-out",
-    border: "1px solid rgba(212,175,55,0.2)",
+    border: "1px solid rgba(200, 255, 1, 0.2)",
   },
   modalFlex: {
     display: "flex",
@@ -425,20 +477,20 @@ const styles = {
   },
   modalBadge: {
     display: "inline-block",
-    background: "rgba(212, 175, 55, 0.1)",
-    color: "#D4AF37",
+    background: "rgba(200, 255, 1, 0.08)",
+    color: "#C8FF01",
     padding: "6px 16px",
     borderRadius: "30px",
     fontWeight: "700",
     fontSize: "0.9rem",
-    border: "1px solid rgba(212, 175, 55, 0.3)",
+    border: "1px solid rgba(200, 255, 1, 0.3)",
   },
   modalScrollArea: {
     overflowY: "auto",
     paddingRight: "15px",
     flex: 1,
     scrollbarWidth: "thin",
-    scrollbarColor: "#D4AF37 #1E1A17",
+    scrollbarColor: "#C8FF01 rgba(0, 17, 125, 0.5)",
   },
   closeBtn: {
     position: "absolute",
@@ -466,7 +518,7 @@ const styles = {
     display: "block",
     fontSize: "0.85rem",
     fontWeight: "800",
-    color: "#D4AF37",
+    color: "#C8FF01",
     marginBottom: "10px",
     textTransform: "uppercase",
     letterSpacing: "1.5px",
@@ -478,8 +530,8 @@ const styles = {
     margin: 0,
   },
   warningBox: {
-    background: "rgba(212, 175, 55, 0.1)",
-    borderLeft: "5px solid #D4AF37",
+    background: "rgba(200, 255, 1, 0.08)",
+    borderLeft: "5px solid #C8FF01",
     padding: "20px",
     borderRadius: "0 12px 12px 0",
     color: "#E0E0E0",
@@ -504,7 +556,7 @@ const styles = {
     width: "100%",
     padding: "16px 20px 16px 50px",
     fontSize: "1.05rem",
-    border: "1px solid rgba(212, 175, 55, 0.3)",
+    border: "1px solid rgba(200, 255, 1, 0.3)",
     borderRadius: "30px",
     background: "rgba(255, 255, 255, 0.05)",
     backdropFilter: "blur(10px)",
@@ -519,18 +571,19 @@ const styles = {
     left: "20px",
     top: "50%",
     transform: "translateY(-50%)",
-    color: "#D4AF37",
+    color: "#C8FF01",
     display: "flex",
     alignItems: "center",
+    zIndex: 10,
   },
   clearBtn: {
     position: "absolute",
     right: "20px",
     top: "50%",
     transform: "translateY(-50%)",
-    background: "rgba(212, 175, 55, 0.15)",
+    background: "rgba(200, 255, 1, 0.15)",
     border: "none",
-    color: "#D4AF37",
+    color: "#C8FF01",
     width: "24px",
     height: "24px",
     borderRadius: "50%",
@@ -550,7 +603,7 @@ const styles = {
   pillsLabel: {
     fontSize: "0.8rem",
     fontWeight: "700",
-    color: "#D4AF37",
+    color: "#C8FF01",
     textTransform: "uppercase",
     letterSpacing: "1.2px",
     paddingLeft: "4px",
@@ -574,9 +627,9 @@ const styles = {
     width: "36px",
     height: "36px",
     borderRadius: "50%",
-    border: "1px solid rgba(212, 175, 55, 0.3)",
+    border: "1px solid rgba(200, 255, 1, 0.3)",
     background: "rgba(255, 255, 255, 0.05)",
-    color: "#D4AF37",
+    color: "#C8FF01",
     fontSize: "1.1rem",
     cursor: "pointer",
     display: "flex",
@@ -603,11 +656,11 @@ const styles = {
     backdropFilter: "blur(5px)",
   },
   activePill: {
-    background: "#D4AF37",
-    color: "#1E1A17",
-    border: "1px solid #D4AF37",
+    background: "#C8FF01",
+    color: "#00117D",
+    border: "1px solid #C8FF01",
     transform: "translateY(-2px)",
-    boxShadow: "0 8px 20px rgba(212, 175, 55, 0.25)",
+    boxShadow: "0 8px 20px rgba(200, 255, 1, 0.25)",
   },
   resultsCount: {
     fontSize: "0.9rem",
@@ -617,8 +670,8 @@ const styles = {
     fontFamily: "Poppins, sans-serif",
   },
   resetSearchBtn: {
-    background: "#D4AF37",
-    color: "#1E1A17",
+    background: "#C8FF01",
+    color: "#00117D",
     border: "none",
     padding: "12px 24px",
     borderRadius: "20px",
@@ -627,8 +680,26 @@ const styles = {
     cursor: "pointer",
     marginTop: "15px",
     fontFamily: "Poppins, sans-serif",
-    boxShadow: "0 4px 15px rgba(212, 175, 55, 0.2)",
+    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.2)",
     transition: "all 0.3s",
+  },
+  footerContainer: {
+    width: "100%",
+    maxWidth: "1200px",
+    margin: "50px auto 10px auto",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderTop: "1px solid rgba(255, 255, 255, 0.15)",
+    paddingTop: "30px"
+  },
+  footerImage: {
+    width: "100%",
+    maxWidth: "850px",
+    height: "auto",
+    borderRadius: "16px",
+    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.35)",
+    border: "1px solid rgba(255, 255, 255, 0.1)"
   }
 };
 

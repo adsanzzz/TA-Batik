@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { isAuthenticated, logout, getRole } from "../services/auth";
-import logo from "../assets/logo.png";
 
 export default function Navbar() {
   const auth = isAuthenticated();
@@ -11,11 +10,11 @@ export default function Navbar() {
       {/* LOGO */}
       <div style={styles.logoWrapper}>
         <img
-          src={logo}
-          alt="Batik AI"
+          src="/logo.png"
+          alt="Trisara"
           style={styles.logoImg}
         />
-        <span style={styles.logoText}>BatikAI</span>
+        <span style={styles.logoText}>Trisara</span>
       </div>
 
       {/* MENU */}
@@ -32,8 +31,8 @@ export default function Navbar() {
           Scan AI
         </Link>
 
-        <Link to="/mixer" style={styles.link} className="nav-link">
-          AI Mixer
+        <Link to="/generative" style={styles.link} className="nav-link">
+          AI Generative
         </Link>
 
         <Link to="/photobox" style={styles.link} className="nav-link">
@@ -53,16 +52,13 @@ export default function Navbar() {
               </Link>
             )}
 
-            <button onClick={logout} style={styles.logoutBtn}>
+            <button onClick={logout} style={styles.logoutBtn} className="nav-btn-outline">
               Logout
             </button>
           </>
         ) : (
           <>
-            <Link to="/register-mitra" style={styles.mitraBtn}>
-              Daftar Mitra
-            </Link>
-            <Link to="/login" style={styles.loginBtn}>
+            <Link to="/login" style={styles.loginBtn} className="nav-btn-primary">
               Login
             </Link>
           </>
@@ -77,13 +73,13 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     padding: "0 50px",
-    height: "70px",
+    height: "85px",
 
-    background: "rgba(30, 26, 23, 0.92)",
+    background: "rgba(2, 38, 146, 0.92)",
     backdropFilter: "blur(12px)",
 
     boxShadow: "0 2px 20px rgba(0,0,0,0.25)",
-    borderBottom: "1px solid rgba(212,175,55,0.15)",
+    borderBottom: "1px solid rgba(200, 255, 1, 0.15)",
 
     position: "sticky",
     top: 0,
@@ -97,15 +93,17 @@ const styles = {
   },
 
   logoImg: {
-    width: "40px",
-    height: "40px",
-    objectFit: "cover",
+    width: "42px",
+    height: "42px",
+    objectFit: "contain",
+    borderRadius: "8px",
+    filter: "drop-shadow(0 2px 8px rgba(200, 255, 1, 0.3))",
   },
 
   logoText: {
     fontSize: "1.4rem",
     fontWeight: "700",
-    color: "#D4AF37",
+    color: "#C8FF01",
     fontFamily: "'Playfair Display', serif",
   },
 
@@ -126,7 +124,7 @@ const styles = {
 
   adminLink: {
     textDecoration: "none",
-    color: "#D4AF37",
+    color: "#C8FF01",
     fontWeight: "600",
     fontSize: "0.95rem",
   },
@@ -134,8 +132,8 @@ const styles = {
   loginBtn: {
     textDecoration: "none",
 
-    background: "#D4AF37",
-    color: "#1E1A17",
+    background: "#C8FF01",
+    color: "#00117D",
 
     padding: "8px 20px",
     borderRadius: "20px",
@@ -148,8 +146,8 @@ const styles = {
 
   mitraBtn: {
     textDecoration: "none",
-    border: "1px solid #D4AF37",
-    color: "#D4AF37",
+    border: "1px solid #C8FF01",
+    color: "#C8FF01",
     padding: "7px 18px",
     borderRadius: "20px",
     fontSize: "0.9rem",
@@ -160,8 +158,8 @@ const styles = {
   logoutBtn: {
     background: "transparent",
 
-    border: "1px solid #D4AF37",
-    color: "#D4AF37",
+    border: "1px solid #C8FF01",
+    color: "#C8FF01",
 
     padding: "6px 16px",
     borderRadius: "20px",

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import VtonModal from "../components/VtonModal";
+import Footer from "../components/Footer";
+import LoadingLogo from "../components/LoadingLogo";
 
 // --- CUSTOM SVG ICONS FOR PROFESSIONAL UI ---
 const SparklesIcon = ({ size = 20, color = "currentColor" }) => (
@@ -54,7 +56,7 @@ const UploadIcon = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
-export default function BatikMixer() {
+export default function AIGenerative() {
   const [activeTab, setActiveTab] = useState("stylegan"); // "stylegan" | "nst"
 
   // --- STATE FOR MODE 1 (STYLEGAN SEED) ---
@@ -241,10 +243,14 @@ export default function BatikMixer() {
   };
 
   return (
+    <>
     <div style={styles.container}>
+      {/* Background Pattern */}
+
       <header style={styles.header}>
+        <img src="/logo.png" alt="Logo SV UNS" style={styles.logoImage} />
         <h1 style={styles.title}>
-          <SparklesIcon size={28} color="#D4AF37" /> AI Batik Style Mixer
+          <SparklesIcon size={28} color="#C8FF01" /> AI Batik <span style={styles.gold}>Generative</span>
         </h1>
         <p style={styles.subtitle}>
           Padukan karakteristik estetika dari dua motif batik berbeda untuk menciptakan pola batik baru yang unik.
@@ -301,13 +307,13 @@ export default function BatikMixer() {
                     style={styles.seedInput}
                   />
                   <button onClick={handleRandomSeedA} style={styles.iconBtn} title="Acak Seed">
-                    <DiceIcon size={16} color="#D4AF37" />
+                    <DiceIcon size={16} color="#C8FF01" />
                   </button>
                 </div>
               </div>
               <div style={styles.previewBox}>
                 {loadingA ? (
-                  <div style={styles.spinner}>Menghasilkan...</div>
+                  <LoadingLogo text="Menghasilkan..." size={40} />
                 ) : imageA ? (
                   <img src={imageA} alt="Batik A" style={styles.previewImage} />
                 ) : (
@@ -332,13 +338,13 @@ export default function BatikMixer() {
                     style={styles.seedInput}
                   />
                   <button onClick={handleRandomSeedB} style={styles.iconBtn} title="Acak Seed">
-                    <DiceIcon size={16} color="#D4AF37" />
+                    <DiceIcon size={16} color="#C8FF01" />
                   </button>
                 </div>
               </div>
               <div style={styles.previewBox}>
                 {loadingB ? (
-                  <div style={styles.spinner}>Menghasilkan...</div>
+                  <LoadingLogo text="Menghasilkan..." size={40} />
                 ) : imageB ? (
                   <img src={imageB} alt="Batik B" style={styles.previewImage} />
                 ) : (
@@ -369,7 +375,7 @@ export default function BatikMixer() {
                   <img src={contentPreview} alt="Content" style={styles.previewImage} />
                 ) : (
                   <div style={styles.uploadPlaceholder}>
-                    <UploadIcon size={24} color="#D4AF37" />
+                    <UploadIcon size={24} color="#C8FF01" />
                     <span style={styles.placeholderText} style={{ marginTop: "8px" }}>
                       Upload Batik Pola Dasar
                     </span>
@@ -407,7 +413,7 @@ export default function BatikMixer() {
                   <img src={stylePreview} alt="Style" style={styles.previewImage} />
                 ) : (
                   <div style={styles.uploadPlaceholder}>
-                    <UploadIcon size={24} color="#D4AF37" />
+                    <UploadIcon size={24} color="#C8FF01" />
                     <span style={styles.placeholderText} style={{ marginTop: "8px" }}>
                       Upload Batik Warna/Tekstur
                     </span>
@@ -470,7 +476,7 @@ export default function BatikMixer() {
                 </button>
                 
                 {!imageA || !imageB ? (
-                  <p style={styles.hintText}>* Harap generate Motif A & B terlebih dahulu di kolom kiri</p>
+                  <p style={styles.hintText}>✦ Harap generate Motif A & B terlebih dahulu di kolom kiri</p>
                 ) : null}
               </>
             ) : (
@@ -479,7 +485,7 @@ export default function BatikMixer() {
                   <div style={styles.sliderHeaders}>
                     <span>Batik Asli</span>
                     <span style={styles.mixPercentage}>
-                      Kekuatan Gaya: {Math.round(styleStrength * 100)}%
+                      Intensitas Motif Baru: {Math.round(styleStrength * 100)}%
                     </span>
                     <span>Batik Baru</span>
                   </div>
@@ -503,7 +509,7 @@ export default function BatikMixer() {
                     style={{
                       width: "18px",
                       height: "18px",
-                      accentColor: "#D4AF37",
+                      accentColor: "#C8FF01",
                       cursor: "pointer"
                     }}
                   />
@@ -525,7 +531,7 @@ export default function BatikMixer() {
                 </button>
                 
                 {!contentFile || !styleFile ? (
-                  <p style={styles.hintText}>* Harap unggah kedua foto batik terlebih dahulu di kolom kiri</p>
+                  <p style={styles.hintText}>✦ Harap upload kedua foto batik terlebih dahulu</p>
                 ) : null}
               </>
             )}
@@ -536,11 +542,10 @@ export default function BatikMixer() {
             <div style={styles.resultWrapper}>
               <div style={styles.bigPreviewBox}>
                 {loadingMixed ? (
-                  <div style={styles.spinner}>
-                    {activeTab === "stylegan" 
-                      ? "Memproses perpaduan latent space..." 
-                      : "Memproses transfer gaya saraf (NST)..."}
-                  </div>
+                  <LoadingLogo 
+                    text={activeTab === "stylegan" ? "Memproses perpaduan latent space..." : "Memproses transfer gaya saraf (NST)..."} 
+                    size={50} 
+                  />
                 ) : imageMixed ? (
                   <img src={imageMixed} alt="Batik Hibrida" style={styles.mixedImage} />
                 ) : (
@@ -552,7 +557,7 @@ export default function BatikMixer() {
                 <div style={styles.metaPanel}>
                   <form onSubmit={handleSaveToCatalog} style={styles.saveForm}>
                     <h3 style={styles.formTitle}>
-                      <SaveIcon size={18} color="#D4AF37" /> Simpan Motif Baru
+                      <SaveIcon size={18} color="#C8FF01" /> Simpan Motif Baru
                     </h3>
                     
                     <div style={styles.fieldGroup}>
@@ -605,7 +610,7 @@ export default function BatikMixer() {
                         onClick={() => setShowVton(true)}
                         style={styles.btnTryOn}
                       >
-                        <ShirtIcon size={14} color="#D4AF37" /> Virtual Try-On
+                        <ShirtIcon size={14} color="#C8FF01" /> Virtual Try-On
                       </button>
                     </div>
                   </form>
@@ -626,31 +631,67 @@ export default function BatikMixer() {
         />
       )}
     </div>
+    <Footer />
+    </>
   );
 }
 
 const styles = {
   container: {
-    padding: "30px 40px",
-    background: "linear-gradient(to bottom, #161311, #0B0908)",
     minHeight: "calc(100vh - 70px)",
+    padding: "60px 40px",
     color: "#F8F4EE",
-    fontFamily: "'Poppins', sans-serif"
+    fontFamily: "'Poppins', sans-serif",
+    position: "relative",
+    overflow: "hidden"
+  },
+  pattern: {
+    position: "absolute",
+    inset: 0,
+    opacity: 0.18,
+    backgroundImage: `
+      radial-gradient(circle at center,
+      #C8FF01 2.5px,
+      transparent 2.5px)
+    `,
+    backgroundSize: "40px 40px",
+    pointerEvents: "none",
+    zIndex: 0
   },
   header: {
     textAlign: "center",
-    marginBottom: "30px"
+    marginBottom: "40px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    position: "relative",
+    zIndex: 1
+  },
+  logoImage: {
+    height: "55px",
+    width: "auto",
+    marginBottom: "15px",
+    filter: "drop-shadow(0px 4px 10px rgba(0,0,0,0.25))"
   },
   title: {
-    fontSize: "2.3rem",
-    color: "#D4AF37",
+    fontSize: "2.8rem",
     fontFamily: "'Playfair Display', serif",
+    background: "linear-gradient(to bottom, #FFFFFF, #D0DBFF)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
     marginBottom: "8px",
-    fontWeight: "700"
+    fontWeight: "700",
+    paddingTop: "10px",
+    paddingBottom: "10px",
+    lineHeight: "1.3",
+  },
+  gold: {
+    color: "#C8FF01",
+    WebkitTextFillColor: "#C8FF01",
   },
   subtitle: {
     fontSize: "0.95rem",
-    color: "#b5a89e",
+    color: "#D0E0FF",
     maxWidth: "650px",
     margin: "0 auto",
     lineHeight: "1.5"
@@ -663,8 +704,8 @@ const styles = {
   },
   tabBtn: {
     background: "rgba(255, 255, 255, 0.03)",
-    border: "1px solid rgba(212, 175, 55, 0.2)",
-    color: "#b5a89e",
+    border: "1px solid rgba(200, 255, 1, 0.2)",
+    color: "#D0E0FF",
     padding: "10px 24px",
     borderRadius: "30px",
     fontSize: "0.9rem",
@@ -673,10 +714,10 @@ const styles = {
     transition: "all 0.3s"
   },
   activeTabBtn: {
-    background: "#D4AF37",
-    color: "#161311",
-    border: "1px solid #D4AF37",
-    boxShadow: "0 4px 15px rgba(212, 175, 55, 0.25)"
+    background: "#C8FF01",
+    color: "#00117D",
+    border: "1px solid #C8FF01",
+    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.25)"
   },
   layoutContainer: {
     display: "flex",
@@ -684,7 +725,9 @@ const styles = {
     gap: "35px",
     maxWidth: "1200px",
     margin: "0 auto",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
+    position: "relative",
+    zIndex: 1
   },
   leftColumn: {
     flex: "1 1 420px",
@@ -700,16 +743,17 @@ const styles = {
   },
   sectionTitle: {
     fontSize: "1.2rem",
-    color: "#D4AF37",
+    color: "#C8FF01",
     fontFamily: "'Playfair Display', serif",
-    borderBottom: "1px solid rgba(212, 175, 55, 0.2)",
+    borderBottom: "1px solid rgba(200, 255, 1, 0.2)",
     paddingBottom: "8px",
     marginBottom: "5px",
     fontWeight: "600"
   },
   patternCard: {
-    background: "rgba(255, 255, 255, 0.02)",
-    border: "1px solid rgba(212, 175, 55, 0.12)",
+    background: "rgba(255, 255, 255, 0.05)",
+    backdropFilter: "blur(12px)",
+    border: "1px solid rgba(255, 255, 255, 0.12)",
     borderRadius: "14px",
     padding: "16px",
     display: "flex",
@@ -724,9 +768,9 @@ const styles = {
     alignItems: "center"
   },
   badge: {
-    background: "rgba(212, 175, 55, 0.08)",
-    border: "1px solid rgba(212, 175, 55, 0.3)",
-    color: "#D4AF37",
+    background: "rgba(200, 255, 1, 0.08)",
+    border: "1px solid rgba(200, 255, 1, 0.3)",
+    color: "#C8FF01",
     padding: "3px 10px",
     borderRadius: "12px",
     fontSize: "0.8rem",
@@ -766,7 +810,7 @@ const styles = {
     height: "240px",
     background: "rgba(0, 0, 0, 0.4)",
     borderRadius: "10px",
-    border: "1px dashed rgba(212, 175, 55, 0.2)",
+    border: "1px dashed rgba(255, 255, 255, 0.2)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -785,20 +829,21 @@ const styles = {
     padding: "0 10px"
   },
   spinner: {
-    color: "#D4AF37",
+    color: "#C8FF01",
     fontSize: "0.85rem",
     fontWeight: "500"
   },
   btnAction: {
-    background: "transparent",
-    border: "1px solid rgba(212, 175, 55, 0.4)",
-    color: "#D4AF37",
-    padding: "8px",
+    background: "rgba(200, 255, 1, 0.1)",
+    border: "1px solid #C8FF01",
+    color: "#C8FF01",
+    padding: "10px",
     borderRadius: "8px",
     fontWeight: "600",
-    fontSize: "0.85rem",
+    fontSize: "0.9rem",
     cursor: "pointer",
-    transition: "all 0.25s"
+    transition: "all 0.25s",
+    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.15)"
   },
   uploadPlaceholder: {
     display: "flex",
@@ -817,8 +862,9 @@ const styles = {
     cursor: "pointer"
   },
   mixControlCard: {
-    background: "rgba(255, 255, 255, 0.02)",
-    border: "1px solid rgba(212, 175, 55, 0.12)",
+    background: "rgba(255, 255, 255, 0.05)",
+    backdropFilter: "blur(12px)",
+    border: "1px solid rgba(255, 255, 255, 0.12)",
     borderRadius: "14px",
     padding: "20px",
     display: "flex",
@@ -840,17 +886,17 @@ const styles = {
     fontWeight: "500"
   },
   mixPercentage: {
-    color: "#D4AF37",
+    color: "#C8FF01",
     fontWeight: "600"
   },
   rangeSlider: {
     width: "100%",
-    accentColor: "#D4AF37",
+    accentColor: "#C8FF01",
     cursor: "pointer"
   },
   btnMix: {
-    background: "linear-gradient(90deg, #D4AF37 0%, #B89327 100%)",
-    color: "#161311",
+    background: "linear-gradient(90deg, #C8FF01 0%, #AEE600 100%)",
+    color: "#00117D",
     border: "none",
     padding: "12px 28px",
     borderRadius: "20px",
@@ -861,17 +907,22 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     gap: "8px",
-    boxShadow: "0 4px 15px rgba(212, 175, 55, 0.2)",
+    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.2)",
     transition: "transform 0.2s"
   },
   hintText: {
-    fontSize: "0.75rem",
-    color: "#e06c75",
-    margin: 0
+    fontSize: "0.85rem",
+    color: "#C8FF01",
+    fontStyle: "italic",
+    lineHeight: "1.4",
+    margin: 0,
+    width: "100%",
+    textAlign: "center",
   },
   resultCard: {
-    background: "rgba(255, 255, 255, 0.01)",
-    border: "1px solid rgba(212, 175, 55, 0.15)",
+    background: "rgba(255, 255, 255, 0.05)",
+    backdropFilter: "blur(12px)",
+    border: "1px solid rgba(255, 255, 255, 0.12)",
     borderRadius: "16px",
     padding: "20px",
     boxShadow: "0 10px 30px rgba(0,0,0,0.3)"
@@ -886,7 +937,7 @@ const styles = {
     width: "100%",
     background: "#000",
     borderRadius: "12px",
-    border: "1px solid rgba(212, 175, 55, 0.2)",
+    border: "1px solid rgba(255, 255, 255, 0.12)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -955,8 +1006,8 @@ const styles = {
   },
   btnSave: {
     flex: 1,
-    background: "#D4AF37",
-    color: "#161311",
+    background: "#C8FF01",
+    color: "#00117D",
     border: "none",
     padding: "10px",
     borderRadius: "20px",
@@ -972,8 +1023,8 @@ const styles = {
   btnTryOn: {
     flex: 1,
     background: "transparent",
-    border: "1.5px solid #D4AF37",
-    color: "#D4AF37",
+    border: "1.5px solid #C8FF01",
+    color: "#C8FF01",
     padding: "9px",
     borderRadius: "20px",
     fontSize: "0.85rem",
@@ -984,5 +1035,23 @@ const styles = {
     justifyContent: "center",
     gap: "6px",
     transition: "background 0.2s"
+  },
+  footerContainer: {
+    width: "100%",
+    maxWidth: "1200px",
+    margin: "50px auto 10px auto",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderTop: "1px solid rgba(255, 255, 255, 0.15)",
+    paddingTop: "30px"
+  },
+  footerImage: {
+    width: "100%",
+    maxWidth: "850px",
+    height: "auto",
+    borderRadius: "16px",
+    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.35)",
+    border: "1px solid rgba(255, 255, 255, 0.1)"
   }
 };

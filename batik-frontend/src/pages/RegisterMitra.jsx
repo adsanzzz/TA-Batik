@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { registerMitra } from "../services/api";
+import Footer from "../components/Footer";
 
 export default function RegisterMitra() {
   const [username, setUsername] = useState("");
@@ -65,19 +66,23 @@ export default function RegisterMitra() {
 
   if (success) {
     return (
+      <>
       <div style={styles.container}>
-        <div style={styles.card}>
-          <div style={styles.successIcon}>✓</div>
-          <h2 style={styles.title}>Registrasi Berhasil</h2>
-          <p style={styles.successMessage}>
-            Pendaftaran Anda sebagai Mitra berhasil diajukan! Data Anda sedang dalam peninjauan oleh Admin. Anda akan diarahkan ke halaman Login.
-          </p>
+          <div style={styles.card}>
+            <div style={styles.successIcon}>✓</div>
+            <h2 style={styles.title}>Registrasi Berhasil</h2>
+            <p style={styles.successMessage}>
+              Pendaftaran Anda sebagai Mitra berhasil diajukan! Data Anda sedang dalam peninjauan oleh Admin. Anda akan diarahkan ke halaman Login.
+            </p>
+          </div>
         </div>
-      </div>
+        <Footer />
+      </>
     );
   }
 
   return (
+    <>
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>Registrasi Mitra Batik AI</h2>
@@ -209,38 +214,43 @@ export default function RegisterMitra() {
         </div>
       </div>
     </div>
+    <Footer />
+    </>
   );
 }
 
 const styles = {
   container: {
-    minHeight: "calc(100vh - 70px)",
-    background: "linear-gradient(135deg, #FDFBF7 0%, #F4EAE0 100%)",
+    minHeight: "100vh",
     display: "flex",
+    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    padding: "40px 20px",
+    padding: "60px 20px",
+    fontFamily: "Poppins, sans-serif",
   },
   card: {
-    background: "#ffffff",
+    background: "#0122B4",
     width: "100%",
     maxWidth: "700px",
     borderRadius: "24px",
-    boxShadow: "0 10px 30px rgba(139, 94, 52, 0.08)",
-    border: "1px solid rgba(139, 94, 52, 0.1)",
+    boxShadow: "0 15px 40px rgba(0,0,0,0.3)",
+    border: "1px solid rgba(200, 255, 1, 0.2)",
     padding: "40px",
     boxSizing: "border-box",
   },
   title: {
-    fontSize: "2.2rem",
+    fontSize: "2.3rem",
     fontWeight: "800",
-    color: "#2C1E16",
+    background: "linear-gradient(to bottom, #FFFFFF, #D0DBFF)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
     fontFamily: "'Playfair Display', serif",
     marginBottom: "10px",
     textAlign: "center",
   },
   subtitle: {
-    color: "#636e72",
+    color: "#D0E0FF",
     fontSize: "1rem",
     textAlign: "center",
     marginBottom: "35px",
@@ -265,18 +275,20 @@ const styles = {
   label: {
     fontSize: "0.85rem",
     fontWeight: "700",
-    color: "#2C1E16",
+    color: "#C8FF01",
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
   input: {
     padding: "12px 16px",
     borderRadius: "10px",
-    border: "2px solid rgba(139, 94, 52, 0.15)",
+    border: "2px solid rgba(255, 255, 255, 0.15)",
     outline: "none",
     fontSize: "0.95rem",
-    transition: "border-color 0.3s",
+    color: "#fff",
+    transition: "all 0.3s ease",
     boxSizing: "border-box",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   storeInputRow: {
     display: "flex",
@@ -295,8 +307,8 @@ const styles = {
   },
   addBtn: {
     background: "transparent",
-    color: "#8B5E34",
-    border: "2px dashed #8B5E34",
+    color: "#C8FF01",
+    border: "2px dashed #C8FF01",
     padding: "10px",
     borderRadius: "10px",
     cursor: "pointer",
@@ -307,13 +319,14 @@ const styles = {
   fileInput: {
     padding: "10px",
     borderRadius: "10px",
-    border: "2px dashed rgba(139, 94, 52, 0.25)",
-    backgroundColor: "#FAF8F5",
+    border: "2px dashed rgba(200, 255, 1, 0.25)",
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    color: "#fff",
     cursor: "pointer",
   },
   fileHint: {
     fontSize: "0.75rem",
-    color: "#7f8c8d",
+    color: "#D0E0FF",
     marginTop: "2px",
   },
   checkboxContainer: {
@@ -326,18 +339,18 @@ const styles = {
     marginTop: "4px",
     width: "18px",
     height: "18px",
-    accentColor: "#8B5E34",
+    accentColor: "#C8FF01",
     cursor: "pointer",
   },
   checkboxLabel: {
     fontSize: "0.9rem",
-    color: "#555",
+    color: "#D0E0FF",
     lineHeight: "1.4",
     cursor: "pointer",
   },
   submitBtn: {
-    background: "#8B5E34",
-    color: "white",
+    background: "linear-gradient(135deg, #C8FF01, #AEE600)",
+    color: "#00117D",
     border: "none",
     padding: "16px",
     borderRadius: "12px",
@@ -346,11 +359,11 @@ const styles = {
     cursor: "pointer",
     transition: "background 0.3s, transform 0.2s",
     marginTop: "15px",
-    boxShadow: "0 4px 15px rgba(139, 94, 52, 0.25)",
+    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.3)",
   },
   error: {
     background: "#ff767522",
-    color: "#d63031",
+    color: "#ff7675",
     padding: "12px 16px",
     borderRadius: "10px",
     border: "1px solid #ff767555",
@@ -371,25 +384,43 @@ const styles = {
   },
   successMessage: {
     fontSize: "1.1rem",
-    color: "#2C1E16",
+    color: "#fff",
     textAlign: "center",
     lineHeight: "1.6",
   },
   loginSection: {
     marginTop: "24px",
     paddingTop: "20px",
-    borderTop: "1px solid rgba(139, 94, 52, 0.1)",
+    borderTop: "1px solid rgba(255, 255, 255, 0.15)",
     textAlign: "center",
   },
   loginText: {
-    color: "#636e72",
+    color: "#D0E0FF",
     fontSize: "0.85rem",
     marginBottom: "8px",
   },
   loginLink: {
-    color: "#B98751",
+    color: "#C8FF01",
     fontWeight: "700",
     fontSize: "0.9rem",
     textDecoration: "none",
   },
+  footerContainer: {
+    width: "100%",
+    maxWidth: "700px",
+    margin: "50px auto 10px auto",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderTop: "1px solid rgba(255, 255, 255, 0.15)",
+    paddingTop: "30px"
+  },
+  footerImage: {
+    width: "100%",
+    maxWidth: "100%",
+    height: "auto",
+    borderRadius: "16px",
+    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.35)",
+    border: "1px solid rgba(255, 255, 255, 0.1)"
+  }
 };

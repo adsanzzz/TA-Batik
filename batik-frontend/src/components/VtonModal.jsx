@@ -1,5 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { generateGarment, executeVton, BASE_URL } from "../services/api";
+
+const MaleShirtIcon = ({ active }) => (
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={active ? "#C8FF01" : "#fff"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: "10px"}}>
+    <path d="M4 10l-2-2 3-5h14l3 5-2 2"></path>
+    <path d="M7 6v14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6"></path>
+    <path d="M12 3v5"></path>
+  </svg>
+);
+
+const FemaleBlouseIcon = ({ active }) => (
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={active ? "#C8FF01" : "#fff"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: "10px"}}>
+    <path d="M5 8l-2 3a2 2 0 0 0 2 2h2v7a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-7h2a2 2 0 0 0 2-2l-2-3c-1.5-2.25-3-3-5-3-2 0-2 2-4 2s-2-2-4-2c-2 0-3.5.75-5 3z"></path>
+  </svg>
+);
+
+const UploadIcon = () => (
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: "15px", opacity: 0.7}}>
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+    <polyline points="21 15 16 10 5 21"></polyline>
+  </svg>
+);
+
+const CameraIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: "10px", opacity: 0.7}}>
+    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+    <circle cx="12" cy="13" r="4"></circle>
+  </svg>
+);
 
 export default function VtonModal({ batik, onClose }) {
   const [step, setStep] = useState(1);
@@ -10,6 +40,72 @@ export default function VtonModal({ batik, onClose }) {
   const [humanImagePreview, setHumanImagePreview] = useState(null);
   const [finalVtonResult, setFinalVtonResult] = useState(null);
   const [error, setError] = useState(null);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
+
+  useEffect(() => {
+    if (isCameraActive) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => {
+          streamRef.current = stream;
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          setError("Kamera tidak dapat diakses. Pastikan Anda telah memberikan izin kamera.");
+          setIsCameraActive(false);
+        });
+    } else {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+    }
+
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [isCameraActive]);
+
+  const startCamera = () => {
+    setIsCameraActive(true);
+  };
+
+  const stopCamera = () => {
+    setIsCameraActive(false);
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      canvas.toBlob((blob) => {
+        const file = new File([blob], "camera-photo.jpg", { type: "image/jpeg" });
+        setHumanImage(file);
+        setHumanImagePreview(URL.createObjectURL(blob));
+        stopCamera();
+      }, 'image/jpeg');
+    }
+  };
+
+  const handleClose = () => {
+    stopCamera();
+    onClose();
+  };
 
   const getBatikImageUrl = (path) => {
     if (!path) return "";
@@ -90,14 +186,15 @@ export default function VtonModal({ batik, onClose }) {
     }
   };
 
-  return (
-    <div style={styles.modalOverlay} onClick={onClose}>
+  return createPortal(
+    <div style={styles.modalOverlay} onClick={handleClose}>
       <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <button style={styles.closeBtn} onClick={onClose}>&times;</button>
-        
         <div style={styles.modalHeader}>
-          <h2 style={styles.modalTitle}>✨ Virtual Try-On</h2>
-          <p style={styles.subtitle}>Motif: {batik.nama}</p>
+          <div style={{ textAlign: "left" }}>
+            <h2 style={styles.modalTitle}>Virtual Try-On</h2>
+            <p style={styles.subtitle}>Motif: {batik.nama}</p>
+          </div>
+          <button style={styles.closeBtn} onClick={handleClose}>&times;</button>
         </div>
 
         {error && (
@@ -118,16 +215,16 @@ export default function VtonModal({ batik, onClose }) {
                   style={{...styles.optionCard, ...(templateType === "male_shirt" ? styles.optionActive : {})}}
                   onClick={() => setTemplateType("male_shirt")}
                 >
-                  <div style={styles.optionIcon}>👔</div>
-                  <h4>Kemeja Pria</h4>
+                  <MaleShirtIcon active={templateType === "male_shirt"} />
+                  <h4 style={templateType === "male_shirt" ? {color: "#C8FF01"} : {}}>Kemeja Pria</h4>
                   <p>Lengan Pendek Berkerah</p>
                 </div>
                 <div 
                   style={{...styles.optionCard, ...(templateType === "female_blouse" ? styles.optionActive : {})}}
                   onClick={() => setTemplateType("female_blouse")}
                 >
-                  <div style={styles.optionIcon}>👚</div>
-                  <h4>Blus Wanita</h4>
+                  <FemaleBlouseIcon active={templateType === "female_blouse"} />
+                  <h4 style={templateType === "female_blouse" ? {color: "#C8FF01"} : {}}>Blus Wanita</h4>
                   <p>Atasan Lengan Pendek</p>
                 </div>
               </div>
@@ -137,7 +234,7 @@ export default function VtonModal({ batik, onClose }) {
                 onClick={handleGenerateGarment}
                 disabled={loading}
               >
-                {loading ? "Menjahit Baju... (Tunggu 5-15 detik) ⏳" : "Jahitkan Baju Sekarang 🪄"}
+                {loading ? "Memproses Model... (Tunggu 5-15 detik)" : "Terapkan Model Pakaian"}
               </button>
             </div>
           )}
@@ -162,63 +259,91 @@ export default function VtonModal({ batik, onClose }) {
                     {humanImagePreview ? (
                       <div style={styles.imagePreviewContainer}>
                         <img src={humanImagePreview} alt="Preview" style={styles.previewImg} />
-                        <button style={styles.changeImgBtn} onClick={() => { setHumanImage(null); setHumanImagePreview(null); }}>
-                          Ganti Foto
-                        </button>
+                        <div style={styles.changeImgActions}>
+                          <button style={styles.changeImgBtn} onClick={() => { setHumanImage(null); setHumanImagePreview(null); }}>
+                            Ganti Foto
+                          </button>
+                          <button style={styles.changeImgBtn} onClick={() => { setHumanImage(null); setHumanImagePreview(null); startCamera(); }}>
+                            Ambil Ulang (Kamera)
+                          </button>
+                        </div>
+                      </div>
+                    ) : isCameraActive ? (
+                      <div style={styles.cameraContainer}>
+                        <video ref={videoRef} autoPlay playsInline style={styles.previewImg} />
+                        <canvas ref={canvasRef} style={{ display: "none" }} />
+                        <div style={styles.cameraActions}>
+                          <button style={styles.captureBtn} onClick={capturePhoto}>Ambil Foto</button>
+                          <button style={styles.cancelBtn} onClick={stopCamera}>Batal</button>
+                        </div>
                       </div>
                     ) : (
-                      <>
-                        <span style={styles.uploadIcon}>📷</span>
-                        <p style={styles.uploadText}>Klik di sini untuk mengunggah fotomu</p>
-                        <input 
-                          type="file" 
-                          accept="image/*" 
-                          onChange={handleHumanImageChange}
-                          style={styles.fileInput} 
-                        />
-                      </>
+                      <div style={styles.uploadOptions}>
+                        <div style={styles.uploadOptionGroup}>
+                          <UploadIcon />
+                          <p style={styles.uploadText}>Dari Galeri</p>
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={handleHumanImageChange}
+                            style={styles.fileInput} 
+                          />
+                        </div>
+                        <div style={styles.orDivider}>atau</div>
+                        <div style={styles.uploadOptionGroup} onClick={startCamera}>
+                          <CameraIcon />
+                          <p style={styles.uploadText}>Dari Kamera</p>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
 
               <button 
-                style={{...styles.primaryBtn, marginTop: "30px"}} 
+                style={{...styles.primaryBtn, marginTop: "15px"}} 
                 onClick={handleExecuteVton}
                 disabled={loading || !humanImage}
               >
-                {loading ? "Memakaikan Baju... (Bisa memakan waktu 1 menit) ⏳" : "Pakai Baju Ini 👕"}
+                {loading ? "Memakaikan Baju... (Bisa memakan waktu 1 menit)" : "Pakai Baju Ini"}
               </button>
             </div>
           )}
 
           {/* STEP 3: Hasil VTON */}
           {step === 3 && (
-            <div style={styles.stepBody}>
-              <h3 style={styles.stepTitle}>Selesai! Ini Penampilanmu</h3>
-              <p style={styles.stepDesc}>Bagaimana menurutmu? Kemeja {batik.nama} ini sangat cocok untukmu!</p>
-              
-              <div style={styles.finalResultBox}>
-                <img src={finalVtonResult} alt="Hasil Try-On" style={styles.finalResultImg} />
+            <div style={{ ...styles.splitView, alignItems: "center", width: "100%" }}>
+              <div style={{ ...styles.splitLeft, alignItems: "center" }}>
+                <div style={{ ...styles.finalResultBox, margin: 0, width: "100%" }}>
+                  <img src={finalVtonResult} alt="Hasil Try-On" style={styles.finalResultImg} />
+                </div>
               </div>
 
-              <div style={styles.actionRow}>
-                <button 
-                  style={styles.secondaryBtn} 
-                  onClick={() => window.open(finalVtonResult, '_blank')}
-                >
-                  Lihat Gambar Penuh 🔍
-                </button>
-                <button style={styles.primaryBtn} onClick={onClose}>
-                  Selesai ✓
-                </button>
+              <div style={{ ...styles.splitRight, alignItems: "flex-start", justifyContent: "center", paddingLeft: "10px" }}>
+                <h3 style={{ ...styles.stepTitle, textAlign: "left", marginTop: 0, marginBottom: "15px", width: "100%" }}>Selesai! Ini Penampilanmu</h3>
+                <p style={{ ...styles.stepDesc, textAlign: "left", maxWidth: "100%", marginBottom: "30px", lineHeight: "1.6" }}>
+                  Bagaimana menurutmu? Kemeja Batik Hibrida AI ini sangat cocok untukmu!
+                </p>
+                
+                <div style={styles.actionRow}>
+                  <button 
+                    style={styles.secondaryBtn} 
+                    onClick={() => window.open(finalVtonResult, '_blank')}
+                  >
+                    Lihat Gambar Penuh
+                  </button>
+                  <button style={styles.primaryBtn} onClick={onClose}>
+                    Selesai
+                  </button>
+                </div>
               </div>
             </div>
           )}
 
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -229,7 +354,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.85)",
+    backgroundColor: "rgba(0, 17, 125, 0.85)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -238,63 +363,59 @@ const styles = {
     backdropFilter: "blur(10px)",
   },
   modalContent: {
-    background: "linear-gradient(135deg, #1E1A17 0%, #2A201A 100%)",
+    background: "#0122B4",
     borderRadius: "24px",
     width: "100%",
-    maxWidth: "800px",
-    maxHeight: "90vh",
+    maxWidth: "1050px",
+    maxHeight: "95vh",
     position: "relative",
     display: "flex",
     flexDirection: "column",
     boxShadow: "0 25px 60px rgba(0,0,0,0.6)",
-    border: "1px solid rgba(212,175,55,0.3)",
-    overflowY: "auto",
+    border: "1px solid rgba(200, 255, 1, 0.2)",
+    overflow: "hidden",
+    fontFamily: "Poppins, sans-serif",
   },
   closeBtn: {
-    position: "absolute",
-    top: "20px",
-    right: "20px",
-    fontSize: "2rem",
-    background: "rgba(255,255,255,0.1)",
+    background: "none",
     border: "none",
-    borderRadius: "50%",
-    width: "40px",
-    height: "40px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
     cursor: "pointer",
-    color: "#fff",
-    transition: "background 0.3s",
-    zIndex: 10,
+    color: "#C8FF01",
+    fontSize: "1.8rem",
+    lineHeight: 1,
+    padding: 0,
   },
   modalHeader: {
-    textAlign: "center",
-    padding: "30px 20px 20px",
-    borderBottom: "1px solid rgba(212,175,55,0.1)",
+    padding: "15px 25px",
+    background: "rgba(255, 255, 255, 0.05)",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   modalTitle: {
-    fontSize: "2rem",
-    color: "#D4AF37",
-    margin: "0 0 5px 0",
-    fontFamily: "'Playfair Display', serif",
+    fontSize: "1.25rem",
+    color: "#fff",
+    margin: 0,
+    fontWeight: "700",
+    fontFamily: "Poppins, sans-serif",
   },
   subtitle: {
     color: "#E0E0E0",
-    margin: 0,
-    fontSize: "1rem",
+    margin: "3px 0 0 0",
+    fontSize: "0.85rem",
   },
   errorBox: {
-    margin: "20px 40px 0",
-    padding: "15px",
+    margin: "15px 40px 0",
+    padding: "12px",
     background: "rgba(255, 0, 0, 0.1)",
     borderLeft: "4px solid #ff4444",
     color: "#ffdddd",
     borderRadius: "0 8px 8px 0",
-    fontSize: "0.9rem",
+    fontSize: "0.85rem",
   },
   stepContainer: {
-    padding: "30px 40px",
+    padding: "15px 30px 20px",
   },
   stepBody: {
     display: "flex",
@@ -303,15 +424,15 @@ const styles = {
   },
   stepTitle: {
     color: "#fff",
-    fontSize: "1.5rem",
-    marginBottom: "10px",
+    fontSize: "1.3rem",
+    marginBottom: "5px",
     marginTop: 0,
   },
   stepDesc: {
     color: "#ccc",
-    fontSize: "0.95rem",
+    fontSize: "0.88rem",
     textAlign: "center",
-    marginBottom: "30px",
+    marginBottom: "15px",
     maxWidth: "500px",
   },
   templateOptions: {
@@ -325,43 +446,43 @@ const styles = {
     flex: 1,
     maxWidth: "250px",
     background: "rgba(255, 255, 255, 0.05)",
-    border: "2px solid rgba(255, 255, 255, 0.1)",
+    border: "1px solid rgba(255, 255, 255, 0.2)",
     borderRadius: "16px",
-    padding: "30px 20px",
+    padding: "20px 15px",
     textAlign: "center",
     cursor: "pointer",
     transition: "all 0.3s",
     color: "#fff",
   },
   optionActive: {
-    borderColor: "#D4AF37",
-    background: "rgba(212, 175, 55, 0.1)",
-    boxShadow: "0 8px 20px rgba(212, 175, 55, 0.2)",
+    borderColor: "#C8FF01",
+    background: "rgba(200, 255, 1, 0.08)",
+    boxShadow: "0 8px 20px rgba(200, 255, 1, 0.2)",
   },
   optionIcon: {
     fontSize: "3rem",
     marginBottom: "15px",
   },
   primaryBtn: {
-    background: "linear-gradient(90deg, #D4AF37 0%, #AA8120 100%)",
-    color: "#1E1A17",
+    background: "linear-gradient(90deg, #C8FF01 0%, #AEE600 100%)",
+    color: "#00117D",
     border: "none",
-    padding: "15px 40px",
+    padding: "12px 35px",
     borderRadius: "30px",
-    fontSize: "1.1rem",
+    fontSize: "1.05rem",
     fontWeight: "bold",
     cursor: "pointer",
-    boxShadow: "0 4px 15px rgba(212, 175, 55, 0.3)",
+    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.3)",
     transition: "all 0.3s",
     fontFamily: "Poppins, sans-serif",
   },
   secondaryBtn: {
     background: "transparent",
-    color: "#D4AF37",
-    border: "2px solid #D4AF37",
-    padding: "13px 30px",
+    color: "#C8FF01",
+    border: "2px solid #C8FF01",
+    padding: "10px 25px",
     borderRadius: "30px",
-    fontSize: "1rem",
+    fontSize: "0.95rem",
     fontWeight: "bold",
     cursor: "pointer",
     transition: "all 0.3s",
@@ -379,7 +500,7 @@ const styles = {
     flexDirection: "column",
   },
   splitRight: {
-    flex: 1,
+    flex: 1.6,
     display: "flex",
     flexDirection: "column",
   },
@@ -387,11 +508,11 @@ const styles = {
     background: "rgba(255,255,255,0.05)",
     borderRadius: "16px",
     padding: "15px",
-    height: "250px",
+    height: "270px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    border: "1px dashed rgba(212,175,55,0.3)",
+    border: "1px dashed rgba(200, 255, 1, 0.3)",
   },
   garmentImg: {
     maxHeight: "100%",
@@ -404,7 +525,7 @@ const styles = {
     background: "rgba(255,255,255,0.05)",
     borderRadius: "16px",
     padding: "15px",
-    height: "250px",
+    height: "270px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -448,8 +569,6 @@ const styles = {
     borderRadius: "8px",
   },
   changeImgBtn: {
-    position: "absolute",
-    bottom: "10px",
     background: "rgba(0,0,0,0.7)",
     color: "#fff",
     border: "none",
@@ -458,16 +577,83 @@ const styles = {
     fontSize: "0.8rem",
     cursor: "pointer",
   },
+  changeImgActions: {
+    position: "absolute",
+    bottom: "10px",
+    display: "flex",
+    gap: "10px",
+  },
+  cameraContainer: {
+    position: "relative",
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cameraActions: {
+    position: "absolute",
+    bottom: "10px",
+    display: "flex",
+    gap: "10px",
+  },
+  captureBtn: {
+    background: "#C8FF01",
+    color: "#00117D",
+    border: "none",
+    padding: "6px 12px",
+    borderRadius: "20px",
+    fontSize: "0.85rem",
+    fontWeight: "bold",
+    cursor: "pointer",
+  },
+  cancelBtn: {
+    background: "rgba(255,0,0,0.8)",
+    color: "#fff",
+    border: "none",
+    padding: "6px 12px",
+    borderRadius: "20px",
+    fontSize: "0.85rem",
+    cursor: "pointer",
+  },
+  uploadOptions: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "15px",
+    width: "100%",
+    height: "100%",
+  },
+  uploadOptionGroup: {
+    position: "relative",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "15px",
+    background: "rgba(255, 255, 255, 0.05)",
+    border: "1px dashed rgba(255, 255, 255, 0.3)",
+    borderRadius: "12px",
+    width: "80%",
+    cursor: "pointer",
+    transition: "0.3s",
+  },
+  orDivider: {
+    color: "#aaa",
+    fontSize: "0.8rem",
+  },
   finalResultBox: {
     width: "100%",
     maxWidth: "400px",
-    height: "400px",
+    height: "450px",
     background: "#000",
     borderRadius: "16px",
     overflow: "hidden",
     marginBottom: "30px",
-    border: "2px solid #D4AF37",
-    boxShadow: "0 10px 30px rgba(212,175,55,0.2)",
+    border: "2px solid #C8FF01",
+    boxShadow: "0 10px 30px rgba(200, 255, 1, 0.2)",
   },
   finalResultImg: {
     width: "100%",

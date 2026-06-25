@@ -1,11 +1,24 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import CardBatik from "../components/CardBatik";
 import { BASE_URL } from "../services/api";
 import VtonModal from "../components/VtonModal";
+import Footer from "../components/Footer";
+import LoadingLogo from "../components/LoadingLogo";
 
 const CrownIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: "8px", verticalAlign: "middle", color: "#d4af37" }}>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: "8px", verticalAlign: "middle", color: "#C8FF01" }}>
     <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"></path>
+  </svg>
+);
+
+const API_URL = "http://localhost:8000/api/predict";
+
+const SparklesIcon = ({ size = 20, color = "currentColor" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: "8px" }}>
+    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+    <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5 5 3Z" opacity="0.6"/>
+    <path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1 1-2.5Z" opacity="0.6"/>
   </svg>
 );
 
@@ -59,11 +72,17 @@ export default function Scan() {
   };
 
   return (
+    <>
     <div style={styles.container}>
+      {/* Background Pattern */}
+
 
       {/* HEADER */}
       <div style={styles.header}>
-        <h1 style={styles.title}>Batik Recognition</h1>
+        <img src="/logo.png" alt="Logo" style={styles.logoImage} />
+        <h1 style={styles.title}>
+          <SparklesIcon size={28} color="#C8FF01" /> Batik <span style={styles.gold}>Recognition</span>
+        </h1>
         <p style={styles.subtitle}>
           Analisis motif batik berbasis kecerdasan buatan
         </p>
@@ -74,7 +93,6 @@ export default function Scan() {
 
         {/* LEFT: INFO PANEL */}
         <div style={styles.infoPanel}>
-          <div style={styles.decorTop}></div>
           <h2 style={styles.infoTitle}>Dukungan Motif AI</h2>
           <p style={styles.infoDesc}>
             Sistem klasifikasi kami dilatih secara khusus untuk mengenali <strong>11 jenis motif batik</strong> berikut:
@@ -100,7 +118,6 @@ export default function Scan() {
         {/* RIGHT: UPLOAD AREA */}
         <div style={styles.uploadCardWrapper}>
           <div style={styles.uploadCard}>
-            <div style={styles.decorTop}></div>
 
             <label style={styles.uploadArea}>
               <input
@@ -125,7 +142,11 @@ export default function Scan() {
               ) : (
                 <div style={styles.placeholder}>
                   <div style={styles.iconCircle}>
-                    Ai
+                    <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
                   </div>
 
                   <h3 style={styles.uploadTitle}>
@@ -160,6 +181,13 @@ export default function Scan() {
 
       </div>
 
+      {/* LOADING OVERLAY */}
+      {loading && (
+        <div style={styles.loadingOverlay}>
+          <LoadingLogo text="AI sedang menganalisis motif batik Anda..." size={80} />
+        </div>
+      )}
+
       {/* RESULT */}
       {result && (
         <div style={styles.resultSection}>
@@ -191,7 +219,7 @@ export default function Scan() {
       )}
 
       {/* RESULT MODAL (POPUP) */}
-      {showResultModal && result && (
+      {showResultModal && result && createPortal(
         <div style={styles.modalOverlay} onClick={closeResultModal}>
           <div style={styles.modalContentAI} onClick={(e) => e.stopPropagation()}>
             <div style={styles.modalHeaderAI}>
@@ -211,8 +239,8 @@ export default function Scan() {
               </div>
 
               {result.warning && (
-                <div style={{...styles.warningBox, borderRadius: "12px", borderLeft: "none", borderTop: "5px solid #D4AF37"}}>
-                  <strong>⚠️ Perhatian:</strong><br/>{result.warning}
+                <div style={{ marginTop: "15px", color: "#FFD700", fontSize: "0.95rem", lineHeight: "1.6" }}>
+                  <strong>Perhatian:</strong> {result.warning}
                 </div>
               )}
 
@@ -233,21 +261,22 @@ export default function Scan() {
         <div style={{display: "flex", gap: "10px", marginTop: "15px"}}>
           <button 
             onClick={() => setShowVtonModal(true)} 
-            style={{...styles.okButton, background: "linear-gradient(135deg, #D4AF37, #AA8120)"}}
+            style={{...styles.okButton, background: "linear-gradient(135deg, #C8FF01, #AEE600)", color: "#00117D"}}
           >
-            Coba Virtual Try-On ✨
+            Coba Virtual Try-On
           </button>
-          <button onClick={closeResultModal} style={{...styles.okButton, background: "rgba(255,255,255,0.1)", color: "#D4AF37", border: "1px solid #D4AF37"}}>
+          <button onClick={closeResultModal} style={{...styles.okButton, background: "rgba(255,255,255,0.1)", color: "#C8FF01", border: "1px solid #C8FF01"}}>
             Lihat Katalog Lengkap
           </button>
         </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* CATALOG DETAIL MODAL */}
-      {selectedBatik && (
+      {selectedBatik && createPortal(
         <div style={styles.modalOverlay} onClick={closeModal}>
           <style>{`
             @keyframes modalSlideUp {
@@ -258,11 +287,11 @@ export default function Scan() {
               width: 8px;
             }
             .modal-scroll-area::-webkit-scrollbar-track {
-              background: #F9F5F0;
+              background: rgba(255, 255, 255, 0.05);
               border-radius: 10px;
             }
             .modal-scroll-area::-webkit-scrollbar-thumb {
-              background: #D4AF37;
+              background: #C8FF01;
               border-radius: 10px;
             }
           `}</style>
@@ -321,7 +350,8 @@ export default function Scan() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* VTON Modal for Scanned Image */}
@@ -331,29 +361,68 @@ export default function Scan() {
           onClose={() => setShowVtonModal(false)} 
         />
       )}
+
+      {/* FOOTER */}
     </div>
+    <Footer />
+    </>
   );
 }
 
 const styles = {
   container: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #1E1A17 0%, #3E2723 50%, #5D4037 100%)",
-    padding: "60px 20px",
+    padding: "60px 40px",
+    color: "#fff",
     fontFamily: "Poppins, sans-serif",
+    position: "relative",
+    overflow: "hidden",
+  },
+  pattern: {
+    position: "absolute",
+    inset: 0,
+    opacity: 0.18,
+    backgroundImage: `
+      radial-gradient(circle at center,
+      #C8FF01 2.5px,
+      transparent 2.5px)
+    `,
+    backgroundSize: "40px 40px",
+    pointerEvents: "none",
+    zIndex: 0,
   },
   header: {
     textAlign: "center",
     marginBottom: "40px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    position: "relative",
+    zIndex: 1
+  },
+  logoImage: {
+    height: "55px",
+    width: "auto",
+    marginBottom: "15px",
+    filter: "drop-shadow(0px 4px 10px rgba(0,0,0,0.25))"
   },
   title: {
     fontSize: "2.8rem",
     fontWeight: "700",
-    color: "#fff",
     fontFamily: "'Playfair Display', serif",
+    background: "linear-gradient(to bottom, #FFFFFF, #D0DBFF)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    paddingTop: "10px",
+    paddingBottom: "10px",
+    lineHeight: "1.3",
+  },
+  gold: {
+    color: "#C8FF01",
+    WebkitTextFillColor: "#C8FF01",
   },
   subtitle: {
-    color: "#E0E0E0",
+    color: "#D0DBFF",
     marginTop: "10px",
   },
 
@@ -361,6 +430,8 @@ const styles = {
     marginTop: "60px",
     maxWidth: "1100px",
     marginInline: "auto",
+    position: "relative",
+    zIndex: 1,
   },
 
   resultHeader: {
@@ -370,13 +441,19 @@ const styles = {
   },
 
   resultTitle: {
-    fontSize: "2rem",
+    fontSize: "2.5rem",
     fontWeight: "700",
-    color: "#fff",
     fontFamily: "'Playfair Display', serif",
+    background: "linear-gradient(to bottom, #FFFFFF, #D0DBFF)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    paddingTop: "10px",
+    paddingBottom: "10px",
+    lineHeight: "1.3",
   },
   confidence: {
-    color: "#D4AF37",
+    color: "#C8FF01",
+    fontWeight: "600",
   },
 
   grid: {
@@ -388,7 +465,7 @@ const styles = {
   empty: {
     padding: "20px",
     background: "rgba(255, 255, 255, 0.05)",
-    border: "1px solid rgba(212, 175, 55, 0.2)",
+    border: "1px solid rgba(200, 255, 1, 0.2)",
     borderRadius: "10px",
     textAlign: "center",
     color: "#E0E0E0",
@@ -397,7 +474,7 @@ const styles = {
   modalOverlay: {
     position: "fixed",
     inset: 0,
-    background: "rgba(44, 30, 22, 0.85)",
+    background: "rgba(0, 17, 125, 0.85)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -406,7 +483,7 @@ const styles = {
     backdropFilter: "blur(5px)",
   },
   modalContent: {
-    background: "#fff",
+    background: "#0122B4",
     borderRadius: "24px",
     width: "100%",
     maxWidth: "1000px",
@@ -414,8 +491,9 @@ const styles = {
     position: "relative",
     display: "flex",
     flexDirection: "column",
-    boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
+    boxShadow: "0 25px 60px rgba(0,0,0,0.5)",
     overflow: "hidden",
+    border: "1px solid rgba(200, 255, 1, 0.2)",
     animation: "modalSlideUp 0.4s ease-out",
   },
   modalFlex: {
@@ -456,19 +534,19 @@ const styles = {
   modalTitle: {
     fontSize: "2rem",
     fontWeight: "700",
-    color: "#2C1E16",
+    color: "#fff",
     margin: "0 0 10px 0",
     fontFamily: "'Playfair Display', serif",
   },
   modalBadge: {
     display: "inline-block",
-    background: "#F9F5F0",
-    color: "#8B5E34",
+    background: "rgba(200, 255, 1, 0.08)",
+    color: "#C8FF01",
     padding: "4px 12px",
     borderRadius: "20px",
     fontSize: "0.85rem",
     fontWeight: "700",
-    border: "1px solid rgba(139, 94, 52, 0.2)",
+    border: "1px solid rgba(200, 255, 1, 0.3)",
   },
   modalScrollArea: {
     overflowY: "auto",
@@ -500,22 +578,22 @@ const styles = {
     display: "block",
     fontSize: "0.8rem",
     fontWeight: "800",
-    color: "#8B5E34",
+    color: "#C8FF01",
     marginBottom: "8px",
     textTransform: "uppercase",
     letterSpacing: "1px",
   },
   modalText: {
     fontSize: "1rem",
-    color: "#4a3b31",
+    color: "#E0E0E0",
     lineHeight: "1.7",
     margin: 0,
   },
   modalContentAI: {
-    background: "#1E1A17",
-    border: "1px solid rgba(212, 175, 55, 0.2)",
+    background: "#0122B4",
+    border: "1px solid rgba(200, 255, 1, 0.2)",
     borderRadius: "24px",
-    maxWidth: "500px",
+    maxWidth: "650px",
     width: "90%",
     overflow: "hidden",
     boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
@@ -523,23 +601,23 @@ const styles = {
   },
   modalHeaderAI: {
     padding: "20px 25px",
-    background: "rgba(212, 175, 55, 0.1)",
-    borderBottom: "1px solid rgba(212, 175, 55, 0.2)",
-    color: "#D4AF37",
+    background: "rgba(255, 255, 255, 0.05)",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+    color: "#fff",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
   },
   modalTitleAI: {
     margin: 0,
-    fontSize: "1.2rem",
-    fontWeight: "600",
+    fontSize: "1.3rem",
+    fontWeight: "700",
     fontFamily: "Poppins, sans-serif",
   },
   closeBtnAI: {
     background: "none",
     border: "none",
-    color: "#D4AF37",
+    color: "#C8FF01",
     fontSize: "1.8rem",
     cursor: "pointer",
     lineHeight: 1,
@@ -553,7 +631,7 @@ const styles = {
     padding: "20px",
     background: "rgba(255, 255, 255, 0.05)",
     borderRadius: "16px",
-    border: "1px solid rgba(212, 175, 55, 0.2)",
+    border: "1px solid rgba(200, 255, 1, 0.2)",
   },
   highlightText: {
     margin: "0 0 10px 0",
@@ -569,9 +647,9 @@ const styles = {
   confidenceBadge: {
     display: "inline-block",
     padding: "6px 12px",
-    background: "rgba(212, 175, 55, 0.15)",
-    color: "#D4AF37",
-    border: "1px solid rgba(212, 175, 55, 0.3)",
+    background: "rgba(200, 255, 1, 0.15)",
+    color: "#C8FF01",
+    border: "1px solid rgba(200, 255, 1, 0.3)",
     borderRadius: "20px",
     fontSize: "0.85rem",
     fontWeight: "600",
@@ -589,8 +667,8 @@ const styles = {
   okButton: {
     width: "100%",
     padding: "14px",
-    background: "linear-gradient(135deg, #D4AF37, #F4D03F)",
-    color: "#1E1A17",
+    background: "linear-gradient(135deg, #C8FF01, #AEE600)",
+    color: "#00117D",
     border: "none",
     borderRadius: "12px",
     fontWeight: "700",
@@ -598,8 +676,8 @@ const styles = {
     transition: "all 0.3s ease",
   },
   warningBox: {
-    background: "rgba(212, 175, 55, 0.1)",
-    borderLeft: "5px solid #D4AF37",
+    background: "rgba(200, 255, 1, 0.1)",
+    borderLeft: "5px solid #C8FF01",
     padding: "20px",
     borderRadius: "0 12px 12px 0",
     color: "#E0E0E0",
@@ -610,190 +688,122 @@ const styles = {
     textAlign: "left",
   },
   uploadCard: {
-  maxWidth: "100%",
-  margin: "0 auto",
-
-  background:
-    "linear-gradient(135deg,#4E342E,#2C1E16)",
-
-  borderRadius: "30px",
-
-  padding: "35px",
-
-  border:
-    "1px solid rgba(212,175,55,0.15)",
-
-  boxShadow:
-    "0 30px 80px rgba(0,0,0,0.35)",
-
-  position: "relative",
-
-  overflow: "hidden",
-},
-
-decorTop: {
-  position: "absolute",
-  top: 0,
-  left: 0,
-  right: 0,
-
-  height: "5px",
-
-  background:
-    "linear-gradient(90deg,#D4AF37,#F4D03F,#D4AF37)",
-},
-
-uploadArea: {
-  minHeight: "420px",
-
-  border:
-    "2px dashed rgba(212,175,55,0.35)",
-
-  borderRadius: "24px",
-
-  display: "flex",
-
-  alignItems: "center",
-
-  justifyContent: "center",
-
-  background:
-    "rgba(255,255,255,0.04)",
-
-  cursor: "pointer",
-
-  transition: "0.3s",
-},
-
-placeholder: {
-  textAlign: "center",
-},
-
-iconCircle: {
-  width: "120px",
-  height: "120px",
-
-  borderRadius: "50%",
-
-  background:
-    "rgba(212,175,55,0.12)",
-
-  border:
-    "1px solid rgba(212,175,55,0.2)",
-
-  display: "flex",
-
-  alignItems: "center",
-
-  justifyContent: "center",
-
-  fontSize: "3rem",
-
-  margin: "0 auto 25px",
-},
-
-uploadTitle: {
-  color: "#F8F4EE",
-
-  fontSize: "2rem",
-
-  marginBottom: "10px",
-
-  fontFamily:
-    "'Playfair Display', serif",
-},
-
-placeholderText: {
-  color: "#F8F4EE",
-
-  fontSize: "1.05rem",
-
-  marginBottom: "10px",
-},
-
-subPlaceholder: {
-  color: "#D4AF37",
-
-  display: "block",
-
-  marginBottom: "25px",
-},
-
-aiBadge: {
-  display: "inline-block",
-
-  padding: "10px 18px",
-
-  borderRadius: "999px",
-
-  background:
-    "rgba(212,175,55,0.1)",
-
-  color: "#D4AF37",
-
-  fontSize: "0.9rem",
-
-  border:
-    "1px solid rgba(212,175,55,0.2)",
-},
-
-previewWrapper: {
-  position: "relative",
-  width: "100%",
-},
-
-preview: {
-  width: "100%",
-  height: "420px",
-
-  objectFit: "cover",
-
-  borderRadius: "18px",
-},
-
-previewOverlay: {
-  position: "absolute",
-
-  bottom: "15px",
-  left: "15px",
-
-  background:
-    "rgba(0,0,0,0.6)",
-
-  color: "#fff",
-
-  padding: "10px 18px",
-
-  borderRadius: "999px",
-
-  backdropFilter: "blur(10px)",
-},
-
-button: {
-  marginTop: "25px",
-
-  width: "100%",
-
-  padding: "18px",
-
-  border: "none",
-
-  borderRadius: "18px",
-
-  cursor: "pointer",
-
-  fontWeight: "700",
-
-  fontSize: "1rem",
-
-  color: "#1E1A17",
-
-  background:
-    "linear-gradient(135deg,#D4AF37,#F4D03F)",
-
-  boxShadow:
-    "0 15px 35px rgba(212,175,55,0.25)",
-},
+    background: "rgba(255, 255, 255, 0.05)",
+    backdropFilter: "blur(12px)",
+    borderRadius: "30px",
+    padding: "35px",
+    border: "1px solid rgba(255, 255, 255, 0.12)",
+    boxShadow: "0 30px 80px rgba(0,0,0,0.35)",
+    position: "relative",
+    maxWidth: "100%",
+    margin: "0 auto",
+    overflow: "hidden",
+  },
+
+  decorTop: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "5px",
+    background: "linear-gradient(90deg, #C8FF01, #E5FF80, #C8FF01)",
+  },
+
+  uploadArea: {
+    minHeight: "420px",
+    border: "2px dashed rgba(255, 255, 255, 0.2)",
+    borderRadius: "24px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "rgba(255,255,255,0.04)",
+    cursor: "pointer",
+    transition: "0.3s",
+  },
+
+  placeholder: {
+    textAlign: "center",
+  },
+
+  iconCircle: {
+    width: "120px",
+    height: "120px",
+    borderRadius: "50%",
+    background: "rgba(255, 255, 255, 0.05)",
+    border: "1px solid rgba(255, 255, 255, 0.15)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "3rem",
+    margin: "0 auto 25px",
+    color: "#C8FF01",
+  },
+
+  uploadTitle: {
+    color: "#F8F4EE",
+    fontSize: "2rem",
+    marginBottom: "10px",
+    fontFamily: "'Playfair Display', serif",
+  },
+
+  placeholderText: {
+    color: "#F8F4EE",
+    fontSize: "1.05rem",
+    marginBottom: "10px",
+  },
+
+  subPlaceholder: {
+    color: "#C8FF01",
+    display: "block",
+    marginBottom: "25px",
+  },
+
+  aiBadge: {
+    display: "inline-block",
+    padding: "10px 18px",
+    borderRadius: "999px",
+    background: "rgba(200, 255, 1, 0.1)",
+    color: "#C8FF01",
+    fontSize: "0.9rem",
+    border: "1px solid rgba(200, 255, 1, 0.2)",
+  },
+
+  previewWrapper: {
+    position: "relative",
+    width: "100%",
+  },
+
+  preview: {
+    width: "100%",
+    height: "420px",
+    objectFit: "cover",
+    borderRadius: "18px",
+  },
+
+  previewOverlay: {
+    position: "absolute",
+    bottom: "15px",
+    left: "15px",
+    background: "rgba(0,0,0,0.6)",
+    color: "#fff",
+    padding: "10px 18px",
+    borderRadius: "999px",
+    backdropFilter: "blur(10px)",
+  },
+
+  button: {
+    marginTop: "25px",
+    width: "100%",
+    padding: "18px",
+    border: "none",
+    borderRadius: "18px",
+    cursor: "pointer",
+    fontWeight: "700",
+    fontSize: "1rem",
+    color: "#00117D",
+    background: "linear-gradient(135deg, #C8FF01, #AEE600)",
+    boxShadow: "0 15px 35px rgba(200, 255, 1, 0.25)",
+  },
   mainLayout: {
     display: "flex",
     gap: "30px",
@@ -801,13 +811,16 @@ button: {
     margin: "0 auto",
     flexWrap: "wrap",
     alignItems: "stretch",
+    position: "relative",
+    zIndex: 1,
   },
   infoPanel: {
     flex: "1 1 350px",
-    background: "linear-gradient(135deg, #2D1B10 0%, #1A0D07 100%)",
+    background: "rgba(255, 255, 255, 0.05)",
+    backdropFilter: "blur(12px)",
     borderRadius: "30px",
     padding: "35px",
-    border: "1px solid rgba(212, 175, 55, 0.15)",
+    border: "1px solid rgba(255, 255, 255, 0.12)",
     boxShadow: "0 30px 80px rgba(0,0,0,0.35)",
     position: "relative",
     overflow: "hidden",
@@ -817,7 +830,7 @@ button: {
   infoTitle: {
     fontSize: "1.8rem",
     fontWeight: "700",
-    color: "#D4AF37",
+    color: "#C8FF01",
     fontFamily: "'Playfair Display', serif",
     marginBottom: "15px",
     marginTop: "10px",
@@ -841,21 +854,63 @@ button: {
     fontSize: "0.95rem",
     color: "#F8F4EE",
     lineHeight: "1.4",
-    borderBottom: "1px solid rgba(212, 175, 55, 0.1)",
+    borderBottom: "1px solid rgba(200, 255, 1, 0.1)",
     paddingBottom: "8px",
   },
   infoFooter: {
     marginTop: "25px",
     fontSize: "0.85rem",
-    color: "#D4AF37",
+    color: "#C8FF01",
     fontStyle: "italic",
     lineHeight: "1.4",
-    background: "rgba(212, 175, 55, 0.05)",
+    background: "rgba(200, 255, 1, 0.05)",
     padding: "12px 18px",
     borderRadius: "12px",
-    border: "1px solid rgba(212, 175, 55, 0.15)",
+    border: "1px solid rgba(200, 255, 1, 0.15)",
   },
   uploadCardWrapper: {
     flex: "1.3 1 450px",
   },
+  recommendSection: {
+    marginTop: "20px",
+    textAlign: "left",
+  },
+  recommendTitle: {
+    color: "#fff",
+    fontSize: "1rem",
+    marginBottom: "10px",
+  },
+  recommendList: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "10px",
+    listStyle: "none",
+    padding: 0,
+  },
+  recommendItem: {
+    background: "rgba(255, 255, 255, 0.1)",
+    padding: "6px 12px",
+    borderRadius: "20px",
+    fontSize: "0.85rem",
+    color: "#fff",
+    border: "1px solid rgba(255, 255, 255, 0.2)",
+  },
+  footerContainer: {
+    width: "100%",
+    maxWidth: "1200px",
+    margin: "50px auto 10px auto",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderTop: "1px solid rgba(255, 255, 255, 0.15)",
+    paddingTop: "30px"
+  },
+  footerImage: {
+    width: "100%",
+    maxWidth: "850px",
+    height: "auto",
+    borderRadius: "16px",
+    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.35)",
+    border: "1px solid rgba(255, 255, 255, 0.1)"
+  }
 };

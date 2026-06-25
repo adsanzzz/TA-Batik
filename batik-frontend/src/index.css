@@ -19,7 +19,6 @@
   letter-spacing: 0.18px;
   color-scheme: light dark;
   color: var(--text);
-  background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -52,6 +51,8 @@
 
 body {
   margin: 0;
+  background: linear-gradient(135deg, #033EEE 6%, #0122B4 23%, #022692 70%, #00117D 100%);
+  background-attachment: fixed;
 }
 
 #root {
@@ -62,6 +63,19 @@ body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  position: relative;
+  z-index: 0;
+}
+
+#root::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  opacity: 0.15;
+  background-image: radial-gradient(circle at center, #C8FF01 2px, transparent 2px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: -1;
 }
 
 h1,
@@ -119,16 +133,28 @@ code {
   bottom: 0;
   width: 0%;
   height: 2px;
-  background-color: #C6A769;
+  background-color: #C8FF01;
   transition: width 0.3s ease;
 }
 
 .nav-link:hover {
-  color: #000;
+  color: #C8FF01;
 }
 
 .nav-link:hover::after {
   width: 100%;
+}
+
+.nav-btn-primary:hover {
+  background: #E0FF66 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(200, 255, 1, 0.4);
+}
+
+.nav-btn-outline:hover {
+  background: rgba(200, 255, 1, 0.1) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(200, 255, 1, 0.2);
 }
 
 /* Button hover */
@@ -138,4 +164,14 @@ button:hover {
 
 a:hover {
   transform: translateY(-2px);
+}
+
+.search-input-focus:focus {
+  border-color: #C8FF01 !important;
+  box-shadow: 0 4px 20px rgba(200, 255, 1, 0.3) !important;
+}
+
+.search-input-focus::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 300;
 }

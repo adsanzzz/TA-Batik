@@ -47,7 +47,7 @@ export default function CardBatik({ batik, onClick }) {
         {/* E-Commerce Shop Links */}
         {(batik.shopee_link || batik.tokopedia_link) && (
           <div style={styles.shopSection}>
-            <span style={{ fontSize: '0.8rem', color: '#D4AF37', fontWeight: 'bold' }}>Beli di Toko Mitra:</span>
+            <span style={{ fontSize: '0.8rem', color: '#C8FF01', fontWeight: 'bold' }}>Beli di Toko Mitra:</span>
             <div style={styles.shopBtns}>
               {batik.shopee_link && (
                 <a
@@ -81,11 +81,11 @@ export default function CardBatik({ batik, onClick }) {
 
 const styles = {
   card: {
-    background: "linear-gradient(135deg, #2C1E16 0%, #1E1A17 100%)",
+    background: "linear-gradient(135deg, #0122B4 0%, #022692 100%)",
     borderRadius: "16px",
     overflow: "hidden",
-    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3)",
-    border: "1px solid rgba(212, 175, 55, 0.2)",
+    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.35)",
+    border: "1px solid rgba(200, 255, 1, 0.15)",
     transition: "transform 0.3s ease, boxShadow 0.3s ease",
     cursor: "pointer",
   },
@@ -113,11 +113,11 @@ const styles = {
   badge: {
     fontSize: "0.75rem",
     fontWeight: "700",
-    color: "#D4AF37",
-    background: "rgba(212, 175, 55, 0.1)",
+    color: "#C8FF01",
+    background: "rgba(200, 255, 1, 0.08)",
     padding: "4px 12px",
     borderRadius: "20px",
-    border: "1px solid rgba(212, 175, 55, 0.3)",
+    border: "1px solid rgba(200, 255, 1, 0.25)",
     letterSpacing: "0.5px",
     alignSelf: "flex-start",
     marginRight: "8px",
@@ -136,9 +136,9 @@ const styles = {
     marginTop: "8px",
     fontSize: "0.7rem",
     fontWeight: "bold",
-    color: "#D4AF37",
-    background: "rgba(212, 175, 55, 0.15)",
-    border: "1px solid #D4AF37",
+    color: "#C8FF01",
+    background: "rgba(200, 255, 1, 0.08)",
+    border: "1px solid rgba(200, 255, 1, 0.35)",
     padding: "2px 8px",
     borderRadius: "12px",
     textTransform: "uppercase",
@@ -165,7 +165,7 @@ const styles = {
   shopSection: {
     marginTop: "15px",
     paddingTop: "15px",
-    borderTop: "1px solid rgba(212, 175, 55, 0.15)",
+    borderTop: "1px solid rgba(200, 255, 1, 0.1)",
     display: "flex",
     flexDirection: "column",
     gap: "8px",
