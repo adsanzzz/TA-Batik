@@ -60,6 +60,8 @@ batik-frontend/build/
 *.onnx
 *.pb
 *.tflite
+*.pkl
+batik-backend/models/
 
 # ========================================
 # DATASET & FILE BESAR

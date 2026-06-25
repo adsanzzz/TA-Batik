@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from database import engine
 import models
-from routes import batik, auth, predict, frame, batik_ai, admin_mitra, model_control, garment_generator, vton
+from routes import batik, auth, predict, frame, batik_ai, admin_mitra, model_control, garment_generator, vton, stylegan_router
 from fastapi.staticfiles import StaticFiles
 import os
 from dotenv import load_dotenv
@@ -44,6 +44,7 @@ app.include_router(admin_mitra.router, tags=["Admin Mitra Management"])
 app.include_router(model_control.router, tags=["AI Model Management"])
 app.include_router(garment_generator.router)
 app.include_router(vton.router)
+app.include_router(stylegan_router.router)
 
 
 if __name__ == "__main__":

@@ -10,6 +10,7 @@ import ManajemenFrame from "./pages/admin/ManajemenFrame";
 import ManajemenInfoBatik from "./pages/admin/ManajemenInfoBatik";
 import ManajemenModel from "./pages/admin/ManajemenModel";
 import Photobox from "./pages/Photobox";
+import BatikMixer from "./pages/BatikMixer";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -29,6 +30,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/katalog" element={<Katalog />} />
           <Route path="/scan" element={<Scan />} />
+          <Route path="/mixer" element={<BatikMixer />} />
           <Route path="/photobox" element={<Photobox />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register-mitra" element={<RegisterMitra />} />

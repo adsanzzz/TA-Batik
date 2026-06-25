@@ -18,3 +18,4 @@ seaborn
 replicate
 httpx
 python-dotenv
+tensorflow-hub

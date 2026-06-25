@@ -10,16 +10,21 @@ SHIRT_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     "..", "uploads", "shirt_template.png"
 )
+BLOUSE_TEMPLATE_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "..", "uploads", "blouse_template.png"
+)
 
 @router.post("/try-on")
 async def execute_vton(
     human_image: UploadFile = File(...),
-    garment_image_url: str = Form(..., description="URL gambar kain batik yang sudah disimpan")
+    garment_image_url: str = Form(..., description="URL gambar kain batik yang sudah disimpan"),
+    template_type: str = Form("male_shirt", description="Jenis template: 'male_shirt' atau 'female_blouse'")
 ):
     """
     Pipeline 2 tahap:
-    Tahap 1 - Buat gambar kemeja batik: Tempel motif batik ke template kemeja putih menggunakan img2img.
-    Tahap 2 - Virtual Try-On: Pakaikan kemeja batik hasil tahap 1 ke foto user menggunakan IDM-VTON.
+    Tahap 1 - Buat gambar kemeja/blus batik: Tempel motif batik ke template putih menggunakan img2img.
+    Tahap 2 - Virtual Try-On: Pakaikan pakaian batik hasil tahap 1 ke foto user menggunakan IDM-VTON.
     """
     if not os.environ.get("REPLICATE_API_TOKEN"):
         raise HTTPException(
@@ -27,17 +32,29 @@ async def execute_vton(
             detail="REPLICATE_API_TOKEN is not configured in .env"
         )
 
-    if not os.path.exists(SHIRT_TEMPLATE_PATH):
+    # Pilih template pakaian berdasarkan jenis
+    if template_type == "female_blouse":
+        template_path = BLOUSE_TEMPLATE_PATH
+        template_name = "blouse_template.png"
+        prompt_garment = "A photorealistic short-sleeve female batik blouse. The batik fabric pattern completely covers every inch of the blouse. Fully patterned, no plain areas. Studio photography."
+        description_garment = "A short-sleeve female batik blouse with colorful pattern"
+    else:
+        template_path = SHIRT_TEMPLATE_PATH
+        template_name = "shirt_template.png"
+        prompt_garment = "A photorealistic collared batik shirt. The batik fabric pattern completely covers every inch of the shirt including collar, sleeves, pocket and body. Fully patterned, no plain areas. Studio photography."
+        description_garment = "A short-sleeve collared button-up batik shirt with colorful pattern"
+
+    if not os.path.exists(template_path):
         raise HTTPException(
             status_code=500,
-            detail="Template kemeja tidak ditemukan. Pastikan file shirt_template.png ada di folder uploads."
+            detail=f"Template {template_name} tidak ditemukan. Pastikan file ada di folder uploads."
         )
 
     temp_human_path = None
     batik_shirt_path = None
 
     try:
-        # === TAHAP 1: Buat gambar kemeja batik dari template + kain batik ===
+        # === TAHAP 1: Buat gambar kemeja/blus batik dari template + kain batik ===
         # Dapatkan path kain batik
         filename = garment_image_url.split("/")[-1]
         fabric_path = os.path.join(
@@ -47,20 +64,20 @@ async def execute_vton(
         if not os.path.exists(fabric_path):
             raise HTTPException(status_code=404, detail=f"File kain batik tidak ditemukan: {filename}")
 
-        print("TAHAP 1: Membuat gambar kemeja batik menggunakan IP-Adapter Style Transfer...")
+        print(f"TAHAP 1: Membuat gambar pakaian batik menggunakan IP-Adapter Style Transfer ({template_type})...")
 
         # Gunakan fofr/style-transfer:
-        #   structure_image = template kemeja putih (untuk bentuk, kerah, kancing)
+        #   structure_image = template kemeja/blus putih (untuk bentuk)
         #   style_image     = kain batik (untuk motif dan warna)
-        with open(SHIRT_TEMPLATE_PATH, "rb") as s_img, \
+        with open(template_path, "rb") as s_img, \
              open(fabric_path, "rb") as f_img:
 
             style_transfer_output = replicate.run(
                 "fofr/style-transfer:f1023890703bc0a5a3a2c21b5e498833be5f6ef6e70e9daf6b9b3a4fd8309cf0",
                 input={
-                    "structure_image": s_img,      # Bentuk kemeja putih
+                    "structure_image": s_img,      # Bentuk pakaian putih
                     "style_image": f_img,           # Motif & warna batik
-                    "prompt": "A photorealistic collared batik shirt. The batik fabric pattern completely covers every inch of the shirt including collar, sleeves, pocket and body. Fully patterned, no plain areas. Studio photography.",
+                    "prompt": prompt_garment,
                     "negative_prompt": "plain white shirt, solid color, unpatterned, blank areas, no pattern, low quality, blurry",
                     "structure_depth_strength": 0.6,      # Lebih rendah = AI lebih bebas mengisi motif
                     "structure_denoising_strength": 0.88, # Lebih tinggi = motif batik menutupi seluruh kain
@@ -72,14 +89,14 @@ async def execute_vton(
             )
 
         batik_shirt_url = str(style_transfer_output[0]) if isinstance(style_transfer_output, list) else str(style_transfer_output)
-        print(f"TAHAP 1 selesai! URL kemeja batik: {batik_shirt_url}")
+        print(f"TAHAP 1 selesai! URL pakaian batik: {batik_shirt_url}")
 
         # Jeda 10 detik untuk menghindari rate limit Replicate
         print("Menunggu 10 detik sebelum Tahap 2 (rate limit avoidance)...")
         time.sleep(10)
 
-        # === TAHAP 2: Pakaikan kemeja batik ke foto user (IDM-VTON) ===
-        print("TAHAP 2: Memakaikan kemeja batik ke foto user...")
+        # === TAHAP 2: Pakaikan pakaian batik ke foto user (IDM-VTON) ===
+        print("TAHAP 2: Memakaikan pakaian batik ke foto user...")
 
         # Simpan foto user ke temporary file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as temp_human:
@@ -95,10 +112,10 @@ async def execute_vton(
                     "steps": 30,
                     "category": "upper_body",
                     "force_dc": False,
-                    "garm_img": batik_shirt_url,   # URL kemeja batik hasil Tahap 1
+                    "garm_img": batik_shirt_url,   # URL pakaian batik hasil Tahap 1
                     "human_img": h_img,
                     "mask_only": False,
-                    "garment_des": "A short-sleeve collared button-up batik shirt with colorful floral pattern"
+                    "garment_des": description_garment
                 }
             )
 
@@ -112,7 +129,7 @@ async def execute_vton(
         return {
             "status": "success",
             "vton_result_url": result_url,
-            "batik_shirt_url": batik_shirt_url  # bonus: user bisa lihat kemeja batiknya juga
+            "batik_shirt_url": batik_shirt_url
         }
 
     except Exception as e:

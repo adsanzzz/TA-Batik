@@ -72,6 +72,7 @@ export default function VtonModal({ batik, onClose }) {
       const formData = new FormData();
       formData.append("human_image", humanImage);
       formData.append("garment_image_url", generatedGarment);
+      formData.append("template_type", templateType);
 
       const result = await executeVton(formData);
 

@@ -32,6 +32,10 @@ export default function Navbar() {
           Scan AI
         </Link>
 
+        <Link to="/mixer" style={styles.link} className="nav-link">
+          AI Mixer
+        </Link>
+
         <Link to="/photobox" style={styles.link} className="nav-link">
           Photobox
         </Link>
