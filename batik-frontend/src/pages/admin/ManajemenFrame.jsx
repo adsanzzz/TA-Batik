@@ -3,7 +3,7 @@ import { getToken } from "../../services/auth";
 import { BASE_URL } from "../../services/api";
 
 const UploadIcon = () => (
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#8B5E34", marginBottom: "10px" }}>
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C8FF01" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "10px" }}>
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
     <polyline points="17 8 12 3 7 8"></polyline>
     <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -19,6 +19,7 @@ export default function ManajemenFrame() {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [hoverBtn, setHoverBtn] = useState(false);
 
   useEffect(() => {
     fetchFrames();
@@ -111,9 +112,14 @@ export default function ManajemenFrame() {
 
   return (
     <div style={styles.pageWrapper}>
+      {/* Background Dot Pattern */}
+      <div style={styles.pattern}></div>
+
       <div style={styles.container}>
         <div style={styles.header}>
-          <h1 style={styles.title}>Manajemen Frame Photobox</h1>
+          <h1 style={styles.title}>
+            Manajemen Frame <span style={{ color: "#C8FF01" }}>Photobox</span>
+          </h1>
           <p style={styles.subtitle}>Upload foto motif batik murni. Sistem akan otomatis menyulapnya menjadi bingkai (frame) Photobox.</p>
         </div>
 
@@ -169,7 +175,12 @@ export default function ManajemenFrame() {
               <button 
                 type="submit" 
                 disabled={submitting || !file}
-                style={submitting || !file ? {...styles.submitBtn, opacity: 0.7} : styles.submitBtn}
+                onMouseEnter={() => setHoverBtn(true)}
+                onMouseLeave={() => setHoverBtn(false)}
+                style={{
+                  ...(submitting || !file ? { ...styles.submitBtn, opacity: 0.7 } : styles.submitBtn),
+                  ...(hoverBtn ? styles.submitBtnHover : {})
+                }}
               >
                 {submitting ? "Mengunggah..." : "Simpan Frame"}
               </button>
@@ -212,7 +223,9 @@ export default function ManajemenFrame() {
 const styles = {
   pageWrapper: {
     minHeight: "calc(100vh - 70px)",
-    background: "linear-gradient(135deg, #FDFBF7 0%, #F4EAE0 100%)",
+    background: "radial-gradient(circle at 10% 20%, #00117D 0%, #000B4D 90%)",
+    backgroundImage: "radial-gradient(circle at 10% 20%, #00117D 0%, #000B4D 90%), radial-gradient(rgba(200, 255, 1, 0.15) 1px, transparent 0)",
+    backgroundSize: "100% 100%, 24px 24px",
     paddingTop: "40px",
     paddingBottom: "60px",
   },
@@ -230,34 +243,35 @@ const styles = {
   title: {
     fontSize: "2.8rem",
     fontWeight: "800",
-    color: "#2C1E16",
-    fontFamily: "'Playfair Display', serif",
+    color: "#ffffff",
+    fontFamily: "'Outfit', sans-serif",
     marginBottom: "12px",
     letterSpacing: "-0.5px",
   },
   subtitle: {
-    color: "#5a4a42",
+    color: "#C8FF01",
     fontSize: "1.15rem",
+    fontWeight: "500",
   },
   successMsg: {
-    background: "rgba(139, 94, 52, 0.1)",
-    color: "#2C1E16",
+    background: "rgba(200, 255, 1, 0.1)",
+    color: "#C8FF01",
     padding: "15px",
     borderRadius: "12px",
     marginBottom: "20px",
     fontWeight: "600",
     textAlign: "center",
-    border: "1px solid rgba(139, 94, 52, 0.3)",
+    border: "1px solid rgba(200, 255, 1, 0.3)",
   },
   errorMsg: {
-    background: "#ff767522",
-    color: "#d63031",
+    background: "rgba(239, 68, 68, 0.15)",
+    color: "#ef4444",
     padding: "15px",
     borderRadius: "12px",
     marginBottom: "20px",
     fontWeight: "600",
     textAlign: "center",
-    border: "1px solid #ff7675",
+    border: "1px solid #ef4444",
   },
   contentGrid: {
     display: "grid",
@@ -266,24 +280,27 @@ const styles = {
     alignItems: "start",
   },
   formContainer: {
-    background: "#ffffff",
+    background: "rgba(255, 255, 255, 0.03)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
     padding: "30px",
     borderRadius: "24px",
-    boxShadow: "0 4px 20px rgba(139, 94, 52, 0.05)",
-    border: "1px solid rgba(139, 94, 52, 0.08)",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
   },
   listContainer: {
-    background: "#ffffff",
+    background: "rgba(255, 255, 255, 0.03)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
     padding: "30px",
     borderRadius: "24px",
-    boxShadow: "0 4px 20px rgba(139, 94, 52, 0.05)",
-    border: "1px solid rgba(139, 94, 52, 0.08)",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
   },
   sectionTitle: {
     fontSize: "1.5rem",
-    color: "#2C1E16",
+    color: "#ffffff",
     marginBottom: "25px",
-    fontFamily: "'Playfair Display', serif",
+    fontFamily: "'Outfit', sans-serif",
+    fontWeight: "700",
   },
   formGroup: {
     display: "flex",
@@ -294,25 +311,27 @@ const styles = {
   label: {
     fontSize: "0.85rem",
     fontWeight: "700",
-    color: "#8B5E34",
+    color: "#C8FF01",
     textTransform: "uppercase",
+    letterSpacing: "0.5px",
   },
   input: {
     padding: "14px 15px",
     borderRadius: "12px",
-    border: "1px solid rgba(139, 94, 52, 0.2)",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
     outline: "none",
     fontSize: "0.95rem",
-    background: "#fafafa",
+    background: "rgba(255, 255, 255, 0.05)",
+    color: "#ffffff",
   },
   uploadBox: {
     width: "100%",
     height: "200px",
-    border: "2px dashed rgba(139, 94, 52, 0.3)",
+    border: "2px dashed rgba(200, 255, 1, 0.3)",
     borderRadius: "15px",
     overflow: "hidden",
     position: "relative",
-    background: "#fafafa",
+    background: "rgba(255, 255, 255, 0.02)",
   },
   fileInput: {
     display: "none",
@@ -334,7 +353,7 @@ const styles = {
     position: "absolute",
     top: 0, left: 0, right: 0, bottom: 0,
     backgroundSize: "20px 20px",
-    backgroundImage: "linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee), linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee)",
+    backgroundImage: "linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05)), linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05))",
     backgroundPosition: "0 0, 10px 10px",
     zIndex: 1,
   },
@@ -349,27 +368,30 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    color: "#5a4a42",
+    color: "#ffffff",
+    opacity: 0.7,
     fontWeight: "500",
+    gap: "8px",
   },
   submitBtn: {
     width: "100%",
-    background: "#8B5E34",
-    color: "white",
+    background: "#C8FF01",
+    color: "#00117D",
     padding: "16px",
     borderRadius: "12px",
     border: "none",
     fontSize: "1.05rem",
-    fontWeight: "600",
+    fontWeight: "700",
     cursor: "pointer",
+    transition: "transform 0.2s, box-shadow 0.2s",
   },
   loading: {
     textAlign: "center",
-    color: "#8B5E34",
+    color: "#C8FF01",
   },
   empty: {
     textAlign: "center",
-    color: "#636e72",
+    color: "#a0aec0",
     fontStyle: "italic",
   },
   frameGrid: {
@@ -378,13 +400,14 @@ const styles = {
     gap: "15px",
   },
   frameCard: {
-    border: "1px solid rgba(139, 94, 52, 0.2)",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
     borderRadius: "12px",
     overflow: "hidden",
     position: "relative",
     height: "180px",
     display: "flex",
     flexDirection: "column",
+    background: "rgba(255, 255, 255, 0.02)",
   },
   frameImg: {
     position: "relative",
@@ -394,27 +417,27 @@ const styles = {
     zIndex: 2,
   },
   frameInfo: {
-    background: "#fff",
+    background: "rgba(255, 255, 255, 0.05)",
     padding: "8px 12px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    borderTop: "1px solid rgba(139, 94, 52, 0.1)",
+    borderTop: "1px solid rgba(255, 255, 255, 0.1)",
     zIndex: 3,
   },
   frameName: {
     fontSize: "0.85rem",
     fontWeight: "600",
-    color: "#2C1E16",
+    color: "#ffffff",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
     maxWidth: "100px",
   },
   deleteBtn: {
-    background: "#ff767522",
-    color: "#d63031",
-    border: "1px solid #ff7675",
+    background: "rgba(239, 68, 68, 0.15)",
+    color: "#ef4444",
+    border: "1px solid #ef4444",
     padding: "4px 8px",
     borderRadius: "6px",
     fontSize: "0.75rem",

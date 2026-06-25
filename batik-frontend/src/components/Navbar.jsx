@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { isAuthenticated, logout, getRole } from "../services/auth";
 
 export default function Navbar() {
+  const location = useLocation(); // Triggers re-render on route changes to refresh auth status
   const auth = isAuthenticated();
   const role = getRole();
 

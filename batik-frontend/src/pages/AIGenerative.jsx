@@ -205,24 +205,29 @@ export default function AIGenerative() {
     
     try {
       setSaveLoading(true);
-      const relativePath = imageMixed.replace(`${BASE_URL}/`, "");
       
-      const payload = {
-        nama: saveForm.nama || `Batik Hibrida AI Seed ${seedA}-${seedB}`,
-        motif_utama: saveForm.motif_utama,
-        jenis_acara: saveForm.jenis_acara,
-        jenis_batik: saveForm.jenis_batik,
-        filosofi: saveForm.filosofi,
-        gambar: relativePath
-      };
+      // Fetch the generated image and convert it to a file blob for Multipart Form Data
+      const response = await fetch(imageMixed);
+      const blob = await response.blob();
+      const file = new File([blob], "batik_ai.png", { type: "image/png" });
 
-      const res = await fetch(`${BASE_URL}/admin/batik`, {
+      const formData = new FormData();
+      formData.append("nama", saveForm.nama || `Batik Hibrida AI Seed ${seedA}-${seedB}`);
+      formData.append("motif_utama", saveForm.motif_utama);
+      formData.append("jenis_acara", saveForm.jenis_acara);
+      formData.append("jenis_batik", saveForm.jenis_batik);
+      formData.append("filosofi", saveForm.filosofi);
+      formData.append("file", file); // FastAPI parameter expects "file"
+
+      const role = localStorage.getItem("role") || "admin";
+      const endpoint = role === "mitra" ? `${BASE_URL}/mitra/batik` : `${BASE_URL}/admin/batik`;
+
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`
         },
-        body: JSON.stringify(payload)
+        body: formData
       });
       
       if (!res.ok) {

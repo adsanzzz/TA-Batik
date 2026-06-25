@@ -135,7 +135,9 @@ export default function VerifikasiMitra() {
 const styles = {
   pageWrapper: {
     minHeight: "calc(100vh - 70px)",
-    background: "linear-gradient(135deg, #FDFBF7 0%, #F4EAE0 100%)",
+    background: "radial-gradient(circle at 10% 20%, #00117D 0%, #000B4D 90%)",
+    backgroundImage: "radial-gradient(circle at 10% 20%, #00117D 0%, #000B4D 90%), radial-gradient(rgba(200, 255, 1, 0.15) 1px, transparent 0)",
+    backgroundSize: "100% 100%, 24px 24px",
     padding: "40px 20px",
   },
   container: {
@@ -149,7 +151,7 @@ const styles = {
   backBtn: {
     background: "transparent",
     border: "none",
-    color: "#8B5E34",
+    color: "#C8FF01",
     fontWeight: "700",
     cursor: "pointer",
     fontSize: "1rem",
@@ -157,44 +159,46 @@ const styles = {
     padding: 0,
   },
   title: {
-    fontSize: "2.4rem",
+    fontSize: "2.8rem",
     fontWeight: "800",
-    color: "#2C1E16",
-    fontFamily: "'Playfair Display', serif",
+    color: "#ffffff",
+    fontFamily: "'Outfit', sans-serif",
     margin: "10px 0",
   },
   subtitle: {
-    color: "#5a4a42",
+    color: "#C8FF01",
     fontSize: "1rem",
   },
   error: {
-    background: "#ff767522",
-    color: "#d63031",
+    background: "rgba(239, 68, 68, 0.15)",
+    color: "#ef4444",
     padding: "12px 16px",
     borderRadius: "10px",
-    border: "1px solid #ff767555",
+    border: "1px solid #ef4444",
     marginBottom: "20px",
   },
   loader: {
     textAlign: "center",
     padding: "50px",
     fontSize: "1.1rem",
-    color: "#8B5E34",
+    color: "#C8FF01",
   },
   emptyState: {
-    background: "white",
-    borderRadius: "16px",
+    background: "rgba(255, 255, 255, 0.03)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    borderRadius: "24px",
     padding: "50px",
     textAlign: "center",
-    boxShadow: "0 4px 15px rgba(139, 94, 52, 0.04)",
-    border: "1px solid rgba(139, 94, 52, 0.08)",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
   },
   tableContainer: {
-    background: "white",
-    borderRadius: "16px",
+    background: "rgba(255, 255, 255, 0.03)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    borderRadius: "24px",
     overflow: "hidden",
-    boxShadow: "0 8px 25px rgba(139, 94, 52, 0.06)",
-    border: "1px solid rgba(139, 94, 52, 0.1)",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
   },
   table: {
     width: "100%",
@@ -202,19 +206,18 @@ const styles = {
     textAlign: "left",
   },
   tableHeaderRow: {
-    background: "#F9F5F0",
-    borderBottom: "2px solid rgba(139, 94, 52, 0.15)",
+    borderBottom: "2px solid rgba(255, 255, 255, 0.08)",
   },
   th: {
     padding: "16px 20px",
     fontWeight: "700",
-    color: "#2C1E16",
+    color: "#C8FF01",
     fontSize: "0.9rem",
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
   tableRow: {
-    borderBottom: "1px solid rgba(139, 94, 52, 0.08)",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
     "&:last-child": {
       borderBottom: "none",
     }
@@ -222,48 +225,37 @@ const styles = {
   td: {
     padding: "18px 20px",
     fontSize: "0.95rem",
-    color: "#2C1E16",
+    color: "#ffffff",
     verticalAlign: "middle",
   },
   fileLink: {
-    color: "#8B5E34",
+    color: "#C8FF01",
     textDecoration: "none",
     fontWeight: "600",
     fontSize: "0.9rem",
-    "&:hover": {
-      textDecoration: "underline",
-    }
   },
   actionGroup: {
     display: "flex",
     gap: "10px",
   },
   approveBtn: {
-    background: "#2ecc71",
-    color: "white",
+    background: "#C8FF01",
+    color: "#00117D",
     border: "none",
     padding: "8px 16px",
     borderRadius: "8px",
     cursor: "pointer",
-    fontWeight: "600",
+    fontWeight: "700",
     fontSize: "0.85rem",
-    transition: "background 0.2s",
-    "&:hover": {
-      background: "#27ae60",
-    }
   },
   rejectBtn: {
-    background: "#e74c3c",
-    color: "white",
-    border: "none",
+    background: "rgba(239, 68, 68, 0.15)",
+    color: "#ef4444",
+    border: "1px solid #ef4444",
     padding: "8px 16px",
     borderRadius: "8px",
     cursor: "pointer",
     fontWeight: "600",
     fontSize: "0.85rem",
-    transition: "background 0.2s",
-    "&:hover": {
-      background: "#c0392b",
-    }
   }
 };

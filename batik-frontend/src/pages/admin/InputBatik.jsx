@@ -3,7 +3,7 @@ import { createBatik } from "../../services/api";
 import { getToken } from "../../services/auth";
 
 const UploadIcon = () => (
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#8B5E34", marginBottom: "10px" }}>
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C8FF01" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "10px" }}>
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
     <polyline points="17 8 12 3 7 8"></polyline>
     <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -25,6 +25,7 @@ export default function InputBatik() {
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
+  const [hoverBtn, setHoverBtn] = useState(false);
 
   const handleChange = (e) => {
     setForm({
@@ -80,9 +81,14 @@ export default function InputBatik() {
 
   return (
     <div style={styles.pageWrapper}>
+      {/* Background Dot Pattern */}
+      <div style={styles.pattern}></div>
+
       <div style={styles.container}>
         <div style={styles.header}>
-          <h1 style={styles.title}>Input Koleksi Batik</h1>
+          <h1 style={styles.title}>
+            Input Koleksi <span style={{ color: "#C8FF01" }}>Batik</span>
+          </h1>
           <p style={styles.subtitle}>Tambahkan data batik baru ke dalam katalog sistem.</p>
         </div>
 
@@ -191,6 +197,32 @@ export default function InputBatik() {
             />
           </div>
 
+          {/* Shopee & Tokopedia Links */}
+          <div style={styles.formRow}>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Link Shopee (Opsional)</label>
+              <input
+                type="url"
+                name="shopee_link"
+                value={form.shopee_link}
+                placeholder="https://shopee.co.id/..."
+                onChange={handleChange}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Link Tokopedia (Opsional)</label>
+              <input
+                type="url"
+                name="tokopedia_link"
+                value={form.tokopedia_link}
+                placeholder="https://tokopedia.com/..."
+                onChange={handleChange}
+                style={styles.input}
+              />
+            </div>
+          </div>
+
           <div style={styles.uploadSection}>
             <label style={styles.label}>Foto Batik</label>
             <div style={styles.uploadBox}>
@@ -218,7 +250,12 @@ export default function InputBatik() {
           <button 
             type="submit" 
             disabled={loading}
-            style={loading ? {...styles.submitBtn, opacity: 0.7} : styles.submitBtn}
+            onMouseEnter={() => setHoverBtn(true)}
+            onMouseLeave={() => setHoverBtn(false)}
+            style={{
+              ...(loading ? { ...styles.submitBtn, opacity: 0.7 } : styles.submitBtn),
+              ...(hoverBtn ? styles.submitBtnHover : {})
+            }}
           >
             {loading ? "Menyimpan..." : "Simpan ke Database"}
           </button>
@@ -231,18 +268,35 @@ export default function InputBatik() {
 const styles = {
   pageWrapper: {
     minHeight: "calc(100vh - 70px)",
-    background: "linear-gradient(135deg, #FDFBF7 0%, #F4EAE0 100%)",
+    background: "linear-gradient(135deg, #00117D 0%, #0122B4 100%)",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     paddingTop: "40px",
     paddingBottom: "60px",
+    position: "relative",
+    overflow: "hidden",
+  },
+  pattern: {
+    position: "absolute",
+    inset: 0,
+    opacity: 0.15,
+    backgroundImage: `
+      radial-gradient(circle at center,
+      #C8FF01 2.5px,
+      transparent 2.5px)
+    `,
+    backgroundSize: "40px 40px",
+    pointerEvents: "none",
+    zIndex: 0
   },
   container: {
     padding: "0 20px",
     width: "100%",
-    maxWidth: "900px",
-    fontFamily: "'Inter', sans-serif",
+    maxWidth: "850px",
+    fontFamily: "'Poppins', sans-serif",
+    position: "relative",
+    zIndex: 1,
   },
   header: {
     marginBottom: "40px",
@@ -251,22 +305,22 @@ const styles = {
   title: {
     fontSize: "2.8rem",
     fontWeight: "800",
-    color: "#2C1E16",
+    color: "#ffffff",
     fontFamily: "'Playfair Display', serif",
     marginBottom: "12px",
     letterSpacing: "-0.5px",
   },
   subtitle: {
-    color: "#5a4a42",
-    fontSize: "1.15rem",
+    color: "#D0E0FF",
+    fontSize: "1.1rem",
     fontWeight: "400",
   },
   form: {
-    background: "#ffffff",
+    background: "rgba(255, 255, 255, 0.05)",
     padding: "40px",
     borderRadius: "24px",
-    boxShadow: "0 4px 20px rgba(139, 94, 52, 0.05)",
-    border: "1px solid rgba(139, 94, 52, 0.08)",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
     display: "flex",
     flexDirection: "column",
     gap: "25px",
@@ -284,42 +338,42 @@ const styles = {
   label: {
     fontSize: "0.85rem",
     fontWeight: "700",
-    color: "#8B5E34",
+    color: "#C8FF01",
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
   input: {
     padding: "14px 15px",
     borderRadius: "12px",
-    border: "1px solid rgba(139, 94, 52, 0.2)",
+    border: "2px solid rgba(255, 255, 255, 0.15)",
     outline: "none",
     fontSize: "0.95rem",
-    background: "#fafafa",
-    color: "#2C1E16",
-    transition: "border-color 0.2s, boxShadow 0.2s",
+    background: "rgba(0, 0, 0, 0.3)",
+    color: "#ffffff",
+    transition: "all 0.3s ease",
   },
   textarea: {
     padding: "14px 15px",
     borderRadius: "12px",
-    border: "1px solid rgba(139, 94, 52, 0.2)",
+    border: "2px solid rgba(255, 255, 255, 0.15)",
     outline: "none",
     fontSize: "0.95rem",
     minHeight: "130px",
-    background: "#fafafa",
-    color: "#2C1E16",
+    background: "rgba(0, 0, 0, 0.3)",
+    color: "#ffffff",
     resize: "vertical",
     fontFamily: "inherit",
-    transition: "border-color 0.2s",
+    transition: "all 0.3s ease",
   },
   uploadBox: {
     position: "relative",
     width: "100%",
     height: "250px",
-    border: "2px dashed rgba(139, 94, 52, 0.3)",
+    border: "2px dashed rgba(200, 255, 1, 0.3)",
     borderRadius: "15px",
     overflow: "hidden",
-    transition: "border-color 0.2s, background 0.2s",
-    background: "#fafafa",
+    transition: "all 0.3s ease",
+    background: "rgba(0, 0, 0, 0.2)",
   },
   fileInput: {
     display: "none",
@@ -342,33 +396,39 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     gap: "5px",
-    color: "#5a4a42",
+    color: "#D0E0FF",
     fontWeight: "500",
     fontSize: "1rem",
   },
   submitBtn: {
     marginTop: "15px",
-    background: "#8B5E34",
-    color: "white",
+    background: "linear-gradient(90deg, #C8FF01 0%, #AEE600 100%)",
+    color: "#00117D",
     padding: "16px",
-    borderRadius: "12px",
+    borderRadius: "30px",
     border: "none",
     fontSize: "1.05rem",
-    fontWeight: "600",
+    fontWeight: "700",
     cursor: "pointer",
-    transition: "all 0.3s",
-    boxShadow: "0 4px 15px rgba(139, 94, 52, 0.25)",
+    transition: "all 0.3s ease",
+    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.25)",
     letterSpacing: "0.5px",
   },
+  submitBtnHover: {
+    background: "#ffffff",
+    color: "#00117D",
+    boxShadow: "0 4px 15px rgba(255, 255, 255, 0.4)",
+    transform: "translateY(-2px)",
+  },
   successMsg: {
-    background: "rgba(139, 94, 52, 0.1)",
-    color: "#2C1E16",
+    background: "rgba(200, 255, 1, 0.1)",
+    color: "#C8FF01",
     padding: "15px",
     borderRadius: "12px",
     marginBottom: "20px",
     fontWeight: "600",
     textAlign: "center",
-    border: "1px solid rgba(139, 94, 52, 0.3)",
+    border: "1px solid rgba(200, 255, 1, 0.3)",
   },
   errorMsg: {
     background: "#ff767522",

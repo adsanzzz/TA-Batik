@@ -107,9 +107,14 @@ export default function ManajemenBatik() {
 
   return (
     <div style={styles.pageWrapper}>
+      {/* Background Dot Pattern */}
+      <div style={styles.pattern}></div>
+
       <div style={styles.container}>
         <div style={styles.header}>
-          <h1 style={styles.title}>Manajemen Data Batik</h1>
+          <h1 style={styles.title}>
+            Manajemen Data <span style={{ color: "#C8FF01" }}>Batik</span>
+          </h1>
           <p style={styles.subtitle}>Kelola (Edit/Hapus) koleksi batik yang sudah ada di database.</p>
         </div>
 
@@ -161,7 +166,7 @@ export default function ManajemenBatik() {
                 })}
                 {data.length === 0 && (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: "center", padding: "40px", color: "#636e72" }}>Tidak ada data koleksi batik.</td>
+                    <td colSpan="6" style={{ textAlign: "center", padding: "40px", color: "#D0E0FF" }}>Tidak ada data koleksi batik.</td>
                   </tr>
                 )}
               </tbody>
@@ -242,13 +247,13 @@ export default function ManajemenBatik() {
                   <div style={{ marginTop: "10px", display: "flex", gap: "15px", alignItems: "flex-end" }}>
                      {!editPreview && (
                        <div>
-                         <p style={{ margin: "0 0 8px", fontSize: "0.85rem", color: "#636e72" }}>Gambar Lama:</p>
+                         <p style={{ margin: "0 0 8px", fontSize: "0.85rem", color: "#D0E0FF" }}>Gambar Lama:</p>
                          <img src={editForm.gambarLama?.startsWith("http") ? editForm.gambarLama : `${BASE_URL}/${editForm.gambarLama}`} alt="lama" style={styles.imgPreview} />
                        </div>
                      )}
                      {editPreview && (
                        <div>
-                         <p style={{ margin: "0 0 8px", fontSize: "0.85rem", color: "#636e72" }}>Gambar Baru:</p>
+                         <p style={{ margin: "0 0 8px", fontSize: "0.85rem", color: "#D0E0FF" }}>Gambar Baru:</p>
                          <img src={editPreview} alt="baru" style={styles.imgPreview} />
                        </div>
                      )}
@@ -273,18 +278,35 @@ export default function ManajemenBatik() {
 const styles = {
   pageWrapper: {
     minHeight: "calc(100vh - 70px)",
-    background: "linear-gradient(135deg, #FDFBF7 0%, #F4EAE0 100%)",
+    background: "linear-gradient(135deg, #00117D 0%, #0122B4 100%)",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     paddingTop: "40px",
     paddingBottom: "60px",
+    position: "relative",
+    overflow: "hidden",
+  },
+  pattern: {
+    position: "absolute",
+    inset: 0,
+    opacity: 0.15,
+    backgroundImage: `
+      radial-gradient(circle at center,
+      #C8FF01 2.5px,
+      transparent 2.5px)
+    `,
+    backgroundSize: "40px 40px",
+    pointerEvents: "none",
+    zIndex: 0
   },
   container: {
     padding: "0 20px",
     width: "100%",
     maxWidth: "1100px",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "'Poppins', sans-serif",
+    position: "relative",
+    zIndex: 1,
   },
   header: {
     marginBottom: "40px",
@@ -293,55 +315,55 @@ const styles = {
   title: {
     fontSize: "2.8rem",
     fontWeight: "800",
-    color: "#2C1E16",
+    color: "#ffffff",
     fontFamily: "'Playfair Display', serif",
     marginBottom: "12px",
     letterSpacing: "-0.5px",
   },
   subtitle: {
-    color: "#5a4a42",
-    fontSize: "1.15rem",
+    color: "#D0E0FF",
+    fontSize: "1.1rem",
     fontWeight: "400",
   },
   loading: {
     textAlign: "center",
-    color: "#8B5E34",
+    color: "#C8FF01",
     fontWeight: "600",
     fontSize: "1.1rem",
     padding: "40px",
   },
   tableContainer: {
     overflowX: "auto",
-    background: "#ffffff",
+    background: "rgba(255, 255, 255, 0.05)",
     borderRadius: "24px",
-    boxShadow: "0 4px 20px rgba(139, 94, 52, 0.05)",
-    border: "1px solid rgba(139, 94, 52, 0.08)",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
   },
   table: {
     width: "100%",
     borderCollapse: "collapse",
   },
   trHeader: {
-    background: "#F9F5F0",
-    borderBottom: "1px solid rgba(139, 94, 52, 0.1)",
+    background: "rgba(255, 255, 255, 0.05)",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.15)",
   },
   th: {
     padding: "20px 24px",
     textAlign: "left",
-    color: "#2C1E16",
+    color: "#C8FF01",
     fontWeight: "700",
     textTransform: "uppercase",
     fontSize: "0.85rem",
     letterSpacing: "0.5px",
   },
   trBody: {
-    borderBottom: "1px solid rgba(139, 94, 52, 0.08)",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
     transition: "background 0.2s",
   },
   td: {
     padding: "20px 24px",
     verticalAlign: "middle",
-    color: "#4a4a4a",
+    color: "#ffffff",
     fontSize: "0.95rem",
   },
   badgeKeraton: {
@@ -367,7 +389,7 @@ const styles = {
     height: "70px",
     objectFit: "cover",
     borderRadius: "12px",
-    border: "1px solid rgba(139, 94, 52, 0.1)",
+    border: "1px solid rgba(255, 255, 255, 0.15)",
   },
   actionBtns: {
     display: "flex",
@@ -375,9 +397,9 @@ const styles = {
   },
   editBtn: {
     padding: "8px 18px",
-    background: "#ffffff",
-    color: "#8B5E34",
-    border: "1px solid #8B5E34",
+    background: "transparent",
+    color: "#C8FF01",
+    border: "1px solid #C8FF01",
     borderRadius: "8px",
     cursor: "pointer",
     fontWeight: "600",
@@ -386,9 +408,9 @@ const styles = {
   },
   deleteBtn: {
     padding: "8px 18px",
-    background: "#ffffff",
-    color: "#d63031",
-    border: "1px solid #d63031",
+    background: "transparent",
+    color: "#ff7675",
+    border: "1px solid #ff7675",
     borderRadius: "8px",
     cursor: "pointer",
     fontWeight: "600",
@@ -396,14 +418,14 @@ const styles = {
     transition: "all 0.2s",
   },
   successMsg: {
-    background: "rgba(139, 94, 52, 0.1)",
-    color: "#2C1E16",
+    background: "rgba(200, 255, 1, 0.1)",
+    color: "#C8FF01",
     padding: "15px",
     borderRadius: "12px",
     marginBottom: "20px",
     fontWeight: "600",
     textAlign: "center",
-    border: "1px solid rgba(139, 94, 52, 0.3)",
+    border: "1px solid rgba(200, 255, 1, 0.3)",
   },
   errorMsg: {
     background: "#ff767522",
@@ -423,8 +445,8 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: "rgba(0,0,0,0.4)",
-    backdropFilter: "blur(4px)",
+    background: "rgba(0, 17, 125, 0.85)",
+    backdropFilter: "blur(10px)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -432,14 +454,15 @@ const styles = {
     padding: "20px",
   },
   modalContent: {
-    background: "#ffffff",
+    background: "#0122B4",
     width: "100%",
     maxWidth: "650px",
     maxHeight: "90vh",
     overflowY: "auto",
     borderRadius: "24px",
     padding: "40px",
-    boxShadow: "0 20px 50px rgba(0,0,0,0.1)",
+    boxShadow: "0 25px 60px rgba(0,0,0,0.6)",
+    border: "1px solid rgba(200, 255, 1, 0.2)",
   },
   modalHeader: {
     display: "flex",
@@ -447,13 +470,13 @@ const styles = {
     alignItems: "center",
     marginBottom: "30px",
     paddingBottom: "15px",
-    borderBottom: "1px solid rgba(139, 94, 52, 0.1)"
+    borderBottom: "1px solid rgba(255, 255, 255, 0.1)"
   },
   modalTitle: {
     margin: 0,
     fontSize: "1.8rem",
     fontWeight: "800",
-    color: "#2C1E16",
+    color: "#ffffff",
     fontFamily: "'Playfair Display', serif",
   },
   closeBtn: {
@@ -461,7 +484,7 @@ const styles = {
     border: "none",
     fontSize: "2rem",
     cursor: "pointer",
-    color: "#636e72",
+    color: "#C8FF01",
     lineHeight: "1",
     transition: "color 0.2s",
   },
@@ -478,62 +501,50 @@ const styles = {
   label: {
     fontSize: "0.85rem",
     fontWeight: "700",
-    color: "#8B5E34",
+    color: "#C8FF01",
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
   input: {
     padding: "12px 15px",
-    border: "1px solid rgba(139, 94, 52, 0.2)",
+    border: "2px solid rgba(255, 255, 255, 0.15)",
     borderRadius: "12px",
     outline: "none",
-    background: "#fafafa",
-    color: "#2C1E16",
+    background: "rgba(0, 0, 0, 0.3)",
+    color: "#ffffff",
     fontSize: "0.95rem",
-    transition: "border-color 0.2s",
+    transition: "all 0.3s ease",
   },
   textarea: {
     padding: "12px 15px",
-    border: "1px solid rgba(139, 94, 52, 0.2)",
+    border: "2px solid rgba(255, 255, 255, 0.15)",
     borderRadius: "12px",
     outline: "none",
-    background: "#fafafa",
-    color: "#2C1E16",
+    background: "rgba(0, 0, 0, 0.3)",
+    color: "#ffffff",
     fontSize: "0.95rem",
     minHeight: "120px",
     resize: "vertical",
     fontFamily: "inherit",
-    transition: "border-color 0.2s",
+    transition: "all 0.3s ease",
   },
   imgPreview: {
     width: "150px",
     height: "100px",
     objectFit: "cover",
     borderRadius: "12px",
-    border: "1px solid rgba(139, 94, 52, 0.2)",
+    border: "1px solid rgba(255, 255, 255, 0.15)",
   },
   saveBtn: {
     padding: "14px 28px",
-    background: "#8B5E34",
-    color: "white",
+    background: "linear-gradient(90deg, #C8FF01 0%, #AEE600 100%)",
+    color: "#00117D",
     border: "none",
-    borderRadius: "12px",
+    borderRadius: "30px",
     cursor: "pointer",
-    fontWeight: "600",
+    fontWeight: "700",
     fontSize: "0.95rem",
-    boxShadow: "0 4px 15px rgba(139, 94, 52, 0.25)",
-    transition: "all 0.2s",
-  },
-  cancelBtn: {
-    padding: "14px 28px",
-    background: "#ffffff",
-    color: "#636e72",
-    border: "1px solid #dfe6e9",
-    borderRadius: "12px",
-    cursor: "pointer",
-    fontWeight: "600",
-    fontSize: "0.95rem",
-    transition: "all 0.2s",
+    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.25)",
   }
 };
 

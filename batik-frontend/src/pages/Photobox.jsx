@@ -84,7 +84,7 @@ const LAYOUTS = [
 const FRAME_COLORS = [
   { id: "none", label: "Tanpa Frame", color: null, textColor: "#6b7280" },
   { id: "white", label: "Putih Bersih", color: "#ffffff", border: "#e5e7eb", textColor: "#1f2937" },
-  { id: "cream", label: "Krem Nusantara", color: "#FDF6EC", border: "#C8FF01", textColor: "#5a3e28" },
+  { id: "cream", label: "Krem Nusantara", color: "#EADBC8", border: "#D2B48C", textColor: "#5a3e28" },
   { id: "dark", label: "Biru Kegelapan", color: "#00117D", border: "#0122B4", textColor: "#C8FF01" },
   { id: "gold", label: "Lime UNS", color: "#C8FF01", border: "#AEE600", textColor: "#00117D" },
   { id: "batik", label: "Batik Merah", color: "#8B1A1A", border: "#5a0f0f", textColor: "#FDF6EC" },
@@ -312,10 +312,22 @@ export default function Photobox() {
     }
 
     // Watermark
+    const isLightColor = (hex) => {
+      if (!hex) return true;
+      const c = hex.replace("#", "");
+      if (c.length < 6) return true;
+      const r = parseInt(c.substring(0, 2), 16);
+      const g = parseInt(c.substring(2, 4), 16);
+      const b = parseInt(c.substring(4, 6), 16);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      return brightness > 155;
+    };
+
     ctx.font = `bold ${Math.round(canvasH * 0.022)}px 'Playfair Display', serif`;
-    ctx.fillStyle = selectedColor.color === "#ffffff" || !selectedColor.color
-      ? "rgba(139,94,52,0.5)"
-      : "rgba(255,255,255,0.4)";
+    const bgColor = selectedApiFrame ? null : (selectedColor.color || "#ffffff");
+    ctx.fillStyle = isLightColor(bgColor)
+      ? "rgba(90, 62, 40, 0.6)"
+      : "rgba(255, 255, 255, 0.6)";
     ctx.textAlign = "center";
     ctx.fillText("✦ BatikAI Photobox ✦", canvasW / 2, canvasH - padY / 2);
 
@@ -469,7 +481,7 @@ export default function Photobox() {
               </button>
             </div>
             <p style={{ textAlign: "center", color: "#C8FF01", fontSize: "0.85rem", marginTop: 8 }}>
-              💡 Klik tombol lalu bersiaplah — hitung mundur 3 detik akan dimulai
+              Klik tombol lalu bersiaplah — hitung mundur 3 detik akan dimulai
             </p>
           </div>
 
@@ -511,7 +523,7 @@ export default function Photobox() {
 
           {/* Frame selector */}
           <div style={S.frameSidebar}>
-            <h3 style={S.sidebarTitle}>🎨 Pilih Warna Bingkai</h3>
+            <h3 style={S.sidebarTitle}>Pilih Warna Bingkai</h3>
             <div style={S.frameColorGrid}>
               {FRAME_COLORS.map(fc => (
                 <div
@@ -570,7 +582,7 @@ export default function Photobox() {
       {step === 4 && (
         <div style={{ ...S.resultLayout, animation: "slide-in 0.4s ease" }}>
           <div style={S.resultBox}>
-            <div style={S.resultBadge}>🎉 Foto siap diunduh!</div>
+            <div style={S.resultBadge}>Foto siap diunduh!</div>
             <div style={S.resultImgWrap}>
               {finalCollage && <img src={finalCollage} alt="hasil photobox" style={S.resultImg} />}
             </div>
@@ -590,6 +602,7 @@ export default function Photobox() {
       )}
 
       {/* Hidden canvas */}
+      <canvas ref={canvasRef} style={{ display: "none" }} />
     </div>
     <Footer />
     </>
@@ -985,17 +998,14 @@ const S = {
     cursor: "pointer",
     transition: "all 0.2s",
     display: "flex",
-    alignItems: "flex-end",
+    alignItems: "center",
     justifyContent: "center",
-    minHeight: 70,
+    minHeight: 60,
   },
   frameChipLabel: {
-    fontSize: "0.68rem",
+    fontSize: "0.72rem",
     fontWeight: 700,
     textAlign: "center",
-    background: "rgba(0,0,0,0.3)",
-    borderRadius: 6,
-    padding: "2px 6px",
   },
   apiFrameList: {
     display: "flex",

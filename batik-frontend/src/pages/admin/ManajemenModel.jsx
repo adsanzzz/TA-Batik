@@ -206,9 +206,8 @@ export default function ManajemenModel() {
                     <th style={styles.th}>Aksi</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {/* Default / Baseline model */}
-                  <tr style={{...styles.tableRow, backgroundColor: !isAnyCustomModelActive ? "#fbf8f3" : "transparent"}}>
+                <tbody>                  {/* Default / Baseline model */}
+                  <tr style={{...styles.tableRow, backgroundColor: !isAnyCustomModelActive ? "rgba(200, 255, 1, 0.05)" : "transparent"}}>
                     <td style={styles.td}>
                       <strong>Model Bawaan (Baseline)</strong>
                       <div style={styles.subText}>Default MobileNetV3</div>
@@ -233,7 +232,7 @@ export default function ManajemenModel() {
                       key={m.id} 
                       style={{
                         ...styles.tableRow, 
-                        backgroundColor: m.is_active ? "#fbf8f3" : "transparent"
+                        backgroundColor: m.is_active ? "rgba(200, 255, 1, 0.05)" : "transparent"
                       }}
                     >
                       <td style={styles.td}>
@@ -256,7 +255,7 @@ export default function ManajemenModel() {
                           <span style={styles.inactiveBadge}>Standby</span>
                         )}
                         {!m.file_exists && (
-                          <div style={{color: "#e74c3c", fontSize: "0.75rem", marginTop: "4px"}}>* File tidak ditemukan</div>
+                          <div style={{color: "#ef4444", fontSize: "0.75rem", marginTop: "4px"}}>* File tidak ditemukan</div>
                         )}
                       </td>
                       <td style={styles.td}>
@@ -280,7 +279,7 @@ export default function ManajemenModel() {
                             </button>
                           )}
                           {m.is_active && (
-                            <span style={{color: "#8b5e34", fontSize: "0.85rem", fontWeight: "600"}}>Aktif Digunakan</span>
+                            <span style={{color: "#C8FF01", fontSize: "0.85rem", fontWeight: "600"}}>Aktif Digunakan</span>
                           )}
                         </div>
                       </td>
@@ -290,6 +289,7 @@ export default function ManajemenModel() {
               </table>
             </div>
           )}
+
         </div>
       </div>
     </div>
@@ -299,7 +299,9 @@ export default function ManajemenModel() {
 const styles = {
   pageWrapper: {
     minHeight: "calc(100vh - 70px)",
-    background: "linear-gradient(135deg, #FDFBF7 0%, #F4EAE0 100%)",
+    background: "radial-gradient(circle at 10% 20%, #00117D 0%, #000B4D 90%)",
+    backgroundImage: "radial-gradient(circle at 10% 20%, #00117D 0%, #000B4D 90%), radial-gradient(rgba(200, 255, 1, 0.15) 1px, transparent 0)",
+    backgroundSize: "100% 100%, 24px 24px",
     padding: "40px 20px",
   },
   container: {
@@ -313,54 +315,55 @@ const styles = {
   backBtn: {
     background: "transparent",
     border: "none",
-    color: "#8B5E34",
+    color: "#C8FF01",
     fontWeight: "700",
     cursor: "pointer",
     fontSize: "1rem",
     marginBottom: "15px",
     padding: 0,
-    transition: "color 0.2s",
   },
   title: {
-    fontSize: "2.4rem",
+    fontSize: "2.8rem",
     fontWeight: "800",
-    color: "#2C1E16",
-    fontFamily: "'Playfair Display', serif",
+    color: "#ffffff",
+    fontFamily: "'Outfit', sans-serif",
     margin: "10px 0",
   },
   subtitle: {
-    color: "#5a4a42",
+    color: "#C8FF01",
     fontSize: "1.05rem",
   },
   error: {
-    background: "#ff767522",
-    color: "#d63031",
+    background: "rgba(239, 68, 68, 0.15)",
+    color: "#ef4444",
     padding: "12px 16px",
     borderRadius: "10px",
-    border: "1px solid #ff767555",
+    border: "1px solid #ef4444",
     marginBottom: "20px",
   },
   success: {
-    background: "#2ecc7122",
-    color: "#27ae60",
+    background: "rgba(200, 255, 1, 0.1)",
+    color: "#C8FF01",
     padding: "12px 16px",
     borderRadius: "10px",
-    border: "1px solid #2ecc7155",
+    border: "1px solid rgba(200, 255, 1, 0.3)",
     marginBottom: "20px",
   },
   card: {
-    background: "white",
-    borderRadius: "16px",
+    background: "rgba(255, 255, 255, 0.03)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    borderRadius: "24px",
     padding: "30px",
-    boxShadow: "0 8px 25px rgba(139, 94, 52, 0.04)",
-    border: "1px solid rgba(139, 94, 52, 0.08)",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
     marginBottom: "35px",
   },
   cardTitle: {
-    fontSize: "1.3rem",
+    fontSize: "1.5rem",
     fontWeight: "700",
-    color: "#2C1E16",
+    color: "#ffffff",
     margin: 0,
+    fontFamily: "'Outfit', sans-serif",
     marginBottom: "20px",
   },
   form: {
@@ -374,51 +377,45 @@ const styles = {
     gap: "8px",
   },
   label: {
-    fontSize: "0.9rem",
-    fontWeight: "600",
-    color: "#5a4a42",
+    fontSize: "0.85rem",
+    fontWeight: "700",
+    color: "#C8FF01",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
   },
   input: {
-    padding: "12px 16px",
-    borderRadius: "8px",
-    border: "1px solid #d4c5b9",
+    padding: "14px 15px",
+    borderRadius: "12px",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
     outline: "none",
     fontSize: "0.95rem",
-    transition: "border-color 0.2s",
-    "&:focus": {
-      borderColor: "#8B5E34",
-    }
+    background: "rgba(255, 255, 255, 0.05)",
+    color: "#ffffff",
   },
   fileInput: {
     padding: "10px",
-    borderRadius: "8px",
-    border: "1px solid #d4c5b9",
-    background: "#fdfcfb",
+    borderRadius: "12px",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
+    background: "rgba(255, 255, 255, 0.05)",
+    color: "#ffffff",
     cursor: "pointer",
   },
   helperText: {
     fontSize: "0.8rem",
-    color: "#8a7d75",
+    color: "#ffffff",
+    opacity: 0.7,
     marginTop: "2px",
   },
   uploadBtn: {
     alignSelf: "flex-start",
-    background: "#8B5E34",
-    color: "white",
+    background: "#C8FF01",
+    color: "#00117D",
     border: "none",
-    padding: "12px 28px",
-    borderRadius: "8px",
+    padding: "16px 28px",
+    borderRadius: "12px",
     cursor: "pointer",
-    fontWeight: "600",
+    fontWeight: "700",
     fontSize: "0.95rem",
-    transition: "background 0.2s, transform 0.1s",
-    boxShadow: "0 4px 12px rgba(139, 94, 52, 0.15)",
-    "&:hover": {
-      background: "#704b29",
-    },
-    "&:active": {
-      transform: "scale(0.98)",
-    }
   },
   listSection: {
     display: "flex",
@@ -432,30 +429,27 @@ const styles = {
   },
   resetBtn: {
     background: "transparent",
-    border: "1px solid #8B5E34",
-    color: "#8B5E34",
+    border: "1px solid #C8FF01",
+    color: "#C8FF01",
     padding: "8px 16px",
     borderRadius: "8px",
     cursor: "pointer",
     fontWeight: "600",
     fontSize: "0.85rem",
-    transition: "all 0.2s",
-    "&:hover": {
-      background: "rgba(139, 94, 52, 0.05)",
-    }
   },
   loader: {
     textAlign: "center",
     padding: "40px",
     fontSize: "1rem",
-    color: "#8B5E34",
+    color: "#C8FF01",
   },
   tableContainer: {
-    background: "white",
-    borderRadius: "16px",
+    background: "rgba(255, 255, 255, 0.03)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    borderRadius: "24px",
     overflow: "hidden",
-    boxShadow: "0 8px 25px rgba(139, 94, 52, 0.06)",
-    border: "1px solid rgba(139, 94, 52, 0.1)",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
   },
   table: {
     width: "100%",
@@ -463,36 +457,35 @@ const styles = {
     textAlign: "left",
   },
   tableHeaderRow: {
-    background: "#F9F5F0",
-    borderBottom: "2px solid rgba(139, 94, 52, 0.15)",
+    borderBottom: "2px solid rgba(255, 255, 255, 0.08)",
   },
   th: {
     padding: "16px 20px",
     fontWeight: "700",
-    color: "#2C1E16",
+    color: "#C8FF01",
     fontSize: "0.85rem",
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
   tableRow: {
-    borderBottom: "1px solid rgba(139, 94, 52, 0.08)",
-    transition: "background-color 0.2s",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
   },
   td: {
     padding: "18px 20px",
     fontSize: "0.95rem",
-    color: "#2C1E16",
+    color: "#ffffff",
     verticalAlign: "middle",
   },
   subText: {
     fontSize: "0.8rem",
-    color: "#8a7d75",
+    color: "#ffffff",
+    opacity: 0.6,
     marginTop: "2px",
     fontWeight: "normal",
   },
   activeBadge: {
-    background: "#2ecc7122",
-    color: "#27ae60",
+    background: "rgba(200, 255, 1, 0.15)",
+    color: "#C8FF01",
     padding: "4px 10px",
     borderRadius: "12px",
     fontSize: "0.8rem",
@@ -500,8 +493,9 @@ const styles = {
     display: "inline-block",
   },
   inactiveBadge: {
-    background: "#8395a722",
-    color: "#57606f",
+    background: "rgba(255, 255, 255, 0.1)",
+    color: "#ffffff",
+    opacity: 0.8,
     padding: "4px 10px",
     borderRadius: "12px",
     fontSize: "0.8rem",
@@ -514,31 +508,23 @@ const styles = {
     alignItems: "center",
   },
   activateBtn: {
-    background: "#2ecc71",
-    color: "white",
+    background: "#C8FF01",
+    color: "#00117D",
     border: "none",
     padding: "8px 16px",
     borderRadius: "8px",
     cursor: "pointer",
-    fontWeight: "600",
+    fontWeight: "700",
     fontSize: "0.85rem",
-    transition: "background 0.2s",
-    "&:hover": {
-      background: "#27ae60",
-    }
   },
   deleteBtn: {
-    background: "#e74c3c",
-    color: "white",
-    border: "none",
+    background: "rgba(239, 68, 68, 0.15)",
+    color: "#ef4444",
+    border: "1px solid #ef4444",
     padding: "8px 16px",
     borderRadius: "8px",
     cursor: "pointer",
     fontWeight: "600",
     fontSize: "0.85rem",
-    transition: "background 0.2s",
-    "&:hover": {
-      background: "#c0392b",
-    }
   }
 };
