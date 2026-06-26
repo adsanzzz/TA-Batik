@@ -39,5 +39,30 @@ export const getToken = () => {
 };
 
 export const isAuthenticated = () => {
-  return !!localStorage.getItem("token");
+  const token = localStorage.getItem("token");
+  if (!token) return false;
+
+  try {
+    // Decode JWT payload locally to check exp
+    const payloadBase64 = token.split(".")[1];
+    if (!payloadBase64) return false;
+    
+    const payloadDecoded = JSON.parse(atob(payloadBase64));
+    if (payloadDecoded.exp) {
+      const isExpired = Date.now() >= payloadDecoded.exp * 1000;
+      if (isExpired) {
+        // Token has expired, auto-clear session
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        return false;
+      }
+    }
+  } catch (e) {
+    // Invalid token format
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    return false;
+  }
+
+  return true;
 };

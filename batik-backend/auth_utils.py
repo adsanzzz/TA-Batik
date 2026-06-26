@@ -7,7 +7,7 @@ from passlib.context import CryptContext
 # SECRET_KEY should be in env in production
 SECRET_KEY = "SECRET_SUPER_KUNCI_BATIK_123"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 # 1 day
+ACCESS_TOKEN_EXPIRE_MINUTES = 120 # 2 hours
 
 import bcrypt
 

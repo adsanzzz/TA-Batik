@@ -560,65 +560,77 @@ export default function AIGenerative() {
 
               {imageMixed && !loadingMixed && (
                 <div style={styles.metaPanel}>
-                  <form onSubmit={handleSaveToCatalog} style={styles.saveForm}>
-                    <h3 style={styles.formTitle}>
-                      <SaveIcon size={18} color="#C8FF01" /> Simpan Motif Baru
-                    </h3>
-                    
-                    <div style={styles.fieldGroup}>
-                      <label style={styles.fieldLabel}>Nama Motif Batik</label>
-                      <input
-                        type="text"
-                        placeholder="Masukkan nama batik baru..."
-                        value={saveForm.nama}
-                        onChange={(e) => setSaveForm({...saveForm, nama: e.target.value})}
-                        style={styles.textInput}
-                        required
-                      />
-                    </div>
-                    
-                    <div style={styles.rowFields}>
-                      <div style={styles.fieldGroup} style={{flex: 1}}>
-                        <label style={styles.fieldLabel}>Acara</label>
-                        <select
-                          value={saveForm.jenis_acara}
-                          onChange={(e) => setSaveForm({...saveForm, jenis_acara: e.target.value})}
-                          style={styles.selectInput}
-                        >
-                          <option value="Formal">Formal</option>
-                          <option value="Pernikahan">Pernikahan</option>
-                          <option value="Acara Adat">Acara Adat</option>
-                          <option value="Kasual">Kasual</option>
-                        </select>
-                      </div>
-                      <div style={styles.fieldGroup} style={{flex: 1}}>
-                        <label style={styles.fieldLabel}>Metode Pembuatan</label>
-                        <select
-                          value={saveForm.jenis_batik}
-                          onChange={(e) => setSaveForm({...saveForm, jenis_batik: e.target.value})}
-                          style={styles.selectInput}
-                        >
-                          <option value="Batik AI Modern">Batik AI Modern</option>
-                          <option value="Batik Tulis">Batik Tulis</option>
-                          <option value="Batik Cap">Batik Cap</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div style={styles.actionButtons}>
-                      <button type="submit" disabled={saveLoading || isSaved} style={styles.btnSave}>
-                        <SaveIcon size={14} color="#161311" /> {saveLoading ? "Menyimpan..." : isSaved ? "Tersimpan di Katalog ✓" : "Simpan ke Katalog"}
-                      </button>
+                  {localStorage.getItem("token") && (localStorage.getItem("role") === "admin" || localStorage.getItem("role") === "mitra") ? (
+                    <form onSubmit={handleSaveToCatalog} style={styles.saveForm}>
+                      <h3 style={styles.formTitle}>
+                        <SaveIcon size={18} color="#C8FF01" /> Simpan Motif Baru
+                      </h3>
                       
+                      <div style={styles.fieldGroup}>
+                        <label style={styles.fieldLabel}>Nama Motif Batik</label>
+                        <input
+                          type="text"
+                          placeholder="Masukkan nama batik baru..."
+                          value={saveForm.nama}
+                          onChange={(e) => setSaveForm({...saveForm, nama: e.target.value})}
+                          style={styles.textInput}
+                          required
+                        />
+                      </div>
+                      
+                      <div style={styles.rowFields}>
+                        <div style={styles.fieldGroup} style={{flex: 1}}>
+                          <label style={styles.fieldLabel}>Acara</label>
+                          <select
+                            value={saveForm.jenis_acara}
+                            onChange={(e) => setSaveForm({...saveForm, jenis_acara: e.target.value})}
+                            style={styles.selectInput}
+                          >
+                            <option value="Formal">Formal</option>
+                            <option value="Pernikahan">Pernikahan</option>
+                            <option value="Acara Adat">Acara Adat</option>
+                            <option value="Kasual">Kasual</option>
+                          </select>
+                        </div>
+                        <div style={styles.fieldGroup} style={{flex: 1}}>
+                          <label style={styles.fieldLabel}>Metode Pembuatan</label>
+                          <select
+                            value={saveForm.jenis_batik}
+                            onChange={(e) => setSaveForm({...saveForm, jenis_batik: e.target.value})}
+                            style={styles.selectInput}
+                          >
+                            <option value="Batik AI Modern">Batik AI Modern</option>
+                            <option value="Batik Tulis">Batik Tulis</option>
+                            <option value="Batik Cap">Batik Cap</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div style={styles.actionButtons}>
+                        <button type="submit" disabled={saveLoading || isSaved} style={styles.btnSave}>
+                          <SaveIcon size={14} color="#161311" /> {saveLoading ? "Menyimpan..." : isSaved ? "Tersimpan di Katalog ✓" : "Simpan ke Katalog"}
+                        </button>
+                        
+                        <button
+                          type="button"
+                          onClick={() => setShowVton(true)}
+                          style={styles.btnTryOn}
+                        >
+                          <ShirtIcon size={14} color="#C8FF01" /> Virtual Try-On
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <div style={{ width: "100%", padding: "10px 0" }}>
                       <button
                         type="button"
                         onClick={() => setShowVton(true)}
-                        style={styles.btnTryOn}
+                        style={styles.btnSave}
                       >
-                        <ShirtIcon size={14} color="#C8FF01" /> Virtual Try-On
+                        <ShirtIcon size={16} color="#00117D" /> Mulai Virtual Try-On
                       </button>
                     </div>
-                  </form>
+                  )}
                 </div>
               )}
             </div>
@@ -938,7 +950,7 @@ const styles = {
     gap: "20px"
   },
   bigPreviewBox: {
-    height: "240px",
+    height: "440px",
     width: "100%",
     background: "#000",
     borderRadius: "12px",
