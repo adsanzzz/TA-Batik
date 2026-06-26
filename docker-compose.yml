@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # BACKEND SERVICE (FastAPI)
+  backend:
+    build:
+      context: ./batik-backend
+      dockerfile: Dockerfile
+    image: trisara-batik-backend:latest
+    environment:
+      - REPLICATE_API_TOKEN=${REPLICATE_API_TOKEN}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-lutfan99}
+      - DB_HOST=${DB_HOST:-db}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME:-batik}
+    volumes:
+      - batik_uploads:/app/uploads
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  # FRONTEND SERVICE (React + Nginx)
+  frontend:
+    build:
+      context: ./batik-frontend
+      dockerfile: Dockerfile
+    image: trisara-batik-frontend:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  # DATABASE SERVICE (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-lutfan99}
+      - POSTGRES_DB=${DB_NAME:-batik}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  pgdata:
+  batik_uploads:
