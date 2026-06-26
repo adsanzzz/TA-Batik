@@ -9,14 +9,14 @@ export default function Navbar() {
   return (
     <nav style={styles.nav}>
       {/* LOGO */}
-      <div style={styles.logoWrapper}>
+      <Link to="/" style={{ ...styles.logoWrapper, textDecoration: "none" }}>
         <img
           src="/logo.png"
           alt="Trisara"
           style={styles.logoImg}
         />
         <span style={styles.logoText}>Trisara</span>
-      </div>
+      </Link>
 
       {/* MENU */}
       <div style={styles.links}>
