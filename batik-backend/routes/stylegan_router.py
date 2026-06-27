@@ -32,9 +32,8 @@ def get_nst_model():
             print(f"Failed to load NST model: {e}")
     return nst_model
 
-def load_and_preprocess_img(image_bytes, target_dim=None):
-    img_pil = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-    img = np.array(img_pil)
+def load_and_preprocess_img(image_pil, target_dim=None):
+    img = np.array(image_pil)
     img = tf.convert_to_tensor(img, dtype=tf.float32)
     img = tf.image.convert_image_dtype(img, tf.float32)
     if target_dim:
@@ -131,9 +130,21 @@ async def nst_blend(
         content_bytes = await content_image.read()
         style_bytes = await style_image.read()
 
-        # Preprocess
-        content_tensor = load_and_preprocess_img(content_bytes)
-        style_tensor = load_and_preprocess_img(style_bytes, target_dim=256)
+        # Open as PIL (sama persis dengan app.py)
+        content_pil = Image.open(io.BytesIO(content_bytes)).convert("RGB")
+        style_pil = Image.open(io.BytesIO(style_bytes)).convert("RGB")
+
+        # Resize content image ke max 512px untuk kualitas terbaik
+        max_dim = 512
+        w, h = content_pil.size
+        scale = min(max_dim / w, max_dim / h, 1.0)
+        if scale < 1.0:
+            new_w, new_h = int(w * scale), int(h * scale)
+            content_pil = content_pil.resize((new_w, new_h), Image.LANCZOS)
+
+        # Preprocess (identik dengan app.py)
+        content_tensor = load_and_preprocess_img(content_pil)
+        style_tensor = load_and_preprocess_img(style_pil, target_dim=256)
         
         # Run Style Transfer
         outputs = model(tf.constant(content_tensor), tf.constant(style_tensor))
@@ -152,8 +163,8 @@ async def nst_blend(
 
         # Preserve Color jika diminta
         if preserve_color:
-            content_pil = Image.open(io.BytesIO(content_bytes)).convert("RGB").resize(stylized_pil.size)
-            content_ycbcr = content_pil.convert("YCbCr")
+            content_for_color = content_pil.resize(stylized_pil.size)
+            content_ycbcr = content_for_color.convert("YCbCr")
             stylized_ycbcr = stylized_pil.convert("YCbCr")
             s_y, _, _ = stylized_ycbcr.split()
             _, c_cb, c_cr = content_ycbcr.split()
