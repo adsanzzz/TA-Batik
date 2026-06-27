@@ -1,17 +1,69 @@
 import os
 import shutil
+import io
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from sqlalchemy.orm import Session
-from gradio_client import Client, handle_file
+from PIL import Image
 
 from database import SessionLocal
 import models
 
-router = APIRouter()
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+import tensorflow as tf
+from tensorflow.keras.applications.mobilenet_v3 import preprocess_input
+import numpy as np
 
-# URL Hugging Face Space API
-HF_SPACE_URL = os.getenv("HF_SPACE_URL", "Umanzz/trisara-batik-ai")
-hf_client = Client(HF_SPACE_URL)
+# ==========================================
+# UNIVERSAL KERAS 3 WORKAROUND
+# ==========================================
+from keras.src.saving import serialization_lib
+from keras.src.layers import BatchNormalization
+import keras.src.layers.core.input_layer as _il_module
+
+_STRIP_ARGS = {
+    "BatchNormalization": ['renorm', 'quantization_config'],
+    "Dense": ['optional'],
+    "InputLayer": ['optional'],
+    "GlobalAveragePooling2D": ['optional']
+}
+
+_original_from_config = serialization_lib.deserialize_keras_object
+
+def patched_deserialize_keras_object(config, *args, **kwargs):
+    class_name = config.get("class_name")
+    if class_name in _STRIP_ARGS and "config" in config:
+        for arg_to_remove in _STRIP_ARGS[class_name]:
+            config["config"].pop(arg_to_remove, None)
+    return _original_from_config(config, *args, **kwargs)
+
+serialization_lib.deserialize_keras_object = patched_deserialize_keras_object
+
+def _make_patched_from_config(orig_from_config, keys_to_remove):
+    def _patched(cls, config, *args, **kwargs):
+        for k in keys_to_remove:
+            config.pop(k, None)
+        return orig_from_config(config, *args, **kwargs)
+    return classmethod(_patched)
+
+BatchNormalization.from_config = _make_patched_from_config(
+    BatchNormalization.from_config.__func__, 
+    _STRIP_ARGS["BatchNormalization"]
+)
+_il_module.InputLayer.from_config = _make_patched_from_config(
+    _il_module.InputLayer.from_config,
+    _STRIP_ARGS["InputLayer"]
+)
+
+# Load Model
+MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "models", "model_94ebc873b24c497cba3157eb944d2db7.keras")
+print("Loading Keras Classification model locally...")
+try:
+    classifier_model = tf.keras.models.load_model(MODEL_PATH)
+except Exception as e:
+    print(f"Failed to load model: {e}")
+    classifier_model = None
+
+router = APIRouter()
 
 # Class Names (11 Classes)
 CLASS_NAMES = [
@@ -57,32 +109,21 @@ def get_db():
 
 @router.post("/predict")
 async def predict(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    if classifier_model is None:
+        raise HTTPException(status_code=500, detail="Model klasifikasi tidak diload dengan benar.")
+        
     try:
-        # Simpan file sementara untuk diproses gradio_client
-        temp_filepath = f"temp_{file.filename}"
-        with open(temp_filepath, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-
-        try:
-            # Panggil Hugging Face API
-            result = hf_client.predict(
-                handle_file(temp_filepath),
-                api_name="/predict"
-            )
-        finally:
-            # Selalu hapus file sementara
-            if os.path.exists(temp_filepath):
-                os.remove(temp_filepath)
-
-        # Parse hasil
-        # result form: {'label': 'batik-kawung', 'confidences': [{'label': 'batik-kawung', 'confidence': 0.99}]}
-        label_data = result.get("confidences", [])
-        if not label_data:
-            raise ValueError("Invalid response from Hugging Face API")
-            
-        top_result = label_data[0]
-        predicted_class_name = top_result["label"]
-        confidence = float(top_result["confidence"])
+        contents = await file.read()
+        img = Image.open(io.BytesIO(contents)).convert("RGB")
+        img = img.resize((224, 224))
+        img_array = np.array(img, dtype=np.float32)
+        img_array = np.expand_dims(img_array, axis=0)
+        img_array = preprocess_input(img_array)
+        
+        predictions = classifier_model.predict(img_array)[0]
+        max_index = np.argmax(predictions)
+        predicted_class_name = CLASS_NAMES[max_index]
+        confidence = float(predictions[max_index])
 
         warning_msg = None
         if confidence < 0.50:

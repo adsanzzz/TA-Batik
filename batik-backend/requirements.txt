@@ -9,4 +9,6 @@ pillow
 httpx
 python-dotenv
 replicate
-gradio_client
+tensorflow-cpu==2.16.1
+tensorflow_hub
+numpy
