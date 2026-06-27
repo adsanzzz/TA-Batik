@@ -18,7 +18,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # URL Hugging Face Space API
 HF_SPACE_URL = os.getenv("HF_SPACE_URL", "Umanzz/trisara-batik-ai")
-hf_client = Client(HF_SPACE_URL)
+hf_client = None
+
+def get_hf_client():
+    global hf_client
+    if hf_client is None:
+        print(f"Connecting to HuggingFace Space: {HF_SPACE_URL}")
+        try:
+            hf_client = Client(HF_SPACE_URL)
+        except Exception as e:
+            print(f"Failed to connect to HF Space: {e}")
+    return hf_client
 
 nst_model = None
 
@@ -111,7 +121,7 @@ async def generate_from_seed(seed: int = Query(..., description="Random seed (an
     """
     try:
         # Panggil Hugging Face API (Gradio)
-        result_filepath = hf_client.predict(
+        result_filepath = get_hf_client().predict(
             float(seed),
             api_name="/generate"
         )
@@ -149,9 +159,9 @@ async def mix_seeds(
     """
     try:
         # Generate gambar A
-        path_a = hf_client.predict(float(seed_a), api_name="/generate")
+        path_a = get_hf_client().predict(float(seed_a), api_name="/generate")
         # Generate gambar B
-        path_b = hf_client.predict(float(seed_b), api_name="/generate")
+        path_b = get_hf_client().predict(float(seed_b), api_name="/generate")
 
         # Blend kedua gambar secara lokal (tanpa AI, sangat ringan)
         img_a = Image.open(path_a).convert("RGB")
