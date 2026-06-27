@@ -133,17 +133,16 @@ async def nst_blend(
         # Open as PIL (sama persis dengan app.py)
         content_pil = Image.open(io.BytesIO(content_bytes)).convert("RGB")
         style_pil = Image.open(io.BytesIO(style_bytes)).convert("RGB")
+        original_size = content_pil.size  # Simpan ukuran asli
 
-        # Resize content image ke max 512px untuk kualitas terbaik
-        max_dim = 512
+        # Resize content ke 384px (sweet spot untuk model Magenta)
+        target_dim = 384
         w, h = content_pil.size
-        scale = min(max_dim / w, max_dim / h, 1.0)
-        if scale < 1.0:
-            new_w, new_h = int(w * scale), int(h * scale)
-            content_pil = content_pil.resize((new_w, new_h), Image.LANCZOS)
+        scale = min(target_dim / w, target_dim / h)
+        content_pil_resized = content_pil.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
 
         # Preprocess (identik dengan app.py)
-        content_tensor = load_and_preprocess_img(content_pil)
+        content_tensor = load_and_preprocess_img(content_pil_resized)
         style_tensor = load_and_preprocess_img(style_pil, target_dim=256)
         
         # Run Style Transfer
@@ -160,6 +159,13 @@ async def nst_blend(
         stylized_tensor = tf.clip_by_value(stylized_tensor, 0.0, 1.0)
         img_array = (stylized_tensor.numpy() * 255).astype(np.uint8)
         stylized_pil = Image.fromarray(img_array)
+
+        # Upscale kembali ke resolusi asli konten agar tidak terlihat kecil/buram
+        stylized_pil = stylized_pil.resize(original_size, Image.LANCZOS)
+
+        # Sharpening - membuat detail lebih tajam (mirip hasil HF)
+        from PIL import ImageFilter, ImageEnhance
+        stylized_pil = stylized_pil.filter(ImageFilter.UnsharpMask(radius=1.5, percent=120, threshold=3))
 
         # Preserve Color jika diminta
         if preserve_color:
