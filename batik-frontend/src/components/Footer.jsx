@@ -152,23 +152,24 @@ const styles = {
   },
   desc: {
     color: "#D0DBFF",
-    fontSize: "0.9rem",
+    fontSize: "1rem",
     lineHeight: "1.75",
     marginBottom: "16px",
     marginTop: 0,
   },
   tagBadge: {
     display: "inline-block",
-    padding: "6px 14px",
+    padding: "8px 16px",
     border: "1px solid rgba(200, 255, 1, 0.25)",
-    borderRadius: "999px",
+    borderRadius: "20px",
     color: "#C8FF01",
     background: "rgba(200, 255, 1, 0.06)",
-    fontSize: "0.75rem",
+    fontSize: "0.85rem",
+    lineHeight: "1.5",
   },
   widgetTitle: {
     color: "#C8FF01",
-    fontSize: "0.78rem",
+    fontSize: "0.9rem",
     fontWeight: "800",
     letterSpacing: "1.5px",
     marginBottom: "16px",
@@ -188,11 +189,12 @@ const styles = {
   navLink: {
     color: "#D0DBFF",
     textDecoration: "none",
-    fontSize: "0.9rem",
+    fontSize: "1rem",
+    transition: "color 0.2s ease",
   },
   contactText: {
     color: "#D0DBFF",
-    fontSize: "0.88rem",
+    fontSize: "1rem",
     lineHeight: "1.7",
     margin: 0,
   },
@@ -212,7 +214,7 @@ const styles = {
   },
   copyright: {
     color: "rgba(208, 219, 255, 0.6)",
-    fontSize: "0.82rem",
+    fontSize: "0.9rem",
     margin: 0,
   },
   socialList: {
