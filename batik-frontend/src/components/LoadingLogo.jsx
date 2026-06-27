@@ -42,6 +42,7 @@ const styles = {
     justifyContent: "center",
     padding: "40px",
     width: "100%",
+    boxSizing: "border-box",
   },
   text: {
     color: "#C8FF01",

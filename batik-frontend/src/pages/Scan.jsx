@@ -76,6 +76,9 @@ export default function Scan() {
     <div style={styles.container} className="scan-container">
       {/* Background Pattern */}
       <style>{`
+        .scan-container * {
+          box-sizing: border-box !important;
+        }
         /* RESPONSIVE DESIGN FOR SCAN AI */
         @media (max-width: 1024px) {
           .scan-container { padding: 40px 20px !important; }
@@ -84,12 +87,45 @@ export default function Scan() {
         }
 
         @media (max-width: 768px) {
-          .scan-container { padding: 30px 15px !important; }
+          .scan-subtitle {
+            max-width: 250px !important;
+            margin: 0 auto !important;
+            line-height: 1.4 !important;
+          }
+          .scan-container { padding: 25px 15px 15px !important; }
           .scan-title { font-size: 1.8rem !important; }
-          .scan-layout { flex-direction: column !important; }
-          .scan-info-panel { flex: 1 1 100% !important; min-width: 100% !important; }
-          .scan-upload-wrapper { flex: 1 1 100% !important; min-width: 100% !important; }
-          .scan-preview { height: 300px !important; }
+          .scan-layout { 
+            flex-direction: column-reverse !important; 
+            gap: 25px !important;
+          }
+          .scan-info-panel { 
+            flex: 1 1 100% !important; 
+            min-width: 100% !important; 
+            padding: 20px !important; 
+            border-radius: 20px !important;
+          }
+          .scan-upload-wrapper { 
+            flex: 1 1 100% !important; 
+            min-width: 100% !important; 
+          }
+          .scan-preview { height: 280px !important; }
+          .scan-upload-card {
+            padding: 20px !important;
+            border-radius: 20px !important;
+          }
+          .scan-upload-area {
+            min-height: 300px !important;
+            border-radius: 18px !important;
+          }
+          .scan-icon-circle {
+            width: 80px !important;
+            height: 80px !important;
+            font-size: 2.2rem !important;
+            margin-bottom: 15px !important;
+          }
+          .scan-upload-title {
+            font-size: 1.5rem !important;
+          }
           
           /* Modal Adjustments */
           .scan-modal-content { max-height: 90vh !important; }
@@ -103,7 +139,7 @@ export default function Scan() {
         <h1 style={styles.title} className="scan-title">
           <SparklesIcon size={28} color="#C8FF01" /> Batik <span style={styles.gold}>Recognition</span>
         </h1>
-        <p style={styles.subtitle}>
+        <p style={styles.subtitle} className="scan-subtitle">
           Analisis motif batik berbasis kecerdasan buatan
         </p>
       </div>
@@ -137,9 +173,9 @@ export default function Scan() {
 
         {/* RIGHT: UPLOAD AREA */}
         <div style={styles.uploadCardWrapper} className="scan-upload-wrapper">
-          <div style={styles.uploadCard}>
+          <div style={styles.uploadCard} className="scan-upload-card">
 
-            <label style={styles.uploadArea}>
+            <label style={styles.uploadArea} className="scan-upload-area">
               <input
                 type="file"
                 accept="image/*"
@@ -162,7 +198,7 @@ export default function Scan() {
                 </div>
               ) : (
                 <div style={styles.placeholder}>
-                  <div style={styles.iconCircle}>
+                  <div style={styles.iconCircle} className="scan-icon-circle">
                     <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                       <polyline points="17 8 12 3 7 8"></polyline>
@@ -170,7 +206,7 @@ export default function Scan() {
                     </svg>
                   </div>
 
-                  <h3 style={styles.uploadTitle}>
+                  <h3 style={styles.uploadTitle} className="scan-upload-title">
                     Unggah Motif Batik
                   </h3>
 

@@ -15,17 +15,50 @@ export default function Home() {
         }
 
         @media (max-width: 768px) {
-          .home-content { padding: 30px 15px !important; gap: 30px !important; margin-top: 40px !important; }
-          .home-title { font-size: 2.2rem !important; line-height: 1.2 !important; }
-          .home-subtitle { font-size: 0.95rem !important; }
-          .home-buttons { flex-direction: column !important; width: 100% !important; max-width: 300px !important; margin: 0 auto !important; gap: 15px !important; }
-          .home-primary-btn, .home-secondary-btn { width: 100% !important; text-align: center !important; justify-content: center !important; }
+          .home-content { padding: 30px 20px !important; gap: 30px !important; margin-top: 20px !important; }
+          .home-title { font-size: 2.1rem !important; line-height: 1.25 !important; }
+          .home-subtitle { font-size: 0.9rem !important; margin-bottom: 25px !important; }
+          .home-badge { 
+            font-size: 0.78rem !important; 
+            padding: 8px 14px !important; 
+            margin-bottom: 20px !important;
+            white-space: normal !important;
+            text-align: center !important;
+            max-width: 90% !important;
+          }
+          .home-image-container {
+            width: 100% !important;
+            max-width: 320px !important;
+            margin: 0 auto !important;
+          }
+          .home-image-container > div:first-child {
+            inset: -10px !important;
+            border-radius: 20px !important;
+          }
+          .home-buttons { 
+            display: flex !important;
+            flex-direction: column !important; 
+            align-items: center !important; 
+            width: 100% !important; 
+            max-width: 280px !important; 
+            margin: 0 auto !important; 
+            gap: 12px !important; 
+            box-sizing: border-box !important;
+          }
+          .home-primary-btn, .home-secondary-btn { 
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important; 
+            box-sizing: border-box !important;
+            padding: 14px 28px !important; 
+          }
         }
       `}</style>
       <div style={styles.content} className="home-content">
         {/* LEFT */}
         <div style={styles.left} className="home-left">
-          <div style={styles.badge}>
+          <div style={styles.badge} className="home-badge">
             ✦ Artificial Intelligence for Indonesian Heritage
           </div>
 
@@ -56,7 +89,7 @@ export default function Home() {
 
         {/* RIGHT */}
         <div style={styles.right} className="home-right">
-          <div style={styles.imageContainer}>
+          <div style={styles.imageContainer} className="home-image-container">
             <div style={styles.goldBorder}></div>
 
             <img

@@ -16,6 +16,87 @@ const FemaleBlouseIcon = ({ active }) => (
   </svg>
 );
 
+const RESPONSIVE_CSS = `
+  @media (max-width: 768px) {
+    .vton-modal-content * {
+      box-sizing: border-box !important;
+    }
+    .vton-modal-content {
+      border-radius: 16px !important;
+      max-height: 90vh !important;
+      padding-bottom: 20px !important;
+    }
+    .vton-split-view {
+      flex-direction: column !important;
+      gap: 20px !important;
+      overflow-y: auto !important;
+      align-items: center !important;
+    }
+    .vton-split-left, .vton-split-right {
+      width: 100% !important;
+      flex: none !important;
+    }
+    .vton-template-options {
+      flex-direction: column !important;
+      gap: 15px !important;
+      align-items: center !important;
+    }
+    .vton-option-card {
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    .vton-step-container {
+      padding: 10px 15px 15px !important;
+      overflow-y: auto;
+      max-height: calc(90vh - 60px);
+    }
+    .vton-garment-box, .vton-upload-box {
+      height: 200px !important;
+    }
+    .vton-final-box {
+      height: 300px !important;
+    }
+    .vton-upload-option-group {
+      width: auto !important;
+      flex: 1 !important;
+      padding: 24px 8px !important;
+    }
+    .vton-upload-options {
+      flex-direction: row !important;
+      gap: 10px !important;
+      align-items: center !important;
+      width: 100% !important;
+    }
+    .vton-upload-option-group svg {
+      width: 32px !important;
+      height: 32px !important;
+      margin-bottom: 6px !important;
+    }
+    .vton-upload-text {
+      font-size: 0.8rem !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .vton-step-title {
+      font-size: 1.2rem !important;
+    }
+    .vton-modal-title {
+      font-size: 1.1rem !important;
+    }
+    .vton-header {
+      padding: 20px 15px !important;
+    }
+    .vton-close-btn {
+      top: 15px !important;
+      right: 15px !important;
+      width: 32px !important;
+      height: 32px !important;
+      font-size: 1.2rem !important;
+    }
+  }
+`;
+
 const UploadIcon = () => (
   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: "15px", opacity: 0.7}}>
     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -188,13 +269,14 @@ export default function VtonModal({ batik, onClose }) {
 
   return createPortal(
     <div style={styles.modalOverlay} onClick={handleClose}>
-      <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <div style={styles.modalHeader}>
+      <style>{RESPONSIVE_CSS}</style>
+      <div style={styles.modalContent} className="vton-modal-content" onClick={(e) => e.stopPropagation()}>
+        <div style={styles.modalHeader} className="vton-header">
           <div style={{ textAlign: "left" }}>
-            <h2 style={styles.modalTitle}>Virtual Try-On</h2>
+            <h2 style={styles.modalTitle} className="vton-modal-title">Virtual Try-On</h2>
             <p style={styles.subtitle}>Motif: {batik.nama}</p>
           </div>
-          <button style={styles.closeBtn} onClick={handleClose}>&times;</button>
+          <button style={styles.closeBtn} className="vton-close-btn" onClick={handleClose}>&times;</button>
         </div>
 
         {error && (
@@ -203,16 +285,17 @@ export default function VtonModal({ batik, onClose }) {
           </div>
         )}
 
-        <div style={styles.stepContainer}>
+        <div style={styles.stepContainer} className="vton-step-container">
           {/* STEP 1: Pilih Baju */}
           {step === 1 && (
             <div style={styles.stepBody}>
-              <h3 style={styles.stepTitle}>Langkah 1: Pilih Model Pakaian</h3>
+              <h3 style={styles.stepTitle} className="vton-step-title">Langkah 1: Pilih Model Pakaian</h3>
               <p style={styles.stepDesc}>Sistem AI kami akan "menjahit" motif batik ini menjadi pakaian yang kamu pilih secara virtual.</p>
               
-              <div style={styles.templateOptions}>
+              <div style={styles.templateOptions} className="vton-template-options">
                 <div 
                   style={{...styles.optionCard, ...(templateType === "male_shirt" ? styles.optionActive : {})}}
+                  className="vton-option-card"
                   onClick={() => setTemplateType("male_shirt")}
                 >
                   <MaleShirtIcon active={templateType === "male_shirt"} />
@@ -221,6 +304,7 @@ export default function VtonModal({ batik, onClose }) {
                 </div>
                 <div 
                   style={{...styles.optionCard, ...(templateType === "female_blouse" ? styles.optionActive : {})}}
+                  className="vton-option-card"
                   onClick={() => setTemplateType("female_blouse")}
                 >
                   <FemaleBlouseIcon active={templateType === "female_blouse"} />
@@ -242,20 +326,20 @@ export default function VtonModal({ batik, onClose }) {
           {/* STEP 2: Upload Foto Diri */}
           {step === 2 && (
             <div style={styles.stepBody}>
-              <h3 style={styles.stepTitle}>Langkah 2: Unggah Fotomu</h3>
+              <h3 style={styles.stepTitle} className="vton-step-title">Langkah 2: Unggah Fotomu</h3>
               <p style={styles.stepDesc}>Baju berhasil dibuat! Sekarang unggah foto setengah badan atau seluruh badanmu yang menghadap ke depan.</p>
               
-              <div style={styles.splitView}>
-                <div style={styles.splitLeft}>
+              <div style={styles.splitView} className="vton-split-view">
+                <div style={styles.splitLeft} className="vton-split-left">
                   <p style={{...styles.stepDesc, textAlign: "center", marginBottom: "10px"}}>Baju Batik Kamu</p>
-                  <div style={styles.garmentPreviewBox}>
+                  <div style={styles.garmentPreviewBox} className="vton-garment-box">
                     <img src={generatedGarment} alt="Baju Batik" style={styles.garmentImg} />
                   </div>
                 </div>
 
-                <div style={styles.splitRight}>
+                <div style={styles.splitRight} className="vton-split-right">
                   <p style={{...styles.stepDesc, textAlign: "center", marginBottom: "10px"}}>Foto Diri Kamu</p>
-                  <div style={styles.uploadBox}>
+                  <div style={styles.uploadBox} className="vton-upload-box">
                     {humanImagePreview ? (
                       <div style={styles.imagePreviewContainer}>
                         <img src={humanImagePreview} alt="Preview" style={styles.previewImg} />
@@ -278,10 +362,10 @@ export default function VtonModal({ batik, onClose }) {
                         </div>
                       </div>
                     ) : (
-                      <div style={styles.uploadOptions}>
-                        <div style={styles.uploadOptionGroup}>
+                      <div style={styles.uploadOptions} className="vton-upload-options">
+                        <div style={styles.uploadOptionGroup} className="vton-upload-option-group">
                           <UploadIcon />
-                          <p style={styles.uploadText}>Dari Galeri</p>
+                          <p style={styles.uploadText} className="vton-upload-text">Dari Galeri</p>
                           <input 
                             type="file" 
                             accept="image/*" 
@@ -290,9 +374,9 @@ export default function VtonModal({ batik, onClose }) {
                           />
                         </div>
                         <div style={styles.orDivider}>atau</div>
-                        <div style={styles.uploadOptionGroup} onClick={startCamera}>
+                        <div style={styles.uploadOptionGroup} className="vton-upload-option-group" onClick={startCamera}>
                           <CameraIcon />
-                          <p style={styles.uploadText}>Dari Kamera</p>
+                          <p style={styles.uploadText} className="vton-upload-text">Dari Kamera</p>
                         </div>
                       </div>
                     )}
@@ -312,14 +396,14 @@ export default function VtonModal({ batik, onClose }) {
 
           {/* STEP 3: Hasil VTON */}
           {step === 3 && (
-            <div style={{ ...styles.splitView, alignItems: "center", width: "100%" }}>
-              <div style={{ ...styles.splitLeft, alignItems: "center" }}>
-                <div style={{ ...styles.finalResultBox, margin: 0, width: "100%" }}>
+            <div style={{ ...styles.splitView, alignItems: "center", width: "100%" }} className="vton-split-view">
+              <div style={{ ...styles.splitLeft, alignItems: "center" }} className="vton-split-left">
+                <div style={{ ...styles.finalResultBox, margin: 0, width: "100%" }} className="vton-final-box">
                   <img src={finalVtonResult} alt="Hasil Try-On" style={styles.finalResultImg} />
                 </div>
               </div>
 
-              <div style={{ ...styles.splitRight, alignItems: "flex-start", justifyContent: "center", paddingLeft: "10px" }}>
+              <div style={{ ...styles.splitRight, alignItems: "flex-start", justifyContent: "center", paddingLeft: "10px" }} className="vton-split-right">
                 <h3 style={{ ...styles.stepTitle, textAlign: "left", marginTop: 0, marginBottom: "15px", width: "100%" }}>Selesai! Ini Penampilanmu</h3>
                 <p style={{ ...styles.stepDesc, textAlign: "left", maxWidth: "100%", marginBottom: "30px", lineHeight: "1.6" }}>
                   Bagaimana menurutmu? Kemeja Batik Hibrida AI ini sangat cocok untukmu!
@@ -358,7 +442,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 3000,
+    zIndex: 10001,
     padding: "20px",
     backdropFilter: "blur(10px)",
   },
@@ -377,28 +461,40 @@ const styles = {
     fontFamily: "Poppins, sans-serif",
   },
   closeBtn: {
-    background: "none",
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    fontSize: "1.4rem",
+    background: "rgba(255, 255, 255, 0.1)",
     border: "none",
+    borderRadius: "50%",
+    width: "36px",
+    height: "36px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     cursor: "pointer",
     color: "#C8FF01",
-    fontSize: "1.8rem",
-    lineHeight: 1,
-    padding: 0,
+    zIndex: 100,
+    lineHeight: "1",
+    transition: "all 0.3s",
   },
   modalHeader: {
-    padding: "15px 25px",
-    background: "rgba(255, 255, 255, 0.05)",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+    padding: "20px 25px",
+    background: "rgba(255, 255, 255, 0.03)",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    position: "relative",
   },
   modalTitle: {
-    fontSize: "1.25rem",
+    fontSize: "1.35rem",
     color: "#fff",
     margin: 0,
     fontWeight: "700",
     fontFamily: "Poppins, sans-serif",
+    paddingRight: "40px", // space for absolute close button
   },
   subtitle: {
     color: "#E0E0E0",
@@ -453,6 +549,7 @@ const styles = {
     cursor: "pointer",
     transition: "all 0.3s",
     color: "#fff",
+    boxSizing: "border-box",
   },
   optionActive: {
     borderColor: "#C8FF01",

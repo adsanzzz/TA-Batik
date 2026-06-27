@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Form
 from PIL import Image
 from gradio_client import Client
 import numpy as np
+import base64
 
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 import tensorflow as tf

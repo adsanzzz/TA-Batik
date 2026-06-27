@@ -17,12 +17,43 @@ export default function Navbar() {
           display: none;
           background: none;
           border: none;
-          color: #C8FF01;
-          font-size: 1.8rem;
           cursor: pointer;
-          z-index: 1001;
+          z-index: 9999;
+          width: 44px;
+          height: 44px;
+          padding: 0;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .hamburger-btn span {
+          display: block;
+          width: 24px;
+          height: 2.5px;
+          background-color: #C8FF01;
+          border-radius: 2px;
+          transition: all 0.3s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .hamburger-btn.open span:nth-child(1) {
+          transform: translateY(8.5px) rotate(45deg);
+        }
+        .hamburger-btn.open span:nth-child(2) {
+          opacity: 0;
+          transform: translateX(-10px);
+        }
+        .hamburger-btn.open span:nth-child(3) {
+          transform: translateY(-8.5px) rotate(-45deg);
         }
         
+        /* GLOBAL FIX FOR MOBILE HORIZONTAL SCROLL */
+        body {
+          overflow-x: hidden;
+          width: 100%;
+        }
+
         .navbar-links {
           display: flex;
           align-items: center;
@@ -32,38 +63,49 @@ export default function Navbar() {
         @media (max-width: 768px) {
           .navbar-container {
             padding: 0 20px !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            background: rgba(2, 38, 146, 0.98) !important;
           }
           .hamburger-btn {
-            display: block;
+            display: flex !important;
           }
           .navbar-links {
             position: fixed;
             top: 0;
-            right: -100%;
-            width: 70%;
-            max-width: 300px;
+            right: 0;
+            transform: translateX(100%);
+            width: 80%;
+            max-width: 320px;
             height: 100vh;
-            background: rgba(2, 38, 146, 0.98);
-            backdrop-filter: blur(15px);
+            background: linear-gradient(135deg, rgba(2, 38, 146, 0.98) 0%, rgba(1, 25, 100, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(200, 255, 1, 0.15);
             flex-direction: column;
             justify-content: flex-start;
             padding-top: 100px;
-            transition: right 0.3s ease;
-            box-shadow: -5px 0 20px rgba(0,0,0,0.5);
-            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.6);
+            z-index: 9998;
           }
           .navbar-links.open {
-            right: 0;
+            transform: translateX(0);
           }
-          .nav-link, .nav-btn-outline, .nav-btn-primary {
+          .nav-link {
             width: 100%;
             text-align: center;
-            padding: 15px !important;
-            font-size: 1.1rem !important;
+            padding: 18px !important;
+            font-size: 1.25rem !important;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #fff !important;
           }
-          .nav-btn-primary, .nav-btn-outline {
-            width: 80% !important;
-            margin: 10px auto;
+          .nav-btn-outline, .nav-btn-primary {
+            width: 85% !important;
+            text-align: center;
+            padding: 14px !important;
+            font-size: 1.1rem !important;
+            margin: 15px auto !important;
+            display: block;
           }
         }
       `}</style>
@@ -79,10 +121,13 @@ export default function Navbar() {
 
       {/* HAMBURGER BTN */}
       <button 
-        className="hamburger-btn" 
+        className={`hamburger-btn ${isMobileMenuOpen ? "open" : ""}`} 
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        aria-label="Toggle menu"
       >
-        {isMobileMenuOpen ? "✕" : "☰"}
+        <span></span>
+        <span></span>
+        <span></span>
       </button>
 
       {/* MENU */}
@@ -110,12 +155,12 @@ export default function Navbar() {
         {auth ? (
           <>
             {role === "admin" && (
-              <Link to="/admin/dashboard" style={styles.adminLink}>
+              <Link to="/admin/dashboard" style={styles.adminLink} className="nav-link">
                 Admin Panel
               </Link>
             )}
             {role === "mitra" && (
-              <Link to="/mitra/dashboard" style={styles.adminLink}>
+              <Link to="/mitra/dashboard" style={styles.adminLink} className="nav-link">
                 Mitra Panel
               </Link>
             )}
@@ -133,6 +178,7 @@ export default function Navbar() {
         )}
       </div>
     </nav>
+
     {isMobileMenuOpen && (
       <div 
         style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0,0,0,0.5)", zIndex: 999 }}
@@ -158,7 +204,7 @@ const styles = {
 
     position: "sticky",
     top: 0,
-    zIndex: 100,
+    zIndex: 9999,
   },
 
   logoWrapper: {

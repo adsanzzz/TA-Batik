@@ -260,7 +260,12 @@ export default function AIGenerative() {
         }
 
         @media (max-width: 768px) {
-          .aigen-container { padding: 30px 15px !important; }
+          .aigen-subtitle {
+            max-width: 250px !important;
+            margin: 0 auto !important;
+            line-height: 1.4 !important;
+          }
+          .aigen-container { padding: 25px 15px 15px !important; }
           .aigen-title { font-size: 1.8rem !important; }
           .aigen-layout { flex-direction: column !important; gap: 20px !important; }
           .aigen-column { flex: 1 1 100% !important; min-width: 100% !important; }
@@ -279,7 +284,7 @@ export default function AIGenerative() {
         <h1 style={styles.title} className="aigen-title">
           <SparklesIcon size={28} color="#C8FF01" /> AI Batik <span style={styles.gold}>Generative</span>
         </h1>
-        <p style={styles.subtitle}>
+        <p style={styles.subtitle} className="aigen-subtitle">
           Padukan karakteristik estetika dari dua motif batik berbeda untuk menciptakan pola batik baru yang unik.
         </p>
       </header>

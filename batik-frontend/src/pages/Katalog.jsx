@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { getBatik, BASE_URL } from "@/services/api";
 import CardBatik from "@/components/CardBatik";
 import VtonModal from "@/components/VtonModal";
@@ -118,7 +119,11 @@ export default function Katalog() {
         }
 
         @media (max-width: 768px) {
-          .katalog-container { padding: 30px 15px !important; }
+          .katalog-subtitle {
+            max-width: 250px !important;
+            margin: 0 auto !important;
+            line-height: 1.4 !important;
+          }
           .katalog-title { font-size: 1.8rem !important; }
           .katalog-grid { 
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; 
@@ -132,20 +137,24 @@ export default function Katalog() {
           .katalog-modal-img-wrapper { 
             flex: none !important; 
             min-width: 100% !important; 
-            height: 35vh !important; 
-            max-height: 35vh !important; 
+            height: 25vh !important; 
+            max-height: 25vh !important; 
           }
           .katalog-modal-body { 
-            padding: 20px !important; 
+            padding: 15px !important; 
             min-width: 100% !important; 
           }
-          .katalog-modal-title { font-size: 1.5rem !important; }
+          .katalog-modal-title { font-size: 1.3rem !important; }
           .close-btn-responsive { 
-            top: 10px !important; 
+            top: 5px !important; 
             right: 10px !important; 
             width: 35px !important; 
             height: 35px !important; 
             font-size: 2rem !important;
+          }
+          .search-input-focus {
+            font-size: 0.9rem !important;
+            padding: 12px 15px 12px 45px !important;
           }
         }
       `}</style>
@@ -154,7 +163,7 @@ export default function Katalog() {
         <h1 style={styles.title} className="katalog-title">
           <SparklesIcon size={28} color="#C8FF01" /> Koleksi <span style={styles.gold}>Batik Nusantara</span>
         </h1>
-        <p style={styles.subtitle}>Jelajahi berbagai motif batik dari seluruh penjuru Indonesia</p>
+        <p style={styles.subtitle} className="katalog-subtitle">Jelajahi berbagai motif batik dari seluruh penjuru Indonesia</p>
       </div>
 
       {/* FILTER BARU YANG MODERN DAN INTERAKTIF */}
@@ -284,7 +293,7 @@ export default function Katalog() {
       )}
 
       {/* Modal Detail Batik */}
-      {selectedBatik && (
+      {selectedBatik && createPortal(
         <div style={styles.modalOverlay} onClick={closeModal}>
           <div style={styles.modalContent} className="katalog-modal-content" onClick={(e) => e.stopPropagation()}>
             <button style={styles.closeBtn} className="close-btn-responsive" onClick={closeModal}>&times;</button>
@@ -356,7 +365,8 @@ export default function Katalog() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* VTON Modal */}
@@ -459,7 +469,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 2000,
+    zIndex: 10000,
     padding: "20px",
     backdropFilter: "blur(8px)",
   },
@@ -592,9 +602,11 @@ const styles = {
   searchWrapper: {
     position: "relative",
     width: "100%",
+    zIndex: 10,
   },
   searchInput: {
     width: "100%",
+    boxSizing: "border-box",
     padding: "16px 20px 16px 50px",
     fontSize: "1.05rem",
     border: "1px solid rgba(200, 255, 1, 0.3)",
@@ -616,6 +628,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     zIndex: 10,
+    pointerEvents: "none",
   },
   clearBtn: {
     position: "absolute",

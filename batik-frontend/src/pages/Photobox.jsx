@@ -379,6 +379,9 @@ export default function Photobox() {
     <div style={S.page} className="photobox-page">
       {/* Background Pattern */}
       <style>{`
+        .photobox-page * {
+          box-sizing: border-box !important;
+        }
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
         @keyframes pulse-ring { 0%{transform:scale(1);opacity:1} 100%{transform:scale(1.6);opacity:0} }
         @keyframes countdown-pop { 0%{transform:scale(1.5);opacity:0} 60%{transform:scale(0.95);opacity:1} 100%{transform:scale(1);opacity:1} }
@@ -398,19 +401,29 @@ export default function Photobox() {
           .photobox-page { padding: 40px 20px !important; }
           .photobox-layout-grid { gap: 20px !important; }
           .photobox-frame-layout { flex-direction: column !important; align-items: center !important; }
-          .photobox-frame-sidebar { width: 100% !important; max-width: 100% !important; margin-top: 30px !important; }
+          .photobox-preview-panel { flex: 1 1 auto !important; width: 100% !important; }
+          .photobox-frame-sidebar { width: 100% !important; max-width: 100% !important; margin-top: 20px !important; }
         }
 
         @media (max-width: 768px) {
+          .photobox-action-btns { flex-direction: column !important; width: 100% !important; }
+          .photobox-action-btns > button { width: 100% !important; justify-content: center !important; }
+          .photobox-subtitle {
+            max-width: 250px !important;
+            margin: 0 auto !important;
+            line-height: 1.4 !important;
+          }
           .photobox-page { padding: 30px 15px !important; }
           .photobox-header-title { font-size: 2rem !important; }
-          .photobox-step-bar { flex-wrap: wrap !important; gap: 15px !important; }
-          .photobox-step-item { flex: 1 1 45% !important; justify-content: flex-start !important; }
+          .photobox-step-bar { flex-wrap: wrap !important; row-gap: 20px !important; }
+          .photobox-step-item { min-width: 50% !important; }
+          .photobox-step-line { display: none !important; }
           
           .photobox-camera-layout { flex-direction: column !important; }
           .photobox-camera-box { min-width: 100% !important; }
           .photobox-strip-panel { min-width: 100% !important; flex-direction: row !important; padding: 15px !important; }
-          .photobox-strip-list { flex-direction: row !important; overflow-x: auto !important; }
+          .photobox-strip-list { flex-direction: row !important; overflow-x: auto !important; gap: 10px !important; padding-bottom: 5px !important; }
+          .photobox-strip-slot { min-width: 110px !important; flex-shrink: 0 !important; }
           
           .photobox-camera-controls { flex-wrap: wrap !important; justify-content: center !important; }
           .capture-btn { width: 100% !important; }
@@ -425,7 +438,7 @@ export default function Photobox() {
         <h1 style={S.headerTitle} className="photobox-header-title">
           <SparklesIcon size={28} color="#C8FF01" /> Photobox <span style={{ color: "#C8FF01", WebkitTextFillColor: "#C8FF01" }}>Nusantara</span>
         </h1>
-        <p style={S.headerSub}>Abadikan momen indah dengan bingkai batik khas Indonesia</p>
+        <p style={S.headerSub} className="photobox-subtitle">Abadikan momen indah dengan bingkai batik khas Indonesia</p>
       </div>
 
       {/* ─── Step Indicator ─── */}
@@ -440,7 +453,7 @@ export default function Photobox() {
                 {done ? <IconCheck /> : n}
               </div>
               <span style={{ ...S.stepLabel, color: active ? "#C8FF01" : done ? "#D0DBFF" : "#b0a090" }}>{label}</span>
-              {i < 3 && <div style={{ ...S.stepLine, background: done ? "#C8FF01" : "rgba(255,255,255,0.15)" }} />}
+              {i < 3 && <div className="photobox-step-line" style={{ ...S.stepLine, background: done ? "#C8FF01" : "rgba(255,255,255,0.15)" }} />}
             </div>
           );
         })}
@@ -515,7 +528,7 @@ export default function Photobox() {
             <h3 style={S.stripTitle}>Foto Terambil ({photos.length}/{layout.count})</h3>
             <div style={S.stripList} className="photobox-strip-list">
               {Array.from({ length: layout.count }).map((_, i) => (
-                <div key={i} style={S.stripSlot}>
+                <div key={i} style={S.stripSlot} className="photobox-strip-slot">
                   {photos[i]
                     ? <img src={photos[i]} alt={`foto ${i + 1}`} style={S.stripImg} />
                     : <div style={S.stripEmpty}><IconCamera /><span style={{ fontSize: "0.7rem", marginTop: 4 }}>Foto {i + 1}</span></div>
@@ -531,14 +544,14 @@ export default function Photobox() {
       {step === 3 && (
         <div style={{ ...S.frameLayout, animation: "slide-in 0.4s ease" }} className="photobox-frame-layout">
           {/* Preview */}
-          <div style={S.previewPanel}>
+          <div style={S.previewPanel} className="photobox-preview-panel">
             <div style={S.previewBox}>
               {finalCollage
                 ? <img src={finalCollage} alt="preview" style={S.previewImg} />
                 : <div style={{ color: "#aaa", textAlign: "center" }}>Memuat preview...</div>
               }
             </div>
-            <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+            <div className="photobox-action-btns" style={{ display: "flex", gap: 12, marginTop: 16 }}>
               <button className="btn-secondary" style={S.btnSecondary} onClick={restart}><IconRetake />&nbsp;Mulai Ulang</button>
               <button className="btn-primary" style={S.btnPrimary} onClick={confirmFrame}>
                 Gunakan Bingkai ini &rarr;
