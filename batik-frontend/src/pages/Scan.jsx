@@ -12,7 +12,7 @@ const CrownIcon = () => (
   </svg>
 );
 
-const API_URL = "http://localhost:8000/api/predict";
+const API_URL = `${BASE_URL}/api/predict`;
 
 const SparklesIcon = ({ size = 20, color = "currentColor" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: "8px" }}>

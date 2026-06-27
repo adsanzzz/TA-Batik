@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createBatik } from "../../services/api";
+import { createBatik, BASE_URL } from "../../services/api";
 import { getToken } from "../../services/auth";
 
 const UploadIcon = () => (
@@ -59,7 +59,7 @@ export default function InputBatik() {
 
     try {
       const token = getToken();
-      await fetch("http://localhost:8000/admin/batik", {
+      await fetch(`${BASE_URL}/admin/batik`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
