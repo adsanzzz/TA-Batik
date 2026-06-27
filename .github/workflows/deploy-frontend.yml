@@ -3,7 +3,7 @@ name: Deploy Frontend to Dokploy
 on:
   push:
     branches:
-      - dev-luthfan  # Jalankan workflow saat ada push ke branch ini
+      - production  # Hanya jalankan deploy otomatis saat push ke branch production
 
 jobs:
   build-and-deploy:
