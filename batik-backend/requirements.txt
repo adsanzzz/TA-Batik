@@ -11,5 +11,5 @@ python-dotenv
 replicate
 tensorflow-cpu==2.16.1
 tensorflow_hub
-numpy
+numpy<2.0.0
 gradio_client
