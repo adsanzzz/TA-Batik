@@ -12,3 +12,4 @@ replicate
 tensorflow-cpu==2.16.1
 tensorflow_hub
 numpy
+gradio_client
