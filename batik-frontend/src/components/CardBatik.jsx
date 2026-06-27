@@ -14,17 +14,48 @@ export default function CardBatik({ batik, onClick }) {
     : `${BASE_URL}/${batik.gambar}`;
 
   return (
-    <div style={styles.card} onClick={onClick}>
+    <>
+    <style>{`
+      .batik-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .batik-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(200, 255, 1, 0.25) !important;
+        border-color: #C8FF01 !important;
+      }
+      @media (max-width: 768px) {
+        .batik-card-header {
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          gap: 10px !important;
+        }
+        .batik-card-badges {
+          align-self: flex-start !important;
+          margin-top: 5px !important;
+        }
+        .batik-card-content {
+          padding: 16px !important;
+        }
+        .batik-card-title {
+          font-size: 1.15rem !important;
+        }
+        .batik-card-text {
+          font-size: 0.85rem !important;
+        }
+      }
+    `}</style>
+    <div style={styles.card} className="batik-card" onClick={onClick}>
       <img
         src={imageUrl || "https://via.placeholder.com/300"}
         alt={batik.nama}
         style={styles.image}
       />
 
-      <div style={styles.content}>
-        <div style={styles.header}>
+      <div style={styles.content} className="batik-card-content">
+        <div style={styles.header} className="batik-card-header">
           <div>
-            <h3 style={styles.title}>{batik.nama}</h3>
+            <h3 style={styles.title} className="batik-card-title">{batik.nama}</h3>
             {batik.jenis_acara === "Batik Keraton" && (
               <div style={styles.keratonBadge}>
                 <CrownIcon /> Batik Keraton
@@ -37,12 +68,14 @@ export default function CardBatik({ batik, onClick }) {
               <div style={styles.uploaderBadge}>Admin</div>
             )}
           </div>
-          <span style={styles.badge}>{batik.jenis_batik}</span>
-          <span style={styles.eventBadge}>{batik.jenis_acara}</span>
+          <div className="batik-card-badges">
+            <span style={styles.badge}>{batik.jenis_batik}</span>
+            <span style={styles.eventBadge}>{batik.jenis_acara}</span>
+          </div>
         </div>
-        <p style={styles.text}><strong>Motif Utama:</strong> {batik.motif_utama}</p>
-        <p style={styles.text}><strong>Jenis Acara:</strong> {batik.jenis_acara}</p>
-        <p style={styles.text}><strong>Filosofi:</strong> {batik.filosofi}</p>
+        <p style={styles.text} className="batik-card-text"><strong>Motif Utama:</strong> {batik.motif_utama}</p>
+        <p style={styles.text} className="batik-card-text"><strong>Jenis Acara:</strong> {batik.jenis_acara}</p>
+        <p style={styles.text} className="batik-card-text"><strong>Filosofi:</strong> {batik.filosofi}</p>
 
         {/* E-Commerce Shop Links */}
         {(batik.shopee_link || batik.tokopedia_link) && (
@@ -76,6 +109,7 @@ export default function CardBatik({ batik, onClick }) {
         )}
       </div>
     </div>
+    </>
   );
 }
 

@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { isAuthenticated, logout, getRole } from "../services/auth";
 
@@ -5,9 +6,67 @@ export default function Navbar() {
   const location = useLocation(); // Triggers re-render on route changes to refresh auth status
   const auth = isAuthenticated();
   const role = getRole();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <nav style={styles.nav}>
+    <>
+    <nav style={styles.nav} className="navbar-container">
+      <style>{`
+        /* RESPONSIVE NAVBAR */
+        .hamburger-btn {
+          display: none;
+          background: none;
+          border: none;
+          color: #C8FF01;
+          font-size: 1.8rem;
+          cursor: pointer;
+          z-index: 1001;
+        }
+        
+        .navbar-links {
+          display: flex;
+          align-items: center;
+          gap: 28px;
+        }
+
+        @media (max-width: 768px) {
+          .navbar-container {
+            padding: 0 20px !important;
+          }
+          .hamburger-btn {
+            display: block;
+          }
+          .navbar-links {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 70%;
+            max-width: 300px;
+            height: 100vh;
+            background: rgba(2, 38, 146, 0.98);
+            backdrop-filter: blur(15px);
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-top: 100px;
+            transition: right 0.3s ease;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.5);
+            z-index: 1000;
+          }
+          .navbar-links.open {
+            right: 0;
+          }
+          .nav-link, .nav-btn-outline, .nav-btn-primary {
+            width: 100%;
+            text-align: center;
+            padding: 15px !important;
+            font-size: 1.1rem !important;
+          }
+          .nav-btn-primary, .nav-btn-outline {
+            width: 80% !important;
+            margin: 10px auto;
+          }
+        }
+      `}</style>
       {/* LOGO */}
       <Link to="/" style={{ ...styles.logoWrapper, textDecoration: "none" }}>
         <img
@@ -18,8 +77,16 @@ export default function Navbar() {
         <span style={styles.logoText}>Trisara</span>
       </Link>
 
+      {/* HAMBURGER BTN */}
+      <button 
+        className="hamburger-btn" 
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      >
+        {isMobileMenuOpen ? "✕" : "☰"}
+      </button>
+
       {/* MENU */}
-      <div style={styles.links}>
+      <div style={styles.links} className={`navbar-links ${isMobileMenuOpen ? "open" : ""}`} onClick={() => setIsMobileMenuOpen(false)}>
         <Link to="/" style={styles.link} className="nav-link">
           Home
         </Link>
@@ -66,6 +133,13 @@ export default function Navbar() {
         )}
       </div>
     </nav>
+    {isMobileMenuOpen && (
+      <div 
+        style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0,0,0,0.5)", zIndex: 999 }}
+        onClick={() => setIsMobileMenuOpen(false)}
+      />
+    )}
+    </>
   );
 }
 const styles = {

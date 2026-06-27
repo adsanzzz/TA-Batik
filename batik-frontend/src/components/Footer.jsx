@@ -3,8 +3,25 @@ import { Link } from "react-router-dom";
 export default function Footer() {
   return (
     <footer style={styles.footer}>
-      <div style={styles.inner}>
-        <div style={styles.row}>
+      <style>{`
+        /* RESPONSIVE FOOTER */
+        @media (max-width: 768px) {
+          .footer-inner {
+            padding: 40px 20px 20px !important;
+          }
+          .footer-row {
+            gap: 30px !important;
+            flex-direction: column !important;
+          }
+          .footer-bottom-inner {
+            flex-direction: column !important;
+            text-align: center !important;
+            gap: 15px !important;
+          }
+        }
+      `}</style>
+      <div style={styles.inner} className="footer-inner">
+        <div style={styles.row} className="footer-row">
 
           {/* COL 1: Logo + Desc */}
           <div style={styles.col}>
@@ -47,7 +64,7 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div style={styles.bottomBar}>
-        <div style={styles.bottomInner}>
+        <div style={styles.bottomInner} className="footer-bottom-inner">
           <p style={styles.copyright}>
             © 2026 Trisara — Universitas Sebelas Maret · Hak Cipta Dilindungi
           </p>
