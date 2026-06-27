@@ -13,10 +13,14 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --default-timeout=1000 -r requirements.txt && \
     pip install --no-cache-dir --no-deps tensorflow-hub
 
-# Download Classification Model from Hugging Face space
-RUN apt-get update && apt-get install -y wget && \
+# Download Models from Internet (so they don't bloat GitHub Repo)
+RUN apt-get update && apt-get install -y wget tar && \
     mkdir -p models && \
-    wget -qO models/model_94ebc873b24c497cba3157eb944d2db7.keras https://huggingface.co/spaces/Umanzz/trisara-batik-ai/resolve/main/model_94ebc873b24c497cba3157eb944d2db7.keras
+    wget -qO models/model_94ebc873b24c497cba3157eb944d2db7.keras https://huggingface.co/spaces/Umanzz/trisara-batik-ai/resolve/main/model_94ebc873b24c497cba3157eb944d2db7.keras && \
+    wget -qO models/magenta.tar.gz "https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2?tf-hub-format=compressed" && \
+    mkdir -p models/magenta_nst && \
+    tar -xzf models/magenta.tar.gz -C models/magenta_nst && \
+    rm models/magenta.tar.gz
 
 COPY . .
 
