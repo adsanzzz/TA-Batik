@@ -30,19 +30,21 @@ _STRIP_ARGS = {
 _original_from_config = serialization_lib.deserialize_keras_object
 
 def patched_deserialize_keras_object(config, *args, **kwargs):
-    class_name = config.get("class_name")
-    if class_name in _STRIP_ARGS and "config" in config:
-        for arg_to_remove in _STRIP_ARGS[class_name]:
-            config["config"].pop(arg_to_remove, None)
+    if isinstance(config, dict):
+        class_name = config.get("class_name")
+        if class_name in _STRIP_ARGS and "config" in config and isinstance(config["config"], dict):
+            for arg_to_remove in _STRIP_ARGS[class_name]:
+                config["config"].pop(arg_to_remove, None)
     return _original_from_config(config, *args, **kwargs)
 
 serialization_lib.deserialize_keras_object = patched_deserialize_keras_object
 
 def _make_patched_from_config(orig_from_config, keys_to_remove):
-    def _patched(cls, config, *args, **kwargs):
-        for k in keys_to_remove:
-            config.pop(k, None)
-        return orig_from_config(config, *args, **kwargs)
+    def _patched(cls, config, **kwargs):
+        if isinstance(config, dict):
+            for k in keys_to_remove:
+                config.pop(k, None)
+        return orig_from_config(cls, config, **kwargs)
     return classmethod(_patched)
 
 BatchNormalization.from_config = _make_patched_from_config(
@@ -50,7 +52,7 @@ BatchNormalization.from_config = _make_patched_from_config(
     _STRIP_ARGS["BatchNormalization"]
 )
 _il_module.InputLayer.from_config = _make_patched_from_config(
-    _il_module.InputLayer.from_config,
+    _il_module.InputLayer.from_config.__func__,
     _STRIP_ARGS["InputLayer"]
 )
 
