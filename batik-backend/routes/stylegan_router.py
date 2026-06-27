@@ -19,13 +19,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HF_SPACE_URL = os.getenv("HF_SPACE_URL", "Umanzz/trisara-batik-ai")
 hf_client = Client(HF_SPACE_URL)
 
-print("Loading Magenta NST model from TF Hub...")
-try:
-    # Mengunduh model otomatis dari TF Hub, hanya dieksekusi 1x saat startup
-    nst_model = hub.load("https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2")
-except Exception as e:
-    print(f"Failed to load NST model: {e}")
-    nst_model = None
+nst_model = None
+
+def get_nst_model():
+    global nst_model
+    if nst_model is None:
+        print("Loading Magenta NST model from TF Hub...")
+        try:
+            nst_model = hub.load("https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2")
+        except Exception as e:
+            print(f"Failed to load NST model: {e}")
+    return nst_model
 
 def load_and_preprocess_img(image_bytes, target_dim=None):
     img_pil = Image.open(io.BytesIO(image_bytes)).convert("RGB")
@@ -118,7 +122,8 @@ async def nst_blend(
     """
     Neural Style Transfer via Local TensorFlow Hub.
     """
-    if nst_model is None:
+    model = get_nst_model()
+    if model is None:
         raise HTTPException(status_code=500, detail="Model NST lokal gagal dimuat.")
 
     try:
@@ -130,7 +135,7 @@ async def nst_blend(
         style_tensor = load_and_preprocess_img(style_bytes, target_dim=256)
         
         # Run Style Transfer
-        outputs = nst_model(tf.constant(content_tensor), tf.constant(style_tensor))
+        outputs = model(tf.constant(content_tensor), tf.constant(style_tensor))
         stylized_tensor = outputs[0]
         
         # Blending (style strength)
