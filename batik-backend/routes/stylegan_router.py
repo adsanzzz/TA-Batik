@@ -1,168 +1,128 @@
 import os
-import sys
+import io
 import time
+import base64
+import httpx
 from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Form
 from PIL import Image
-import torch
-import tensorflow as tf
-import tensorflow_hub as hub
-
-# Ensure stylegan_lib is in sys.path
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STYLEGAN_LIB = os.path.join(BASE_DIR, "stylegan_lib")
-if STYLEGAN_LIB not in sys.path:
-    sys.path.insert(0, STYLEGAN_LIB)
-
-import legacy
-import dnnlib
 
 router = APIRouter(prefix="/stylegan", tags=["StyleGAN2 Generator & Mixer"])
 
-# Global variables for caching model
-_G = None
-_model_path = os.path.join(BASE_DIR, "models", "stylegan2_batik.pkl")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-def get_generator():
-    global _G
-    if _G is not None:
-        return _G
-        
-    if not os.path.exists(_model_path):
-        raise HTTPException(
-            status_code=500,
-            detail=f"Model StyleGAN2 tidak ditemukan di {_model_path}. Harap pastikan model sudah dipindahkan."
-        )
-        
-    try:
-        print(f"Loading StyleGAN2 model from {_model_path} into CPU memory...", flush=True)
-        # Optimize CPU threads for PyTorch to prevent CPU hangs/contention
-        torch.set_num_threads(4)
-        
-        with dnnlib.util.open_url(_model_path) as f:
-            network = legacy.load_network_pkl(f)
-            _G = network['G_ema']
-            _G = _G.eval().to(torch.device('cpu'))
-            print("StyleGAN2 model loaded successfully!", flush=True)
-            return _G
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Gagal memuat model StyleGAN2: {str(e)}")
+# URL Hugging Face Space API
+HF_SPACE_URL = os.getenv("HF_SPACE_URL", "https://umanzz-trisara-batik-ai.hf.space")
 
-def save_tensor_to_image(img_tensor, filename: str) -> str:
-    """Converts a StyleGAN2 output tensor [-1, 1] to a saved image file and returns the relative path."""
+def save_image_from_base64(b64_str: str, filename: str) -> str:
+    """Simpan gambar base64 dari HF ke folder uploads/generated."""
+    # Hapus header data URI jika ada
+    if "base64," in b64_str:
+        b64_str = b64_str.split("base64,")[1]
+    
+    img_bytes = base64.b64decode(b64_str)
     upload_dir = os.path.join(BASE_DIR, "uploads", "generated")
     os.makedirs(upload_dir, exist_ok=True)
     
     filepath = os.path.join(upload_dir, filename)
-    
-    # Post-process image: [-1, 1] -> [0, 255]
-    img = (img_tensor * 127.5 + 128).clamp(0, 255).to(torch.uint8)
-    img = img[0].permute(1, 2, 0).cpu().numpy()
-    
-    pil_img = Image.fromarray(img)
-    pil_img.save(filepath)
+    with open(filepath, "wb") as f:
+        f.write(img_bytes)
     
     return f"uploads/generated/{filename}"
 
 @router.get("/generate")
-def generate_from_seed(seed: int = Query(..., description="Random seed (angka integer)")):
+async def generate_from_seed(seed: int = Query(..., description="Random seed (angka integer)")):
     """
-    Generate gambar batik baru menggunakan single seed.
+    Generate gambar batik baru menggunakan single seed via Hugging Face API.
     """
-    G = get_generator()
-    device = torch.device('cpu')
-    
     try:
-        # Generate random vector z based on seed
-        z = torch.from_numpy(legacy.np.random.RandomState(seed).randn(1, G.z_dim).astype(legacy.np.float32)).to(device)
-        
-        # Inference
-        with torch.no_grad():
-            img_tensor = G(z, None, force_fp32=True, fused_modconv=False)
-            
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            response = await client.post(
+                f"{HF_SPACE_URL}/api/predict",
+                json={
+                    "data": [float(seed)],
+                    "fn_index": 1  # Tab StyleGAN adalah fungsi index 1
+                }
+            )
+            response.raise_for_status()
+            result = response.json()
+
+        # Hasil dari Gradio berupa base64 image
+        img_data = result["data"][0]
         filename = f"gen_seed_{seed}_{int(time.time())}.png"
-        relative_path = save_tensor_to_image(img_tensor, filename)
-        
+        relative_path = save_image_from_base64(img_data, filename)
+
         return {
             "status": "success",
             "seed": seed,
-            "image_url": f"http://127.0.0.1:8000/{relative_path}"
+            "image_url": f"/uploads/generated/{filename}"
         }
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=502, detail=f"Gagal menghubungi Hugging Face AI: {str(e)}")
     except Exception as e:
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Gagal men-generate gambar batik: {str(e)}")
 
 @router.get("/mix")
-def mix_seeds(
+async def mix_seeds(
     seed_a: int = Query(..., description="Seed untuk Batik A"),
     seed_b: int = Query(..., description="Seed untuk Batik B"),
-    weight: float = Query(0.5, ge=0.0, le=1.0, description="Bobot percampuran (0.0 = murni A, 1.0 = murni B)")
+    weight: float = Query(0.5, ge=0.0, le=1.0, description="Bobot interpolasi (0.0 = A, 1.0 = B)")
 ):
     """
-    Menggabungkan (blending) dua batik berdasarkan seed_a dan seed_b dengan bobot (weight) tertentu.
+    Mix dua seed batik menggunakan interpolasi via Hugging Face API.
+    Karena HF Space kita expose fungsi generate tunggal,
+    kita generate dua gambar lalu blend secara lokal (ringan, tanpa AI).
     """
-    G = get_generator()
-    device = torch.device('cpu')
-    
     try:
-        # Generate latent vectors z_a and z_b
-        z_a = torch.from_numpy(legacy.np.random.RandomState(seed_a).randn(1, G.z_dim).astype(legacy.np.float32)).to(device)
-        z_b = torch.from_numpy(legacy.np.random.RandomState(seed_b).randn(1, G.z_dim).astype(legacy.np.float32)).to(device)
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            # Generate gambar A
+            resp_a = await client.post(
+                f"{HF_SPACE_URL}/api/predict",
+                json={"data": [float(seed_a)], "fn_index": 1}
+            )
+            resp_a.raise_for_status()
+            
+            # Generate gambar B
+            resp_b = await client.post(
+                f"{HF_SPACE_URL}/api/predict",
+                json={"data": [float(seed_b)], "fn_index": 1}
+            )
+            resp_b.raise_for_status()
+
+        img_data_a = resp_a.json()["data"][0]
+        img_data_b = resp_b.json()["data"][0]
         
-        with torch.no_grad():
-            # 1. Map to W-space
-            w_a = G.mapping(z_a, None)
-            w_b = G.mapping(z_b, None)
-            
-            # 2. Linear interpolation in W-space
-            w_mixed = (1.0 - weight) * w_a + weight * w_b
-            
-            # 3. Synthesize image from mixed W
-            img_tensor = G.synthesis(w_mixed, force_fp32=True, fused_modconv=False)
-            
-        filename = f"mix_{seed_a}_{seed_b}_w{int(weight*100)}_{int(time.time())}.png"
-        relative_path = save_tensor_to_image(img_tensor, filename)
-        
+        if "base64," in img_data_a:
+            img_data_a = img_data_a.split("base64,")[1]
+        if "base64," in img_data_b:
+            img_data_b = img_data_b.split("base64,")[1]
+
+        # Blend kedua gambar secara lokal (tanpa AI, sangat ringan)
+        img_a = Image.open(io.BytesIO(base64.b64decode(img_data_a))).convert("RGB")
+        img_b = Image.open(io.BytesIO(base64.b64decode(img_data_b))).convert("RGB")
+        img_b = img_b.resize(img_a.size)
+        blended = Image.blend(img_a, img_b, weight)
+
+        # Simpan hasil blend
+        filename = f"mix_{seed_a}_{seed_b}_{int(time.time())}.png"
+        upload_dir = os.path.join(BASE_DIR, "uploads", "generated")
+        os.makedirs(upload_dir, exist_ok=True)
+        blended.save(os.path.join(upload_dir, filename))
+
         return {
             "status": "success",
             "seed_a": seed_a,
             "seed_b": seed_b,
             "weight": weight,
-            "image_url": f"http://127.0.0.1:8000/{relative_path}"
+            "image_url": f"/uploads/generated/{filename}"
         }
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=502, detail=f"Gagal menghubungi Hugging Face AI: {str(e)}")
     except Exception as e:
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Gagal melakukan blending batik: {str(e)}")
-
-# --- NEURAL STYLE TRANSFER (NST) FOR UPLOADED IMAGES ---
-_nst_model = None
-
-def get_nst_model():
-    global _nst_model
-    if _nst_model is None:
-        try:
-            print("Loading pre-trained Magenta Arbitrary Style Transfer model locally...", flush=True)
-            # Disable GPU for NST to prevent conflicts
-            tf.config.set_visible_devices([], 'GPU')
-            model_path = os.path.join(BASE_DIR, "models", "magenta_nst")
-            _nst_model = hub.load(model_path)
-            print("Magenta NST model loaded successfully from local storage!", flush=True)
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            raise HTTPException(status_code=500, detail=f"Gagal memuat model NST Magenta secara lokal: {str(e)}")
-    return _nst_model
-
-def load_and_preprocess_img(image_bytes, target_dim=None):
-    img = tf.image.decode_image(image_bytes, channels=3)
-    img = tf.image.convert_image_dtype(img, tf.float32)
-    if target_dim:
-        img = tf.image.resize(img, [target_dim, target_dim])
-    img = img[tf.newaxis, :]
-    return img
 
 @router.post("/nst-blend")
 async def nst_blend(
@@ -172,58 +132,55 @@ async def nst_blend(
     preserve_color: bool = Form(False, description="Apakah warna asli batik konten dipertahankan")
 ):
     """
-    Padukan gaya (warna/tekstur) dari style_image ke struktur content_image menggunakan Neural Style Transfer.
+    Neural Style Transfer via Hugging Face API.
     """
     try:
         content_bytes = await content_image.read()
         style_bytes = await style_image.read()
         
-        # Preprocess images
-        # Content image resized to 512x512, Style image resized to 256x256 (optimized for Magenta)
-        content_tensor = load_and_preprocess_img(content_bytes, target_dim=512)
-        style_tensor = load_and_preprocess_img(style_bytes, target_dim=256)
-        
-        # Load model and run inference
-        nst_model = get_nst_model()
-        outputs = nst_model(tf.constant(content_tensor), tf.constant(style_tensor))
-        stylized_img = outputs[0]
-        
-        # Convert content bytes to PIL for blending and resizing
-        import io
-        content_pil = Image.open(io.BytesIO(content_bytes)).convert("RGB").resize((512, 512))
-        
-        # Convert stylized tensor [1, H, W, 3] back to PIL Image
-        img_np = (stylized_img[0].numpy() * 255.0).clip(0, 255).astype(legacy.np.uint8)
-        stylized_pil = Image.fromarray(img_np)
-        
-        # Apply Color Preservation if requested (YCbCr Channel Merge)
-        if preserve_color:
-            content_ycbcr = content_pil.convert("YCbCr")
-            stylized_ycbcr = stylized_pil.convert("YCbCr")
-            
-            c_y, c_cb, c_cr = content_ycbcr.split()
-            s_y, s_cb, s_cr = stylized_ycbcr.split()
-            
-            # Combine stylized luminance with original chrominance
-            stylized_pil = Image.merge("YCbCr", (s_y, c_cb, c_cr)).convert("RGB")
-        
-        # Apply Style Strength (Linear interpolation between original content and stylized image)
-        if style_strength < 1.0:
-            final_pil = Image.blend(content_pil, stylized_pil, style_strength)
-        else:
-            final_pil = stylized_pil
-        
-        # Save output image
+        content_b64 = "data:image/jpeg;base64," + base64.b64encode(content_bytes).decode("utf-8")
+        style_b64 = "data:image/jpeg;base64," + base64.b64encode(style_bytes).decode("utf-8")
+
+        async with httpx.AsyncClient(timeout=180.0) as client:
+            response = await client.post(
+                f"{HF_SPACE_URL}/api/predict",
+                json={
+                    "data": [content_b64, style_b64, style_strength],
+                    "fn_index": 2  # Tab NST adalah fungsi index 2
+                }
+            )
+            response.raise_for_status()
+            result = response.json()
+
+        img_data = result["data"][0]
         filename = f"nst_{int(time.time())}.png"
         upload_dir = os.path.join(BASE_DIR, "uploads", "generated")
         os.makedirs(upload_dir, exist_ok=True)
-        filepath = os.path.join(upload_dir, filename)
-        final_pil.save(filepath)
+
+        if "base64," in img_data:
+            img_data = img_data.split("base64,")[1]
         
+        img_bytes = base64.b64decode(img_data)
+        stylized_pil = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+
+        # Preserve Color jika diminta (lokal, ringan)
+        if preserve_color:
+            content_pil = Image.open(io.BytesIO(content_bytes)).convert("RGB").resize(stylized_pil.size)
+            content_ycbcr = content_pil.convert("YCbCr")
+            stylized_ycbcr = stylized_pil.convert("YCbCr")
+            s_y, _, _ = stylized_ycbcr.split()
+            _, c_cb, c_cr = content_ycbcr.split()
+            stylized_pil = Image.merge("YCbCr", (s_y, c_cb, c_cr)).convert("RGB")
+
+        filepath = os.path.join(upload_dir, filename)
+        stylized_pil.save(filepath)
+
         return {
             "status": "success",
-            "image_url": f"http://127.0.0.1:8000/uploads/generated/{filename}"
+            "image_url": f"/uploads/generated/{filename}"
         }
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=502, detail=f"Gagal menghubungi Hugging Face AI: {str(e)}")
     except Exception as e:
         import traceback
         traceback.print_exc()

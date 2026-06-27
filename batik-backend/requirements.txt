@@ -1,11 +1,3 @@
-flask
-flask-cors
-flasgger
-tensorflow-cpu==2.16.1
-numpy
-pillow
-scipy
-matplotlib
 fastapi
 uvicorn
 sqlalchemy
@@ -13,8 +5,7 @@ passlib[bcrypt]
 python-jose[cryptography]
 python-multipart
 psycopg2-binary
-scikit-learn
-seaborn
-replicate
+pillow
 httpx
 python-dotenv
+replicate
