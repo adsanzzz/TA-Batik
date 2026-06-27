@@ -66,7 +66,7 @@ async def predict(file: UploadFile = File(...), db: Session = Depends(get_db)):
         try:
             # Panggil Hugging Face API
             result = hf_client.predict(
-                upload_gambar_batik=handle_file(temp_filepath),
+                handle_file(temp_filepath),
                 api_name="/predict"
             )
         finally:

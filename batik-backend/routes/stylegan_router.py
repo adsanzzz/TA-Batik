@@ -22,7 +22,7 @@ async def generate_from_seed(seed: int = Query(..., description="Random seed (an
     try:
         # Panggil Hugging Face API (Gradio)
         result_filepath = hf_client.predict(
-            seed_angka=float(seed),
+            float(seed),
             api_name="/generate"
         )
 
@@ -57,9 +57,9 @@ async def mix_seeds(
     """
     try:
         # Generate gambar A
-        path_a = hf_client.predict(seed_angka=float(seed_a), api_name="/generate")
+        path_a = hf_client.predict(float(seed_a), api_name="/generate")
         # Generate gambar B
-        path_b = hf_client.predict(seed_angka=float(seed_b), api_name="/generate")
+        path_b = hf_client.predict(float(seed_b), api_name="/generate")
 
         # Blend kedua gambar secara lokal (tanpa AI, sangat ringan)
         img_a = Image.open(path_a).convert("RGB")
@@ -106,9 +106,9 @@ async def nst_blend(
 
         # Panggil API NST Hugging Face
         result_filepath = hf_client.predict(
-            gambar_konten=handle_file(temp_content),
-            gambar_gaya_batik=handle_file(temp_style),
-            kekuatan_gaya=style_strength,
+            handle_file(temp_content),
+            handle_file(temp_style),
+            style_strength,
             api_name="/nst"
         )
         
