@@ -89,16 +89,14 @@ async def nst_blend(
         else:
             final_pil = stylized_pil
         
-        # Save output image
-        filename = f"nst_{int(time.time())}.png"
-        upload_dir = os.path.join(BASE_DIR, "uploads", "generated")
-        os.makedirs(upload_dir, exist_ok=True)
-        filepath = os.path.join(upload_dir, filename)
-        final_pil.save(filepath)
+        # Save ke base64 langsung
+        buffered = io.BytesIO()
+        final_pil.save(buffered, format="PNG")
+        b64_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
         
         return {
             "status": "success",
-            "image_url": f"/uploads/generated/{filename}"
+            "image_b64": f"data:image/png;base64,{b64_str}"
         }
     except Exception as e:
         import traceback
@@ -117,18 +115,20 @@ async def generate_from_seed(seed: int = Query(..., description="Random seed (an
             api_name="/generate"
         )
 
-        filename = f"gen_seed_{seed}_{int(time.time())}.png"
-        upload_dir = os.path.join(BASE_DIR, "uploads", "generated")
-        os.makedirs(upload_dir, exist_ok=True)
-        filepath = os.path.join(upload_dir, filename)
-
-        # Copy hasil download dari gradio_client ke direktori kita
-        shutil.copy2(result_filepath, filepath)
+        # Baca file asli untuk di-encode ke base64 (dari hugging face gradio client yg nyimpen ke temp)
+        with open(result_filepath, "rb") as f:
+            b64_str = base64.b64encode(f.read()).decode("utf-8")
+        
+        # Hapus file sementara dari gradio_client
+        try:
+            os.remove(result_filepath)
+        except:
+            pass
 
         return {
             "status": "success",
             "seed": seed,
-            "image_url": f"/uploads/generated/{filename}"
+            "image_b64": f"data:image/png;base64,{b64_str}"
         }
     except Exception as e:
         import traceback
@@ -158,18 +158,24 @@ async def mix_seeds(
         img_b = img_b.resize(img_a.size)
         blended = Image.blend(img_a, img_b, weight)
 
-        # Simpan hasil blend
-        filename = f"mix_{seed_a}_{seed_b}_{int(time.time())}.png"
-        upload_dir = os.path.join(BASE_DIR, "uploads", "generated")
-        os.makedirs(upload_dir, exist_ok=True)
-        blended.save(os.path.join(upload_dir, filename))
+        # Convert ke base64 tanpa nyimpen
+        buffered = io.BytesIO()
+        blended.save(buffered, format="PNG")
+        b64_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+        # Bersihkan temp file
+        try:
+            os.remove(path_a)
+            os.remove(path_b)
+        except:
+            pass
 
         return {
             "status": "success",
             "seed_a": seed_a,
             "seed_b": seed_b,
             "weight": weight,
-            "image_url": f"/uploads/generated/{filename}"
+            "image_b64": f"data:image/png;base64,{b64_str}"
         }
     except Exception as e:
         import traceback

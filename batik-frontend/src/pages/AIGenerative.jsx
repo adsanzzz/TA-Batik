@@ -101,7 +101,7 @@ export default function AIGenerative() {
       if (!res.ok) throw new Error("Gagal");
       const data = await res.json();
       if (data.status === "success") {
-        setImageA(data.image_url);
+        setImageA(data.image_b64);
       }
     } catch (err) {
       console.error(err);
@@ -119,7 +119,7 @@ export default function AIGenerative() {
       if (!res.ok) throw new Error("Gagal");
       const data = await res.json();
       if (data.status === "success") {
-        setImageB(data.image_url);
+        setImageB(data.image_b64);
       }
     } catch (err) {
       console.error(err);
@@ -140,7 +140,7 @@ export default function AIGenerative() {
       if (!res.ok) throw new Error("Gagal");
       const data = await res.json();
       if (data.status === "success") {
-        setImageMixed(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${data.image_url}`);
+        setImageMixed(data.image_b64);
       }
     } catch (err) {
       console.error(err);
@@ -186,7 +186,7 @@ export default function AIGenerative() {
       if (!res.ok) throw new Error("Gagal");
       const data = await res.json();
       if (data.status === "success") {
-        setImageMixed(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${data.image_url}`);
+        setImageMixed(data.image_b64);
       }
     } catch (err) {
       console.error(err);
