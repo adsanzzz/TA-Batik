@@ -1,11 +1,8 @@
 import os
-import io
-import base64
-import httpx
-import numpy as np
+import shutil
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from sqlalchemy.orm import Session
-from PIL import Image
+from gradio_client import Client, handle_file
 
 from database import SessionLocal
 import models
@@ -13,7 +10,8 @@ import models
 router = APIRouter()
 
 # URL Hugging Face Space API
-HF_SPACE_URL = os.getenv("HF_SPACE_URL", "https://umanzz-trisara-batik-ai.hf.space")
+HF_SPACE_URL = os.getenv("HF_SPACE_URL", "Umanzz/trisara-batik-ai")
+hf_client = Client(HF_SPACE_URL)
 
 # Class Names (11 Classes)
 CLASS_NAMES = [
@@ -60,24 +58,28 @@ def get_db():
 @router.post("/predict")
 async def predict(file: UploadFile = File(...), db: Session = Depends(get_db)):
     try:
-        contents = await file.read()
+        # Simpan file sementara untuk diproses gradio_client
+        temp_filepath = f"temp_{file.filename}"
+        with open(temp_filepath, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
 
-        # Kirim gambar ke Hugging Face API (Gradio endpoint)
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            response = await client.post(
-                f"{HF_SPACE_URL}/api/predict",
-                json={
-                    "data": [
-                        "data:image/jpeg;base64," + base64.b64encode(contents).decode("utf-8")
-                    ],
-                    "fn_index": 0  # Tab Klasifikasi adalah fungsi index 0
-                }
+        try:
+            # Panggil Hugging Face API
+            result = hf_client.predict(
+                upload_gambar_batik=handle_file(temp_filepath),
+                api_name="/predict"
             )
-            response.raise_for_status()
-            result = response.json()
+        finally:
+            # Selalu hapus file sementara
+            if os.path.exists(temp_filepath):
+                os.remove(temp_filepath)
 
-        # Parse hasil dari Gradio API
-        label_data = result["data"][0]["confidences"]  # [{label, confidence}, ...]
+        # Parse hasil
+        # result form: {'label': 'batik-kawung', 'confidences': [{'label': 'batik-kawung', 'confidence': 0.99}]}
+        label_data = result.get("confidences", [])
+        if not label_data:
+            raise ValueError("Invalid response from Hugging Face API")
+            
         top_result = label_data[0]
         predicted_class_name = top_result["label"]
         confidence = float(top_result["confidence"])
@@ -120,8 +122,6 @@ async def predict(file: UploadFile = File(...), db: Session = Depends(get_db)):
             "event_suggestions": event_suggestions
         }
 
-    except httpx.HTTPError as e:
-        raise HTTPException(status_code=502, detail=f"Gagal menghubungi Hugging Face AI: {str(e)}")
     except Exception as e:
         import traceback
         traceback.print_exc()

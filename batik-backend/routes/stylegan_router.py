@@ -1,33 +1,18 @@
 import os
+import shutil
 import io
 import time
-import base64
-import httpx
 from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Form
 from PIL import Image
+from gradio_client import Client, handle_file
 
 router = APIRouter(prefix="/stylegan", tags=["StyleGAN2 Generator & Mixer"])
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # URL Hugging Face Space API
-HF_SPACE_URL = os.getenv("HF_SPACE_URL", "https://umanzz-trisara-batik-ai.hf.space")
-
-def save_image_from_base64(b64_str: str, filename: str) -> str:
-    """Simpan gambar base64 dari HF ke folder uploads/generated."""
-    # Hapus header data URI jika ada
-    if "base64," in b64_str:
-        b64_str = b64_str.split("base64,")[1]
-    
-    img_bytes = base64.b64decode(b64_str)
-    upload_dir = os.path.join(BASE_DIR, "uploads", "generated")
-    os.makedirs(upload_dir, exist_ok=True)
-    
-    filepath = os.path.join(upload_dir, filename)
-    with open(filepath, "wb") as f:
-        f.write(img_bytes)
-    
-    return f"uploads/generated/{filename}"
+HF_SPACE_URL = os.getenv("HF_SPACE_URL", "Umanzz/trisara-batik-ai")
+hf_client = Client(HF_SPACE_URL)
 
 @router.get("/generate")
 async def generate_from_seed(seed: int = Query(..., description="Random seed (angka integer)")):
@@ -35,29 +20,25 @@ async def generate_from_seed(seed: int = Query(..., description="Random seed (an
     Generate gambar batik baru menggunakan single seed via Hugging Face API.
     """
     try:
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            response = await client.post(
-                f"{HF_SPACE_URL}/api/predict",
-                json={
-                    "data": [float(seed)],
-                    "fn_index": 1  # Tab StyleGAN adalah fungsi index 1
-                }
-            )
-            response.raise_for_status()
-            result = response.json()
+        # Panggil Hugging Face API (Gradio)
+        result_filepath = hf_client.predict(
+            seed_angka=float(seed),
+            api_name="/generate"
+        )
 
-        # Hasil dari Gradio berupa base64 image
-        img_data = result["data"][0]
         filename = f"gen_seed_{seed}_{int(time.time())}.png"
-        relative_path = save_image_from_base64(img_data, filename)
+        upload_dir = os.path.join(BASE_DIR, "uploads", "generated")
+        os.makedirs(upload_dir, exist_ok=True)
+        filepath = os.path.join(upload_dir, filename)
+
+        # Copy hasil download dari gradio_client ke direktori kita
+        shutil.copy2(result_filepath, filepath)
 
         return {
             "status": "success",
             "seed": seed,
             "image_url": f"/uploads/generated/{filename}"
         }
-    except httpx.HTTPError as e:
-        raise HTTPException(status_code=502, detail=f"Gagal menghubungi Hugging Face AI: {str(e)}")
     except Exception as e:
         import traceback
         traceback.print_exc()
@@ -75,32 +56,14 @@ async def mix_seeds(
     kita generate dua gambar lalu blend secara lokal (ringan, tanpa AI).
     """
     try:
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            # Generate gambar A
-            resp_a = await client.post(
-                f"{HF_SPACE_URL}/api/predict",
-                json={"data": [float(seed_a)], "fn_index": 1}
-            )
-            resp_a.raise_for_status()
-            
-            # Generate gambar B
-            resp_b = await client.post(
-                f"{HF_SPACE_URL}/api/predict",
-                json={"data": [float(seed_b)], "fn_index": 1}
-            )
-            resp_b.raise_for_status()
-
-        img_data_a = resp_a.json()["data"][0]
-        img_data_b = resp_b.json()["data"][0]
-        
-        if "base64," in img_data_a:
-            img_data_a = img_data_a.split("base64,")[1]
-        if "base64," in img_data_b:
-            img_data_b = img_data_b.split("base64,")[1]
+        # Generate gambar A
+        path_a = hf_client.predict(seed_angka=float(seed_a), api_name="/generate")
+        # Generate gambar B
+        path_b = hf_client.predict(seed_angka=float(seed_b), api_name="/generate")
 
         # Blend kedua gambar secara lokal (tanpa AI, sangat ringan)
-        img_a = Image.open(io.BytesIO(base64.b64decode(img_data_a))).convert("RGB")
-        img_b = Image.open(io.BytesIO(base64.b64decode(img_data_b))).convert("RGB")
+        img_a = Image.open(path_a).convert("RGB")
+        img_b = Image.open(path_b).convert("RGB")
         img_b = img_b.resize(img_a.size)
         blended = Image.blend(img_a, img_b, weight)
 
@@ -117,8 +80,6 @@ async def mix_seeds(
             "weight": weight,
             "image_url": f"/uploads/generated/{filename}"
         }
-    except httpx.HTTPError as e:
-        raise HTTPException(status_code=502, detail=f"Gagal menghubungi Hugging Face AI: {str(e)}")
     except Exception as e:
         import traceback
         traceback.print_exc()
@@ -134,54 +95,52 @@ async def nst_blend(
     """
     Neural Style Transfer via Hugging Face API.
     """
+    temp_content = f"temp_content_{content_image.filename}"
+    temp_style = f"temp_style_{style_image.filename}"
     try:
-        content_bytes = await content_image.read()
-        style_bytes = await style_image.read()
+        # Simpan file sementara
+        with open(temp_content, "wb") as buffer:
+            shutil.copyfileobj(content_image.file, buffer)
+        with open(temp_style, "wb") as buffer:
+            shutil.copyfileobj(style_image.file, buffer)
+
+        # Panggil API NST Hugging Face
+        result_filepath = hf_client.predict(
+            gambar_konten=handle_file(temp_content),
+            gambar_gaya_batik=handle_file(temp_style),
+            kekuatan_gaya=style_strength,
+            api_name="/nst"
+        )
         
-        content_b64 = "data:image/jpeg;base64," + base64.b64encode(content_bytes).decode("utf-8")
-        style_b64 = "data:image/jpeg;base64," + base64.b64encode(style_bytes).decode("utf-8")
-
-        async with httpx.AsyncClient(timeout=180.0) as client:
-            response = await client.post(
-                f"{HF_SPACE_URL}/api/predict",
-                json={
-                    "data": [content_b64, style_b64, style_strength],
-                    "fn_index": 2  # Tab NST adalah fungsi index 2
-                }
-            )
-            response.raise_for_status()
-            result = response.json()
-
-        img_data = result["data"][0]
-        filename = f"nst_{int(time.time())}.png"
-        upload_dir = os.path.join(BASE_DIR, "uploads", "generated")
-        os.makedirs(upload_dir, exist_ok=True)
-
-        if "base64," in img_data:
-            img_data = img_data.split("base64,")[1]
-        
-        img_bytes = base64.b64decode(img_data)
-        stylized_pil = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+        stylized_pil = Image.open(result_filepath).convert("RGB")
 
         # Preserve Color jika diminta (lokal, ringan)
         if preserve_color:
-            content_pil = Image.open(io.BytesIO(content_bytes)).convert("RGB").resize(stylized_pil.size)
+            content_pil = Image.open(temp_content).convert("RGB").resize(stylized_pil.size)
             content_ycbcr = content_pil.convert("YCbCr")
             stylized_ycbcr = stylized_pil.convert("YCbCr")
             s_y, _, _ = stylized_ycbcr.split()
             _, c_cb, c_cr = content_ycbcr.split()
             stylized_pil = Image.merge("YCbCr", (s_y, c_cb, c_cr)).convert("RGB")
 
+        filename = f"nst_{int(time.time())}.png"
+        upload_dir = os.path.join(BASE_DIR, "uploads", "generated")
+        os.makedirs(upload_dir, exist_ok=True)
         filepath = os.path.join(upload_dir, filename)
+        
         stylized_pil.save(filepath)
 
         return {
             "status": "success",
             "image_url": f"/uploads/generated/{filename}"
         }
-    except httpx.HTTPError as e:
-        raise HTTPException(status_code=502, detail=f"Gagal menghubungi Hugging Face AI: {str(e)}")
     except Exception as e:
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Gagal melakukan style transfer: {str(e)}")
+    finally:
+        # Hapus file sementara
+        if os.path.exists(temp_content):
+            os.remove(temp_content)
+        if os.path.exists(temp_style):
+            os.remove(temp_style)

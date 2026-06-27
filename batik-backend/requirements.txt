@@ -9,3 +9,4 @@ pillow
 httpx
 python-dotenv
 replicate
+gradio_client
