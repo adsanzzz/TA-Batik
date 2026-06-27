@@ -114,3 +114,13 @@ htmlcov/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# ========================================
+# HUGGING FACE SPACE (Repo terpisah, jangan ikut push ke GitHub)
+# ========================================
+trisara-batik-ai/
+
+# ========================================
+# LOCAL ENV BACKEND (Credentials database lokal)
+# ========================================
+batik-backend/.env
