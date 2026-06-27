@@ -140,7 +140,7 @@ export default function AIGenerative() {
       if (!res.ok) throw new Error("Gagal");
       const data = await res.json();
       if (data.status === "success") {
-        setImageMixed(data.image_url);
+        setImageMixed(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${data.image_url}`);
       }
     } catch (err) {
       console.error(err);
@@ -186,7 +186,7 @@ export default function AIGenerative() {
       if (!res.ok) throw new Error("Gagal");
       const data = await res.json();
       if (data.status === "success") {
-        setImageMixed(data.image_url);
+        setImageMixed(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${data.image_url}`);
       }
     } catch (err) {
       console.error(err);
