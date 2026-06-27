@@ -32,14 +32,78 @@ def get_nst_model():
             print(f"Failed to load NST model: {e}")
     return nst_model
 
-def load_and_preprocess_img(image_pil, target_dim=None):
-    img = np.array(image_pil)
-    img = tf.convert_to_tensor(img, dtype=tf.float32)
+def load_and_preprocess_img(image_bytes, target_dim=None):
+    img = tf.image.decode_image(image_bytes, channels=3)
     img = tf.image.convert_image_dtype(img, tf.float32)
     if target_dim:
         img = tf.image.resize(img, [target_dim, target_dim])
     img = img[tf.newaxis, :]
     return img
+
+@router.post("/nst-blend")
+async def nst_blend(
+    content_image: UploadFile = File(...),
+    style_image: UploadFile = File(...),
+    style_strength: float = Form(1.0, ge=0.0, le=1.0, description="Kekuatan penerapan gaya (0.0 - 1.0)"),
+    preserve_color: bool = Form(False, description="Apakah warna asli batik konten dipertahankan")
+):
+    """
+    Padukan gaya (warna/tekstur) dari style_image ke struktur content_image menggunakan Neural Style Transfer.
+    """
+    model = get_nst_model()
+    if model is None:
+        raise HTTPException(status_code=500, detail="Model NST lokal gagal dimuat.")
+
+    try:
+        content_bytes = await content_image.read()
+        style_bytes = await style_image.read()
+        
+        # Preprocess - IDENTIK dengan versi original sebelum HF migration
+        # Content image resized ke 512x512, Style image ke 256x256 (optimized for Magenta)
+        content_tensor = load_and_preprocess_img(content_bytes, target_dim=512)
+        style_tensor = load_and_preprocess_img(style_bytes, target_dim=256)
+        
+        # Run NST inference
+        outputs = model(tf.constant(content_tensor), tf.constant(style_tensor))
+        stylized_img = outputs[0]
+        
+        # Convert content bytes ke PIL untuk blending dan resizing
+        content_pil = Image.open(io.BytesIO(content_bytes)).convert("RGB").resize((512, 512))
+        
+        # Convert stylized tensor [1, H, W, 3] balik ke PIL Image
+        img_np = (stylized_img[0].numpy() * 255.0).clip(0, 255).astype(np.uint8)
+        stylized_pil = Image.fromarray(img_np)
+        
+        # Apply Color Preservation jika diminta (YCbCr Channel Merge)
+        if preserve_color:
+            content_ycbcr = content_pil.convert("YCbCr")
+            stylized_ycbcr = stylized_pil.convert("YCbCr")
+            c_y, c_cb, c_cr = content_ycbcr.split()
+            s_y, s_cb, s_cr = stylized_ycbcr.split()
+            # Gabungkan luminance stylized dengan chrominance asli
+            stylized_pil = Image.merge("YCbCr", (s_y, c_cb, c_cr)).convert("RGB")
+        
+        # Apply Style Strength (Linear interpolation antara konten asli dan hasil stylized)
+        if style_strength < 1.0:
+            final_pil = Image.blend(content_pil, stylized_pil, style_strength)
+        else:
+            final_pil = stylized_pil
+        
+        # Save output image
+        filename = f"nst_{int(time.time())}.png"
+        upload_dir = os.path.join(BASE_DIR, "uploads", "generated")
+        os.makedirs(upload_dir, exist_ok=True)
+        filepath = os.path.join(upload_dir, filename)
+        final_pil.save(filepath)
+        
+        return {
+            "status": "success",
+            "image_url": f"/uploads/generated/{filename}"
+        }
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Gagal melakukan style transfer: {str(e)}")
 
 @router.get("/generate")
 async def generate_from_seed(seed: int = Query(..., description="Random seed (angka integer)")):
