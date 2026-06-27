@@ -24,9 +24,10 @@ nst_model = None
 def get_nst_model():
     global nst_model
     if nst_model is None:
-        print("Loading Magenta NST model from TF Hub...")
+        print("Loading Magenta NST model from local directory...")
         try:
-            nst_model = hub.load("https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2")
+            nst_path = os.path.join(BASE_DIR, "models", "magenta_nst")
+            nst_model = hub.load(nst_path)
         except Exception as e:
             print(f"Failed to load NST model: {e}")
     return nst_model
