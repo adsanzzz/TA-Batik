@@ -5,16 +5,31 @@ export default function Home() {
   return (
     <section style={styles.hero}>
       {/* Background Pattern */}
+      <style>{`
+        /* RESPONSIVE DESIGN FOR HOME */
+        @media (max-width: 1024px) {
+          .home-content { padding: 40px 5% !important; flex-direction: column !important; justify-content: center !important; gap: 40px !important; text-align: center !important; }
+          .home-left { flex: none !important; width: 100% !important; display: flex !important; flex-direction: column !important; align-items: center !important; }
+          .home-right { flex: none !important; width: 100% !important; max-width: 600px !important; margin: 0 auto !important; }
+          .home-title { font-size: 2.8rem !important; }
+        }
 
-
-      <div style={styles.content}>
+        @media (max-width: 768px) {
+          .home-content { padding: 30px 15px !important; gap: 30px !important; margin-top: 40px !important; }
+          .home-title { font-size: 2.2rem !important; line-height: 1.2 !important; }
+          .home-subtitle { font-size: 0.95rem !important; }
+          .home-buttons { flex-direction: column !important; width: 100% !important; max-width: 300px !important; margin: 0 auto !important; gap: 15px !important; }
+          .home-primary-btn, .home-secondary-btn { width: 100% !important; text-align: center !important; justify-content: center !important; }
+        }
+      `}</style>
+      <div style={styles.content} className="home-content">
         {/* LEFT */}
-        <div style={styles.left}>
+        <div style={styles.left} className="home-left">
           <div style={styles.badge}>
             ✦ Artificial Intelligence for Indonesian Heritage
           </div>
 
-          <h1 style={styles.title}>
+          <h1 style={styles.title} className="home-title">
             Mengenali Keindahan
             <br />
             <span style={styles.gold}>Batik Nusantara</span>
@@ -22,25 +37,25 @@ export default function Home() {
             Dengan Teknologi AI
           </h1>
 
-          <p style={styles.subtitle}>
+          <p style={styles.subtitle} className="home-subtitle">
             Temukan identitas motif batik secara otomatis, pelajari filosofi
             yang terkandung di dalamnya, dan dapatkan rekomendasi penggunaan
             batik berdasarkan budaya serta makna tradisionalnya.
           </p>
 
-          <div style={styles.buttons}>
-            <a href="/scan" style={styles.primaryBtn}>
+          <div style={styles.buttons} className="home-buttons">
+            <a href="/scan" style={styles.primaryBtn} className="home-primary-btn">
               Mulai Identifikasi →
             </a>
 
-            <a href="/katalog" style={styles.secondaryBtn}>
+            <a href="/katalog" style={styles.secondaryBtn} className="home-secondary-btn">
               Jelajahi Katalog
             </a>
           </div>
         </div>
 
         {/* RIGHT */}
-        <div style={styles.right}>
+        <div style={styles.right} className="home-right">
           <div style={styles.imageContainer}>
             <div style={styles.goldBorder}></div>
 

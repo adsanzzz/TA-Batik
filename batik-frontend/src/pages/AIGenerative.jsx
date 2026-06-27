@@ -249,12 +249,34 @@ export default function AIGenerative() {
 
   return (
     <>
-    <div style={styles.container}>
+    <div style={styles.container} className="aigen-container">
       {/* Background Pattern */}
+      <style>{`
+        /* RESPONSIVE DESIGN FOR AI GENERATIVE */
+        @media (max-width: 1024px) {
+          .aigen-container { padding: 40px 20px !important; }
+          .aigen-layout { gap: 25px !important; }
+          .aigen-big-preview { height: 350px !important; }
+        }
+
+        @media (max-width: 768px) {
+          .aigen-container { padding: 30px 15px !important; }
+          .aigen-title { font-size: 1.8rem !important; }
+          .aigen-layout { flex-direction: column !important; gap: 20px !important; }
+          .aigen-column { flex: 1 1 100% !important; min-width: 100% !important; }
+          
+          .aigen-row-fields { flex-direction: column !important; gap: 10px !important; }
+          .aigen-big-preview { height: 280px !important; }
+          .aigen-preview-box { height: 180px !important; }
+          
+          .aigen-tab-container { flex-direction: column !important; width: 100% !important; }
+          .aigen-tab-btn { width: 100% !important; text-align: center !important; }
+        }
+      `}</style>
 
       <header style={styles.header}>
         <img src="/logo.png" alt="Logo SV UNS" style={styles.logoImage} />
-        <h1 style={styles.title}>
+        <h1 style={styles.title} className="aigen-title">
           <SparklesIcon size={28} color="#C8FF01" /> AI Batik <span style={styles.gold}>Generative</span>
         </h1>
         <p style={styles.subtitle}>
@@ -263,7 +285,7 @@ export default function AIGenerative() {
       </header>
 
       {/* TAB NAVIGATION */}
-      <div style={styles.tabContainer}>
+      <div style={styles.tabContainer} className="aigen-tab-container">
         <button
           onClick={() => {
             setActiveTab("stylegan");
@@ -290,13 +312,13 @@ export default function AIGenerative() {
         </button>
       </div>
 
-      <div style={styles.layoutContainer}>
+      <div style={styles.layoutContainer} className="aigen-layout">
         
         {/* ============================================================== */}
         {/* TAB 1: STYLEGAN2 MIXER */}
         {/* ============================================================== */}
         {activeTab === "stylegan" && (
-          <div style={styles.leftColumn}>
+          <div style={styles.leftColumn} className="aigen-column">
             <h2 style={styles.sectionTitle}>1. Pilih Motif Sumber</h2>
             
             {/* PANEL BATIK A */}
@@ -316,7 +338,7 @@ export default function AIGenerative() {
                   </button>
                 </div>
               </div>
-              <div style={styles.previewBox}>
+              <div style={styles.previewBox} className="aigen-preview-box">
                 {loadingA ? (
                   <LoadingLogo text="Menghasilkan..." size={40} />
                 ) : imageA ? (
@@ -347,7 +369,7 @@ export default function AIGenerative() {
                   </button>
                 </div>
               </div>
-              <div style={styles.previewBox}>
+              <div style={styles.previewBox} className="aigen-preview-box">
                 {loadingB ? (
                   <LoadingLogo text="Menghasilkan..." size={40} />
                 ) : imageB ? (
@@ -413,7 +435,7 @@ export default function AIGenerative() {
               <div style={styles.cardHeader}>
                 <span style={styles.badge}>Batik Style (Tekstur & Warna)</span>
               </div>
-              <div style={styles.previewBox}>
+              <div style={styles.previewBox} className="aigen-preview-box">
                 {stylePreview ? (
                   <img src={stylePreview} alt="Style" style={styles.previewImage} />
                 ) : (
@@ -443,7 +465,7 @@ export default function AIGenerative() {
         )}
 
         {/* KOLOM KANAN: KONTROL DAN HASIL BLENDING */}
-        <div style={styles.rightColumn}>
+        <div style={styles.rightColumn} className="aigen-column">
           <h2 style={styles.sectionTitle}>2. Padukan & Tinjau Hasil</h2>
           
           <div style={styles.mixControlCard}>
@@ -545,7 +567,7 @@ export default function AIGenerative() {
           {/* PREVIEW HASIL CAMPURAN */}
           <div style={styles.resultCard}>
             <div style={styles.resultWrapper}>
-              <div style={styles.bigPreviewBox}>
+              <div style={styles.bigPreviewBox} className="aigen-big-preview">
                 {loadingMixed ? (
                   <LoadingLogo 
                     text={activeTab === "stylegan" ? "Memproses perpaduan latent space..." : "Memproses transfer gaya saraf (NST)..."} 
@@ -578,7 +600,7 @@ export default function AIGenerative() {
                         />
                       </div>
                       
-                      <div style={styles.rowFields}>
+                      <div style={styles.rowFields} className="aigen-row-fields">
                         <div style={styles.fieldGroup} style={{flex: 1}}>
                           <label style={styles.fieldLabel}>Acara</label>
                           <select

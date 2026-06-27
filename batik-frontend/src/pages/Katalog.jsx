@@ -72,7 +72,7 @@ export default function Katalog() {
 
   return (
     <>
-    <div style={styles.container}>
+    <div style={styles.container} className="katalog-container">
       {/* Background Pattern */}
 
       <style>{`
@@ -109,10 +109,49 @@ export default function Katalog() {
         .pills-container-scroll::-webkit-scrollbar {
           display: none;
         }
+
+        /* RESPONSIVE DESIGN (TABLET & MOBILE) */
+        @media (max-width: 1024px) {
+          .katalog-container { padding: 40px 20px !important; }
+          .katalog-title { font-size: 2.2rem !important; }
+          .katalog-grid { gap: 20px !important; }
+        }
+
+        @media (max-width: 768px) {
+          .katalog-container { padding: 30px 15px !important; }
+          .katalog-title { font-size: 1.8rem !important; }
+          .katalog-grid { 
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; 
+            gap: 15px !important; 
+          }
+          .katalog-modal-content {
+            max-height: 90vh !important;
+            border-radius: 16px !important;
+          }
+          .katalog-modal-flex { flex-direction: column !important; }
+          .katalog-modal-img-wrapper { 
+            flex: none !important; 
+            min-width: 100% !important; 
+            height: 35vh !important; 
+            max-height: 35vh !important; 
+          }
+          .katalog-modal-body { 
+            padding: 20px !important; 
+            min-width: 100% !important; 
+          }
+          .katalog-modal-title { font-size: 1.5rem !important; }
+          .close-btn-responsive { 
+            top: 10px !important; 
+            right: 10px !important; 
+            width: 35px !important; 
+            height: 35px !important; 
+            font-size: 2rem !important;
+          }
+        }
       `}</style>
       <div style={styles.header}>
         <img src="/logo.png" alt="Logo" style={styles.logoImage} />
-        <h1 style={styles.title}>
+        <h1 style={styles.title} className="katalog-title">
           <SparklesIcon size={28} color="#C8FF01" /> Koleksi <span style={styles.gold}>Batik Nusantara</span>
         </h1>
         <p style={styles.subtitle}>Jelajahi berbagai motif batik dari seluruh penjuru Indonesia</p>
@@ -210,9 +249,11 @@ export default function Katalog() {
       )}
 
       {loading ? (
-        <LoadingLogo text="Memuat koleksi..." />
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh", width: "100%" }}>
+          <LoadingLogo text="Memuat koleksi..." />
+        </div>
       ) : filteredData.length > 0 ? (
-        <div style={styles.grid}>
+        <div style={styles.grid} className="katalog-grid">
           {filteredData.map((item) => (
             <CardBatik 
               key={item.id} 
@@ -245,12 +286,12 @@ export default function Katalog() {
       {/* Modal Detail Batik */}
       {selectedBatik && (
         <div style={styles.modalOverlay} onClick={closeModal}>
-          <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button style={styles.closeBtn} onClick={closeModal}>&times;</button>
+          <div style={styles.modalContent} className="katalog-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button style={styles.closeBtn} className="close-btn-responsive" onClick={closeModal}>&times;</button>
             
-            <div style={styles.modalFlex}>
+            <div style={styles.modalFlex} className="katalog-modal-flex">
               {/* Left Side: Image */}
-              <div style={styles.modalImageWrapper}>
+              <div style={styles.modalImageWrapper} className="katalog-modal-img-wrapper">
                 <img 
                   src={selectedBatik.gambar?.startsWith("http") ? selectedBatik.gambar : `${BASE_URL}/${selectedBatik.gambar}`} 
                   alt={selectedBatik.nama} 
@@ -260,10 +301,10 @@ export default function Katalog() {
               </div>
 
               {/* Right Side: Content */}
-              <div style={styles.modalBody}>
+              <div style={styles.modalBody} className="katalog-modal-body">
                 <div style={styles.modalHeader}>
                   <div>
-                    <h2 style={styles.modalTitle}>
+                    <h2 style={styles.modalTitle} className="katalog-modal-title">
                       {selectedBatik.jenis_acara === "Batik Keraton" && <CrownIcon />}
                       {selectedBatik.nama}
                     </h2>

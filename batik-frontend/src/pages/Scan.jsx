@@ -73,14 +73,34 @@ export default function Scan() {
 
   return (
     <>
-    <div style={styles.container}>
+    <div style={styles.container} className="scan-container">
       {/* Background Pattern */}
+      <style>{`
+        /* RESPONSIVE DESIGN FOR SCAN AI */
+        @media (max-width: 1024px) {
+          .scan-container { padding: 40px 20px !important; }
+          .scan-layout { gap: 20px !important; }
+          .scan-info-panel { padding: 25px !important; }
+        }
 
-
-      {/* HEADER */}
+        @media (max-width: 768px) {
+          .scan-container { padding: 30px 15px !important; }
+          .scan-title { font-size: 1.8rem !important; }
+          .scan-layout { flex-direction: column !important; }
+          .scan-info-panel { flex: 1 1 100% !important; min-width: 100% !important; }
+          .scan-upload-wrapper { flex: 1 1 100% !important; min-width: 100% !important; }
+          .scan-preview { height: 300px !important; }
+          
+          /* Modal Adjustments */
+          .scan-modal-content { max-height: 90vh !important; }
+          .scan-modal-flex { flex-direction: column !important; }
+          .scan-modal-img-wrapper { max-height: 35vh !important; min-width: 100% !important; flex: none !important; }
+          .scan-modal-body { padding: 20px !important; min-width: 100% !important; }
+        }
+      `}</style>      {/* HEADER */}
       <div style={styles.header}>
         <img src="/logo.png" alt="Logo" style={styles.logoImage} />
-        <h1 style={styles.title}>
+        <h1 style={styles.title} className="scan-title">
           <SparklesIcon size={28} color="#C8FF01" /> Batik <span style={styles.gold}>Recognition</span>
         </h1>
         <p style={styles.subtitle}>
@@ -89,10 +109,10 @@ export default function Scan() {
       </div>
 
       {/* MAIN CONTENT SPLIT */}
-      <div style={styles.mainLayout}>
+      <div style={styles.mainLayout} className="scan-layout">
 
         {/* LEFT: INFO PANEL */}
-        <div style={styles.infoPanel}>
+        <div style={styles.infoPanel} className="scan-info-panel">
           <h2 style={styles.infoTitle}>Dukungan Motif AI</h2>
           <p style={styles.infoDesc}>
             Sistem klasifikasi kami dilatih secara khusus untuk mengenali <strong>11 jenis motif batik</strong> berikut:
@@ -116,7 +136,7 @@ export default function Scan() {
         </div>
 
         {/* RIGHT: UPLOAD AREA */}
-        <div style={styles.uploadCardWrapper}>
+        <div style={styles.uploadCardWrapper} className="scan-upload-wrapper">
           <div style={styles.uploadCard}>
 
             <label style={styles.uploadArea}>
@@ -133,6 +153,7 @@ export default function Scan() {
                     src={preview}
                     alt="preview"
                     style={styles.preview}
+                    className="scan-preview"
                   />
 
                   <div style={styles.previewOverlay}>
@@ -295,12 +316,12 @@ export default function Scan() {
               border-radius: 10px;
             }
           `}</style>
-          <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+          <div style={styles.modalContent} className="scan-modal-content" onClick={(e) => e.stopPropagation()}>
             <button style={styles.closeBtn} onClick={closeModal}>&times;</button>
 
-            <div style={styles.modalFlex}>
-              {/* Left: Image */}
-              <div style={styles.modalImageWrapper}>
+            <div style={styles.modalFlex} className="scan-modal-flex">
+              {/* Left Side: Uploaded Image */}
+              <div style={styles.modalImageWrapper} className="scan-modal-img-wrapper">
                 <img
                   src={
                     selectedBatik.gambar?.startsWith("http")
@@ -314,7 +335,7 @@ export default function Scan() {
               </div>
 
               {/* Right: Content */}
-              <div style={styles.modalBody}>
+              <div style={styles.modalBody} className="scan-modal-body">
                 <div style={styles.modalHeader}>
                   <div>
                     <h2 style={styles.modalTitle}>

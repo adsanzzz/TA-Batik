@@ -376,7 +376,7 @@ export default function Photobox() {
   /* ─── Render ─────────────────────────────────────────── */
   return (
     <>
-    <div style={S.page}>
+    <div style={S.page} className="photobox-page">
       {/* Background Pattern */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
@@ -392,25 +392,50 @@ export default function Photobox() {
         .btn-dark:hover { background: #1a1008 !important; transform: translateY(-1px); }
         .capture-btn:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 8px 30px rgba(212,175,55,0.5) !important; }
         .capture-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* RESPONSIVE DESIGN FOR PHOTOBOX */
+        @media (max-width: 1024px) {
+          .photobox-page { padding: 40px 20px !important; }
+          .photobox-layout-grid { gap: 20px !important; }
+          .photobox-frame-layout { flex-direction: column !important; align-items: center !important; }
+          .photobox-frame-sidebar { width: 100% !important; max-width: 100% !important; margin-top: 30px !important; }
+        }
+
+        @media (max-width: 768px) {
+          .photobox-page { padding: 30px 15px !important; }
+          .photobox-header-title { font-size: 2rem !important; }
+          .photobox-step-bar { flex-wrap: wrap !important; gap: 15px !important; }
+          .photobox-step-item { flex: 1 1 45% !important; justify-content: flex-start !important; }
+          
+          .photobox-camera-layout { flex-direction: column !important; }
+          .photobox-camera-box { min-width: 100% !important; }
+          .photobox-strip-panel { min-width: 100% !important; flex-direction: row !important; padding: 15px !important; }
+          .photobox-strip-list { flex-direction: row !important; overflow-x: auto !important; }
+          
+          .photobox-camera-controls { flex-wrap: wrap !important; justify-content: center !important; }
+          .capture-btn { width: 100% !important; }
+          
+          .photobox-frame-color-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important; }
+        }
       `}</style>
 
       {/* ─── Header ─── */}
       <div style={S.header}>
         <img src="/logo.png" alt="Logo" style={S.logoImage} />
-        <h1 style={S.headerTitle}>
+        <h1 style={S.headerTitle} className="photobox-header-title">
           <SparklesIcon size={28} color="#C8FF01" /> Photobox <span style={{ color: "#C8FF01", WebkitTextFillColor: "#C8FF01" }}>Nusantara</span>
         </h1>
         <p style={S.headerSub}>Abadikan momen indah dengan bingkai batik khas Indonesia</p>
       </div>
 
       {/* ─── Step Indicator ─── */}
-      <div style={S.stepBar}>
+      <div style={S.stepBar} className="photobox-step-bar">
         {["Pilih Layout", "Sesi Foto", "Pilih Bingkai", "Simpan"].map((label, i) => {
           const n = i + 1;
           const done = step > n;
           const active = step === n;
           return (
-            <div key={n} style={S.stepItem}>
+            <div key={n} style={S.stepItem} className="photobox-step-item">
               <div style={{ ...S.stepCircle, ...(done ? S.stepDone : active ? S.stepActive : S.stepFuture) }}>
                 {done ? <IconCheck /> : n}
               </div>
@@ -426,7 +451,7 @@ export default function Photobox() {
         <div style={{ ...S.contentBox, animation: "slide-in 0.4s ease" }}>
           <h2 style={S.sectionTitle}>Pilih Jumlah Foto</h2>
           <p style={S.sectionSub}>Tentukan berapa banyak foto yang ingin masuk dalam satu bingkai</p>
-          <div style={S.layoutGrid}>
+          <div style={S.layoutGrid} className="photobox-layout-grid">
             {LAYOUTS.map(lay => (
               <div key={lay.count} className="photobox-card" style={S.layoutCard} onClick={() => handleSelectLayout(lay)}>
                 <div style={S.layoutPreview}>{lay.preview()}</div>
@@ -442,8 +467,8 @@ export default function Photobox() {
       {step === 2 && (
         <div style={{ ...S.captureLayout, animation: "slide-in 0.4s ease" }}>
           {/* Camera view */}
-          <div style={S.cameraWrap}>
-            <div style={S.cameraBox}>
+          <div style={S.cameraLayout} className="photobox-camera-layout">
+            <div style={S.cameraBox} className="photobox-camera-box">
               <video ref={videoRef} autoPlay playsInline muted style={S.video} />
               {/* Countdown overlay */}
               {countdown !== null && (
@@ -460,7 +485,7 @@ export default function Photobox() {
                 ))}
               </div>
             </div>
-            <div style={S.cameraControls}>
+            <div style={S.cameraControls} className="photobox-camera-controls">
               <button className="btn-secondary" style={S.btnSecondary} onClick={restart}>Batal</button>
               {photos.length > 0 && (
                 <button className="btn-secondary" style={S.btnSecondary} onClick={retakePhoto} disabled={isCapturing}>
@@ -486,9 +511,9 @@ export default function Photobox() {
           </div>
 
           {/* Strip preview */}
-          <div style={S.stripPanel}>
+          <div style={S.stripPanel} className="photobox-strip-panel">
             <h3 style={S.stripTitle}>Foto Terambil ({photos.length}/{layout.count})</h3>
-            <div style={S.stripList}>
+            <div style={S.stripList} className="photobox-strip-list">
               {Array.from({ length: layout.count }).map((_, i) => (
                 <div key={i} style={S.stripSlot}>
                   {photos[i]
@@ -504,7 +529,7 @@ export default function Photobox() {
 
       {/* ═══ STEP 3: FRAME ═══ */}
       {step === 3 && (
-        <div style={{ ...S.frameLayout, animation: "slide-in 0.4s ease" }}>
+        <div style={{ ...S.frameLayout, animation: "slide-in 0.4s ease" }} className="photobox-frame-layout">
           {/* Preview */}
           <div style={S.previewPanel}>
             <div style={S.previewBox}>
@@ -522,9 +547,9 @@ export default function Photobox() {
           </div>
 
           {/* Frame selector */}
-          <div style={S.frameSidebar}>
+          <div style={S.frameSidebar} className="photobox-frame-sidebar">
             <h3 style={S.sidebarTitle}>Pilih Warna Bingkai</h3>
-            <div style={S.frameColorGrid}>
+            <div style={S.frameColorGrid} className="photobox-frame-color-grid">
               {FRAME_COLORS.map(fc => (
                 <div
                   key={fc.id}
