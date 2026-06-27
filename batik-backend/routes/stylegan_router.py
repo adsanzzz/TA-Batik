@@ -4,12 +4,7 @@ import io
 import time
 from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Form
 from PIL import Image
-from gradio_client import Client
-import numpy as np
-
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-import tensorflow as tf
-import tensorflow_hub as hub
+from gradio_client import Client, handle_file
 
 router = APIRouter(prefix="/stylegan", tags=["StyleGAN2 Generator & Mixer"])
 
@@ -18,28 +13,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # URL Hugging Face Space API
 HF_SPACE_URL = os.getenv("HF_SPACE_URL", "Umanzz/trisara-batik-ai")
 hf_client = Client(HF_SPACE_URL)
-
-nst_model = None
-
-def get_nst_model():
-    global nst_model
-    if nst_model is None:
-        print("Loading Magenta NST model from TF Hub...")
-        try:
-            nst_model = hub.load("https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2")
-        except Exception as e:
-            print(f"Failed to load NST model: {e}")
-    return nst_model
-
-def load_and_preprocess_img(image_bytes, target_dim=None):
-    img_pil = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-    img = np.array(img_pil)
-    img = tf.convert_to_tensor(img, dtype=tf.float32)
-    img = tf.image.convert_image_dtype(img, tf.float32)
-    if target_dim:
-        img = tf.image.resize(img, [target_dim, target_dim])
-    img = img[tf.newaxis, :]
-    return img
 
 @router.get("/generate")
 async def generate_from_seed(seed: int = Query(..., description="Random seed (angka integer)")):
@@ -120,38 +93,30 @@ async def nst_blend(
     preserve_color: bool = Form(False, description="Apakah warna asli batik konten dipertahankan")
 ):
     """
-    Neural Style Transfer via Local TensorFlow Hub.
+    Neural Style Transfer via Hugging Face API.
     """
-    model = get_nst_model()
-    if model is None:
-        raise HTTPException(status_code=500, detail="Model NST lokal gagal dimuat.")
-
+    temp_content = f"temp_content_{content_image.filename}"
+    temp_style = f"temp_style_{style_image.filename}"
     try:
-        content_bytes = await content_image.read()
-        style_bytes = await style_image.read()
+        # Simpan file sementara
+        with open(temp_content, "wb") as buffer:
+            shutil.copyfileobj(content_image.file, buffer)
+        with open(temp_style, "wb") as buffer:
+            shutil.copyfileobj(style_image.file, buffer)
 
-        # Preprocess
-        content_tensor = load_and_preprocess_img(content_bytes)
-        style_tensor = load_and_preprocess_img(style_bytes, target_dim=256)
+        # Panggil API NST Hugging Face
+        result_filepath = hf_client.predict(
+            handle_file(temp_content),
+            handle_file(temp_style),
+            style_strength,
+            api_name="/nst"
+        )
         
-        # Run Style Transfer
-        outputs = model(tf.constant(content_tensor), tf.constant(style_tensor))
-        stylized_tensor = outputs[0]
-        
-        # Blending (style strength)
-        if style_strength < 1.0:
-            content_resized = tf.image.resize(content_tensor, [stylized_tensor.shape[1], stylized_tensor.shape[2]])
-            stylized_tensor = style_strength * stylized_tensor + (1.0 - style_strength) * content_resized
-            
-        # Convert back to PIL Image
-        stylized_tensor = tf.squeeze(stylized_tensor)
-        stylized_tensor = tf.clip_by_value(stylized_tensor, 0.0, 1.0)
-        img_array = (stylized_tensor.numpy() * 255).astype(np.uint8)
-        stylized_pil = Image.fromarray(img_array)
+        stylized_pil = Image.open(result_filepath).convert("RGB")
 
-        # Preserve Color jika diminta
+        # Preserve Color jika diminta (lokal, ringan)
         if preserve_color:
-            content_pil = Image.open(io.BytesIO(content_bytes)).convert("RGB").resize(stylized_pil.size)
+            content_pil = Image.open(temp_content).convert("RGB").resize(stylized_pil.size)
             content_ycbcr = content_pil.convert("YCbCr")
             stylized_ycbcr = stylized_pil.convert("YCbCr")
             s_y, _, _ = stylized_ycbcr.split()
@@ -172,4 +137,10 @@ async def nst_blend(
     except Exception as e:
         import traceback
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Gagal melakukan style transfer lokal: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Gagal melakukan style transfer: {str(e)}")
+    finally:
+        # Hapus file sementara
+        if os.path.exists(temp_content):
+            os.remove(temp_content)
+        if os.path.exists(temp_style):
+            os.remove(temp_style)
