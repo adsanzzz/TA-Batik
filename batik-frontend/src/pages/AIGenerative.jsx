@@ -91,7 +91,7 @@ export default function AIGenerative() {
     filosofi: "Motif batik hibrida unik hasil pencampuran gaya kecerdasan buatan."
   });
 
-  const BASE_URL = "http://127.0.0.1:8000";
+  const BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
   // Mode 1: Generate A
   const handleGenerateA = async () => {
