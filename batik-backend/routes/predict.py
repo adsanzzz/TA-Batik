@@ -21,8 +21,8 @@ from keras.src.layers import BatchNormalization
 import keras.src.layers.core.input_layer as _il_module
 
 _STRIP_ARGS = {
-    "BatchNormalization": ['renorm', 'quantization_config'],
-    "Dense": ['optional'],
+    "BatchNormalization": ['renorm', 'quantization_config', 'renorm_clipping', 'renorm_momentum'],
+    "Dense": ['optional', 'quantization_config'],
     "InputLayer": ['optional'],
     "GlobalAveragePooling2D": ['optional']
 }
