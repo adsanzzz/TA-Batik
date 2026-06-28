@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Request
 import httpx
 import os
 
@@ -9,6 +9,7 @@ router = APIRouter(prefix="/vton", tags=["Virtual Try On"])
 
 @router.post("/generate-garment")
 async def generate_garment(
+    request: Request,
     batik_image: UploadFile = File(...),
     template_type: str = Form(..., description="Jenis template: 'male_shirt' atau 'female_blouse'")
 ):
@@ -43,8 +44,9 @@ async def generate_garment(
         with open(filepath, "wb") as f:
             f.write(await batik_image.read())
             
-        # 4. Buat URL yang bisa diakses publik (localhost)
-        garment_url = f"http://127.0.0.1:8000/uploads/{filename}"
+        # 4. Buat URL yang bisa diakses publik (menggunakan base URL dari request)
+        base_url = str(request.base_url).rstrip("/")
+        garment_url = f"{base_url}/uploads/{filename}"
         
         print(f"Bypass berhasil! Flat fabric disimpan di: {garment_url}")
         
