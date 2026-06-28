@@ -28,7 +28,6 @@ ENV/
 .env
 .env.*
 !.env.production
-!.env.development
 *.env
 !.env.example
 
