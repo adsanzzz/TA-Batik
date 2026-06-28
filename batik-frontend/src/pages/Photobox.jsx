@@ -480,7 +480,7 @@ export default function Photobox() {
       {step === 2 && (
         <div style={{ ...S.captureLayout, animation: "slide-in 0.4s ease" }}>
           {/* Camera view */}
-          <div style={S.cameraLayout} className="photobox-camera-layout">
+          <div style={S.cameraWrap} className="photobox-camera-layout">
             <div style={S.cameraBox} className="photobox-camera-box">
               <video ref={videoRef} autoPlay playsInline muted style={S.video} />
               {/* Countdown overlay */}
