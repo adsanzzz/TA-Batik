@@ -342,15 +342,18 @@ export default function Scan() {
               to { transform: translateY(0); opacity: 1; }
             }
             .modal-scroll-area::-webkit-scrollbar {
-              width: 8px;
+              width: 6px;
             }
             .modal-scroll-area::-webkit-scrollbar-track {
-              background: #EEF3FF;
-              border-radius: 10px;
+              background: transparent;
+              margin: 4px 0;
             }
             .modal-scroll-area::-webkit-scrollbar-thumb {
-              background: #033EEE;
-              border-radius: 10px;
+              background: rgba(3, 62, 238, 0.3);
+              border-radius: 999px;
+            }
+            .modal-scroll-area::-webkit-scrollbar-thumb:hover {
+              background: rgba(3, 62, 238, 0.55);
             }
           `}</style>
           <div style={styles.modalContent} className="scan-modal-content" onClick={(e) => e.stopPropagation()}>

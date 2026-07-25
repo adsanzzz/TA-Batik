@@ -83,19 +83,18 @@ export default function Katalog() {
           to { transform: translateY(0); opacity: 1; }
         }
         .modal-scroll-area::-webkit-scrollbar {
-          width: 8px;
+          width: 6px;
         }
         .modal-scroll-area::-webkit-scrollbar-track {
-          background: #EEF3FF;
-          border-radius: 10px;
+          background: transparent;
+          margin: 4px 0;
         }
         .modal-scroll-area::-webkit-scrollbar-thumb {
-          background: #033EEE;
-          border-radius: 10px;
+          background: rgba(3, 62, 238, 0.3);
+          border-radius: 999px;
         }
         .modal-scroll-area::-webkit-scrollbar-thumb:hover {
-          background: #0A46D6;
-          border-radius: 10px;
+          background: rgba(3, 62, 238, 0.55);
         }
         .search-input-focus:focus {
           border-color: #033EEE !important;
@@ -539,12 +538,12 @@ const styles = {
   },
   modalScrollArea: {
     overflowY: "auto",
-    paddingRight: "16px",
-    paddingBottom: "20px",
+    paddingRight: "18px",
+    paddingBottom: "24px",
     flex: 1,
     minHeight: 0,
     scrollbarWidth: "thin",
-    scrollbarColor: `${colors.blue} ${colors.surfaceAlt}`,
+    scrollbarColor: "rgba(3, 62, 238, 0.3) transparent",
   },
   closeBtn: {
     position: "absolute",
