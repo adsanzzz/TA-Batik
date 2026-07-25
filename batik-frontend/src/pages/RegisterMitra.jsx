@@ -68,14 +68,14 @@ export default function RegisterMitra() {
   if (success) {
     return (
       <>
-      <div style={styles.container}>
-          <div style={styles.card}>
+      <div style={styles.container} className="reg-mitra-container">
+          <div style={styles.card} className="reg-mitra-card">
             <div style={styles.successIcon}>
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
             </div>
-            <h2 style={styles.title}>Registrasi Berhasil</h2>
+            <h2 style={styles.title} className="reg-mitra-title">Registrasi Berhasil</h2>
             <p style={styles.successMessage}>
               Pendaftaran Anda sebagai Mitra berhasil diajukan! Data Anda sedang dalam peninjauan oleh Admin. Anda akan diarahkan ke halaman Login.
             </p>
@@ -88,9 +88,22 @@ export default function RegisterMitra() {
 
   return (
     <>
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Registrasi Mitra Batik AI</h2>
+    <div style={styles.container} className="reg-mitra-container">
+      <style>{`
+        .reg-mitra-card { box-sizing: border-box; }
+        @media (max-width: 1024px) {
+          .reg-mitra-title { font-size: 2rem !important; }
+        }
+        @media (max-width: 640px) {
+          .reg-mitra-container { padding: 32px 16px !important; }
+          .reg-mitra-card { padding: 24px !important; max-width: 460px !important; }
+          .reg-mitra-title { font-size: 1.6rem !important; }
+          .reg-mitra-row { flex-direction: column !important; gap: 20px !important; }
+          .reg-mitra-submit { width: 100% !important; }
+        }
+      `}</style>
+      <div style={styles.card} className="reg-mitra-card">
+        <h2 style={styles.title} className="reg-mitra-title">Registrasi Mitra Batik AI</h2>
         <p style={styles.subtitle}>
           Bergabunglah sebagai mitra untuk mempromosikan produk batik Anda dengan teknologi AI.
         </p>
@@ -99,7 +112,7 @@ export default function RegisterMitra() {
 
         <form onSubmit={handleSubmit} style={styles.form}>
           {/* USERNAME & PASSWORD */}
-          <div style={styles.row}>
+          <div style={styles.row} className="reg-mitra-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>Username Baru</label>
               <input
@@ -125,7 +138,7 @@ export default function RegisterMitra() {
           </div>
 
           {/* NIK & NAMA */}
-          <div style={styles.row}>
+          <div style={styles.row} className="reg-mitra-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>NIK KTP</label>
               <input
@@ -164,7 +177,7 @@ export default function RegisterMitra() {
           </div>
 
           {/* FILE UPLOADS */}
-          <div style={styles.row}>
+          <div style={styles.row} className="reg-mitra-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>Upload KTP</label>
               <input
@@ -207,6 +220,7 @@ export default function RegisterMitra() {
           <button
             type="submit"
             disabled={loading}
+            className="reg-mitra-submit"
             style={loading ? { ...styles.submitBtn, opacity: 0.7 } : styles.submitBtn}
           >
             {loading ? "Mengirim Pendaftaran..." : "Daftar Sekarang"}

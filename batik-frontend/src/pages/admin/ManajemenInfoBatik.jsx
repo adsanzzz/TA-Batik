@@ -70,18 +70,36 @@ export default function ManajemenInfoBatik() {
     };
 
     return (
-        <div style={styles.pageWrapper}>
-            <div style={styles.container}>
-                <h1 style={styles.title}>Manajemen Info Scan Batik</h1>
-                <p style={styles.subtitle}>Atur informasi dasar yang akan muncul saat pengguna melakukan scan AI.</p>
+        <div style={styles.pageWrapper} className="mi-page">
+            <style>{`
+              @media (max-width: 1024px) {
+                .mi-container { max-width: 100% !important; }
+                .mi-title { font-size: 2.2rem !important; }
+              }
+              @media (max-width: 640px) {
+                .mi-page { padding-top: 24px !important; padding-bottom: 32px !important; }
+                .mi-container { padding: 0 16px !important; box-sizing: border-box !important; }
+                .mi-title { font-size: 1.7rem !important; }
+                .mi-subtitle { font-size: 0.98rem !important; margin-bottom: 28px !important; }
+                .mi-form { padding: 20px !important; }
+                .mi-list { padding: 20px !important; }
+                .mi-select, .mi-textarea { width: 100% !important; box-sizing: border-box !important; }
+                .mi-button { width: 100% !important; }
+                .mi-table { min-width: 620px !important; }
+              }
+            `}</style>
+            <div style={styles.container} className="mi-container">
+                <h1 style={styles.title} className="mi-title">Manajemen Info Scan Batik</h1>
+                <p style={styles.subtitle} className="mi-subtitle">Atur informasi dasar yang akan muncul saat pengguna melakukan scan AI.</p>
 
-                <form onSubmit={handleSubmit} style={styles.form}>
+                <form onSubmit={handleSubmit} style={styles.form} className="mi-form">
                     <div style={styles.inputGroup}>
                         <label style={styles.label}>Pilih Jenis Batik AI:</label>
                         <select 
                             value={formData.nama} 
                             onChange={(e) => setFormData({...formData, nama: e.target.value})}
                             style={styles.select}
+                            className="mi-select"
                         >
                             {PRESET_CLASSES.map(c => <option key={c} value={c} style={{background: "#FFFFFF", color: colors.textHead}}>{c}</option>)}
                         </select>
@@ -93,18 +111,19 @@ export default function ManajemenInfoBatik() {
                             onChange={(e) => setFormData({...formData, deskripsi: e.target.value})}
                             placeholder="Contoh: Batik Parang merupakan salah satu motif batik tertua di Indonesia..."
                             style={styles.textarea}
+                            className="mi-textarea"
                             required
                         />
                     </div>
-                    <button type="submit" style={styles.button}>Simpan Informasi</button>
+                    <button type="submit" style={styles.button} className="mi-button">Simpan Informasi</button>
                     {message && <p style={styles.message}>{message}</p>}
                 </form>
 
-                <div style={styles.list}>
+                <div style={styles.list} className="mi-list">
                     <h2 style={styles.listTitle}>Daftar Informasi Terdaftar</h2>
                     {loading ? <p style={styles.loading}>Memuat...</p> : (
                         <div style={styles.tableResponsive}>
-                            <table style={styles.table}>
+                            <table style={styles.table} className="mi-table">
                                 <thead>
                                     <tr>
                                         <th style={styles.th}>Nama Batik</th>

@@ -75,14 +75,30 @@ export default function InputBatikMitra() {
   };
 
   return (
-    <div style={styles.pageWrapper}>
-      <div style={styles.container}>
+    <div style={styles.pageWrapper} className="input-batik-wrapper">
+      <style>{`
+        .input-batik-container { box-sizing: border-box; }
+        @media (max-width: 1024px) {
+          .input-batik-title { font-size: 2.2rem !important; }
+        }
+        @media (max-width: 640px) {
+          .input-batik-wrapper { padding-top: 24px !important; padding-bottom: 32px !important; }
+          .input-batik-container { padding: 0 16px !important; }
+          .input-batik-title { font-size: 1.7rem !important; }
+          .input-batik-subtitle { font-size: 1rem !important; }
+          .input-batik-form { padding: 24px !important; gap: 20px !important; }
+          .input-batik-row { grid-template-columns: 1fr !important; gap: 20px !important; }
+          .input-batik-uploadbox { height: 200px !important; }
+          .input-batik-submit { width: 100% !important; }
+        }
+      `}</style>
+      <div style={styles.container} className="input-batik-container">
         <div style={styles.header}>
           <button onClick={() => navigate("/mitra/dashboard")} style={styles.backBtn}>
             Kembali ke Dashboard
           </button>
-          <h1 style={styles.title}>Unggah Koleksi Batik</h1>
-          <p style={styles.subtitle}>Bagikan keindahan motif batik Anda ke publik dengan link toko e-commerce.</p>
+          <h1 style={styles.title} className="input-batik-title">Unggah Koleksi Batik</h1>
+          <p style={styles.subtitle} className="input-batik-subtitle">Bagikan keindahan motif batik Anda ke publik dengan link toko e-commerce.</p>
         </div>
 
         {message.text && (
@@ -91,8 +107,8 @@ export default function InputBatikMitra() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.formRow}>
+        <form onSubmit={handleSubmit} style={styles.form} className="input-batik-form">
+          <div style={styles.formRow} className="input-batik-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>Nama/Motif Batik (Sesuai Kategori Model AI)</label>
               <select
@@ -140,7 +156,7 @@ export default function InputBatikMitra() {
             </div>
           </div>
 
-          <div style={styles.formRow}>
+          <div style={styles.formRow} className="input-batik-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>Jenis Batik</label>
               <select
@@ -173,7 +189,7 @@ export default function InputBatikMitra() {
           </div>
 
           {/* E-COMMERCE LINKS */}
-          <div style={styles.formRow}>
+          <div style={styles.formRow} className="input-batik-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>Link Shopee (Opsional)</label>
               <input
@@ -213,7 +229,7 @@ export default function InputBatikMitra() {
 
           <div style={styles.uploadSection}>
             <label style={styles.label}>Foto Produk Batik</label>
-            <div style={styles.uploadBox}>
+            <div style={styles.uploadBox} className="input-batik-uploadbox">
               <input
                 type="file"
                 accept="image/*"
@@ -235,9 +251,10 @@ export default function InputBatikMitra() {
             </div>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
+            className="input-batik-submit"
             style={loading ? {...styles.submitBtn, opacity: 0.7} : styles.submitBtn}
           >
             {loading ? "Mengunggah..." : "Unggah Batik"}

@@ -56,24 +56,39 @@ export default function AdminDashboard() {
   const [hoverButton, setHoverButton] = useState(null);
 
   return (
-    <div style={styles.pageWrapper}>
+    <div style={styles.pageWrapper} className="admin-dash-page">
+      <style>{`
+        .admin-dash-page { box-sizing: border-box; }
+        .admin-dash-page * { box-sizing: border-box; }
+        @media (max-width: 1024px) {
+          .admin-dash-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 640px) {
+          .admin-dash-page { padding-top: 32px !important; padding-bottom: 32px !important; }
+          .admin-dash-container { padding: 0 16px !important; }
+          .admin-dash-title { font-size: 2rem !important; }
+          .admin-dash-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+          .admin-dash-card { padding: 24px !important; }
+        }
+      `}</style>
       {/* Background Dot Pattern */}
       <div style={styles.pattern}></div>
 
-      <div style={styles.container}>
+      <div style={styles.container} className="admin-dash-container">
         <div style={styles.header}>
-          <h1 style={styles.title}>
+          <h1 style={styles.title} className="admin-dash-title">
             Admin <span style={{ color: colors.blue }}>Dashboard</span>
           </h1>
           <p style={styles.subtitle}>Selamat datang di panel kendali utama sistem BatikAI</p>
         </div>
 
-        <div style={styles.grid}>
+        <div style={styles.grid} className="admin-dash-grid">
           {/* Card 1: Input Batik */}
           <div 
             style={{...styles.card, ...(hoverCard === 1 ? styles.cardHover : {})}}
             onMouseEnter={() => setHoverCard(1)}
             onMouseLeave={() => setHoverCard(null)}
+            className="admin-dash-card"
           >
             <div style={styles.iconWrapper}>
               <PlusIcon />
@@ -98,6 +113,7 @@ export default function AdminDashboard() {
             style={{...styles.card, ...(hoverCard === 2 ? styles.cardHover : {})}}
             onMouseEnter={() => setHoverCard(2)}
             onMouseLeave={() => setHoverCard(null)}
+            className="admin-dash-card"
           >
             <div style={styles.iconWrapper}>
               <DatabaseIcon />
@@ -122,6 +138,7 @@ export default function AdminDashboard() {
             style={{...styles.card, ...(hoverCard === 3 ? styles.cardHover : {})}}
             onMouseEnter={() => setHoverCard(3)}
             onMouseLeave={() => setHoverCard(null)}
+            className="admin-dash-card"
           >
             <div style={styles.iconWrapper}>
               <FrameIcon />
@@ -146,6 +163,7 @@ export default function AdminDashboard() {
             style={{...styles.card, ...(hoverCard === 4 ? styles.cardHover : {})}}
             onMouseEnter={() => setHoverCard(4)}
             onMouseLeave={() => setHoverCard(null)}
+            className="admin-dash-card"
           >
             <div style={styles.iconWrapper}>
               <InfoIcon />
@@ -170,6 +188,7 @@ export default function AdminDashboard() {
             style={{...styles.card, ...(hoverCard === 5 ? styles.cardHover : {})}}
             onMouseEnter={() => setHoverCard(5)}
             onMouseLeave={() => setHoverCard(null)}
+            className="admin-dash-card"
           >
             <div style={styles.iconWrapper}>
               <UsersIcon />
@@ -194,6 +213,7 @@ export default function AdminDashboard() {
             style={{...styles.card, ...(hoverCard === 6 ? styles.cardHover : {})}}
             onMouseEnter={() => setHoverCard(6)}
             onMouseLeave={() => setHoverCard(null)}
+            className="admin-dash-card"
           >
             <div style={styles.iconWrapper}>
               <CpuIcon />

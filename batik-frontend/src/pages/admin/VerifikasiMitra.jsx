@@ -44,13 +44,27 @@ export default function VerifikasiMitra() {
   };
 
   return (
-    <div style={styles.pageWrapper}>
+    <div style={styles.pageWrapper} className="vmitra-page">
+      <style>{`
+        .vmitra-page, .vmitra-page * { box-sizing: border-box; }
+        .vmitra-table-wrap { overflow-x: auto !important; }
+        .vmitra-table { min-width: 780px; }
+        @media (max-width: 1024px) {
+          .vmitra-page { padding: 32px 20px !important; }
+        }
+        @media (max-width: 640px) {
+          .vmitra-page { padding: 24px 16px !important; }
+          .vmitra-title { font-size: 1.9rem !important; }
+          .vmitra-action-group { flex-direction: column !important; }
+          .vmitra-action-group button { width: 100% !important; }
+        }
+      `}</style>
       <div style={styles.container}>
         <div style={styles.header}>
           <button onClick={() => navigate("/admin/dashboard")} style={styles.backBtn}>
             Kembali ke Dashboard
           </button>
-          <h1 style={styles.title}>Verifikasi Pengajuan Mitra</h1>
+          <h1 style={styles.title} className="vmitra-title">Verifikasi Pengajuan Mitra</h1>
           <p style={styles.subtitle}>Tinjau berkas pendaftar sebelum memberikan izin masuk platform.</p>
         </div>
 
@@ -64,8 +78,8 @@ export default function VerifikasiMitra() {
             <p>Semua pendaftaran mitra telah diproses.</p>
           </div>
         ) : (
-          <div style={styles.tableContainer}>
-            <table style={styles.table}>
+          <div style={styles.tableContainer} className="vmitra-table-wrap">
+            <table style={styles.table} className="vmitra-table">
               <thead>
                 <tr style={styles.tableHeaderRow}>
                   <th style={styles.th}>Username</th>
@@ -105,7 +119,7 @@ export default function VerifikasiMitra() {
                       </a>
                     </td>
                     <td style={styles.td}>
-                      <div style={styles.actionGroup}>
+                      <div style={styles.actionGroup} className="vmitra-action-group">
                         <button
                           disabled={actionLoading !== null}
                           onClick={() => handleAction(mitra.id, "approve")}

@@ -21,16 +21,33 @@ export default function MitraDashboard() {
   const [hoverCard, setHoverCard] = useState(null);
 
   return (
-    <div style={styles.pageWrapper}>
-      <div style={styles.container}>
+    <div style={styles.pageWrapper} className="mitra-dash-wrapper">
+      <style>{`
+        .mitra-dash-container { box-sizing: border-box; }
+        @media (max-width: 1024px) {
+          .mitra-dash-wrapper { padding-top: 40px !important; padding-bottom: 40px !important; }
+          .mitra-dash-title { font-size: 2.2rem !important; }
+          .mitra-dash-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 24px !important; }
+        }
+        @media (max-width: 640px) {
+          .mitra-dash-wrapper { padding-top: 24px !important; padding-bottom: 32px !important; }
+          .mitra-dash-container { padding: 0 16px !important; }
+          .mitra-dash-title { font-size: 1.7rem !important; }
+          .mitra-dash-subtitle { font-size: 1rem !important; }
+          .mitra-dash-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+          .mitra-dash-card { padding: 24px !important; }
+        }
+      `}</style>
+      <div style={styles.container} className="mitra-dash-container">
         <div style={styles.header}>
-          <h1 style={styles.title}>Mitra Dashboard</h1>
-          <p style={styles.subtitle}>Selamat datang di panel kendali Mitra BatikAI. Kelola produk batik Anda di sini.</p>
+          <h1 style={styles.title} className="mitra-dash-title">Mitra Dashboard</h1>
+          <p style={styles.subtitle} className="mitra-dash-subtitle">Selamat datang di panel kendali Mitra BatikAI. Kelola produk batik Anda di sini.</p>
         </div>
 
-        <div style={styles.grid}>
+        <div style={styles.grid} className="mitra-dash-grid">
           {/* Card 1: Unggah Batik */}
-          <div 
+          <div
+            className="mitra-dash-card"
             style={{...styles.card, ...(hoverCard === 1 ? styles.cardHover : {})}}
             onMouseEnter={() => setHoverCard(1)}
             onMouseLeave={() => setHoverCard(null)}
@@ -46,7 +63,8 @@ export default function MitraDashboard() {
           </div>
 
           {/* Card 2: Kelola Batik */}
-          <div 
+          <div
+            className="mitra-dash-card"
             style={{...styles.card, ...(hoverCard === 2 ? styles.cardHover : {})}}
             onMouseEnter={() => setHoverCard(2)}
             onMouseLeave={() => setHoverCard(null)}

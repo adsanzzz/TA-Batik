@@ -114,14 +114,29 @@ export default function ManajemenBatikMitra() {
   };
 
   return (
-    <div style={styles.pageWrapper}>
-      <div style={styles.container}>
+    <div style={styles.pageWrapper} className="manaj-batik-wrapper">
+      <style>{`
+        .manaj-batik-container { box-sizing: border-box; }
+        .manaj-batik-table { min-width: 700px; }
+        @media (max-width: 1024px) {
+          .manaj-batik-title { font-size: 2.2rem !important; }
+        }
+        @media (max-width: 640px) {
+          .manaj-batik-wrapper { padding-top: 24px !important; padding-bottom: 32px !important; }
+          .manaj-batik-container { padding: 0 16px !important; }
+          .manaj-batik-title { font-size: 1.7rem !important; }
+          .manaj-batik-subtitle { font-size: 1rem !important; }
+          .manaj-batik-modal { padding: 24px !important; max-width: 90vw !important; max-height: 90vh !important; }
+          .manaj-batik-modal-title { font-size: 1.4rem !important; }
+        }
+      `}</style>
+      <div style={styles.container} className="manaj-batik-container">
         <div style={styles.header}>
           <button onClick={() => navigate("/mitra/dashboard")} style={styles.backBtn}>
             Kembali ke Dashboard
           </button>
-          <h1 style={styles.title}>Kelola Data Batik</h1>
-          <p style={styles.subtitle}>Kelola (Edit/Hapus) koleksi batik yang telah Anda unggah.</p>
+          <h1 style={styles.title} className="manaj-batik-title">Kelola Data Batik</h1>
+          <p style={styles.subtitle} className="manaj-batik-subtitle">Kelola (Edit/Hapus) koleksi batik yang telah Anda unggah.</p>
         </div>
 
         {message.text && (
@@ -134,7 +149,7 @@ export default function ManajemenBatikMitra() {
           <p style={styles.loading}>Memuat data batik Anda...</p>
         ) : (
           <div style={styles.tableContainer}>
-            <table style={styles.table}>
+            <table style={styles.table} className="manaj-batik-table">
               <thead>
                 <tr style={styles.trHeader}>
                   <th style={styles.th}>Gambar</th>
@@ -191,9 +206,9 @@ export default function ManajemenBatikMitra() {
         {/* MODAL EDIT */}
         {editModal && editForm && (
           <div style={styles.modalOverlay} onClick={closeEditModal}>
-            <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.modalContent} className="manaj-batik-modal" onClick={(e) => e.stopPropagation()}>
               <div style={styles.modalHeader}>
-                <h2 style={styles.modalTitle}>Edit Detail Batik</h2>
+                <h2 style={styles.modalTitle} className="manaj-batik-modal-title">Edit Detail Batik</h2>
                 <button style={styles.closeBtn} onClick={closeEditModal}>&times;</button>
               </div>
               
