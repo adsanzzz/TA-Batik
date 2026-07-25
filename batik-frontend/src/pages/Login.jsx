@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { login } from "../services/auth";
 import Footer from "../components/Footer";
+import { colors, fonts } from "../theme";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -105,14 +106,15 @@ const styles = {
     alignItems: "center",
     minHeight: "calc(100vh - 75px)",
     padding: "60px 20px",
-    fontFamily: "Poppins, sans-serif",
+    background: "transparent",
+    fontFamily: fonts.body,
   },
   card: {
-    background: "#0122B4",
+    background: colors.surface,
     padding: "40px",
     borderRadius: "20px",
-    boxShadow: "0 15px 40px rgba(0,0,0,0.3)",
-    border: "1px solid rgba(200, 255, 1, 0.2)",
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`,
     width: "100%",
     maxWidth: "400px",
     textAlign: "center",
@@ -120,14 +122,12 @@ const styles = {
   title: {
     fontSize: "2.3rem",
     fontWeight: "800",
-    background: "linear-gradient(to bottom, #FFFFFF, #D0DBFF)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
+    color: colors.textHead,
     marginBottom: "10px",
-    fontFamily: "'Playfair Display', serif",
+    fontFamily: fonts.heading,
   },
   subtitle: {
-    color: "#D0E0FF",
+    color: colors.textBody,
     marginBottom: "30px",
     fontSize: "0.9rem",
   },
@@ -144,7 +144,7 @@ const styles = {
     marginBottom: "8px",
     fontSize: "0.85rem",
     fontWeight: "700",
-    color: "#C8FF01",
+    color: colors.textBody,
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
@@ -152,21 +152,21 @@ const styles = {
     width: "100%",
     padding: "12px 15px",
     borderRadius: "10px",
-    border: "2px solid rgba(255, 255, 255, 0.15)",
+    border: `1px solid ${colors.border}`,
     outline: "none",
     fontSize: "1rem",
-    color: "#fff",
+    color: colors.textHead,
     transition: "all 0.3s ease",
     boxSizing: "border-box",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: colors.surface,
   },
   inputFocus: {
-    borderColor: "#C8FF01",
-    boxShadow: "0 0 0 4px rgba(200, 255, 1, 0.15)",
+    borderColor: colors.blue,
+    boxShadow: `0 0 0 4px ${colors.blueSoft}`,
   },
   button: {
-    background: "linear-gradient(135deg, #C8FF01, #AEE600)",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     padding: "14px",
     borderRadius: "10px",
     border: "none",
@@ -174,7 +174,7 @@ const styles = {
     fontWeight: "700",
     cursor: "pointer",
     transition: "transform 0.2s, background 0.2s",
-    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.3)",
+    boxShadow: colors.shadowSm,
     marginTop: "10px",
   },
   error: {
@@ -189,16 +189,16 @@ const styles = {
   registerSection: {
     marginTop: "24px",
     paddingTop: "20px",
-    borderTop: "1px solid rgba(255, 255, 255, 0.15)",
+    borderTop: `1px solid ${colors.border}`,
     textAlign: "center",
   },
   registerText: {
-    color: "#D0E0FF",
+    color: colors.textMuted,
     fontSize: "0.85rem",
     marginBottom: "8px",
   },
   registerLink: {
-    color: "#C8FF01",
+    color: colors.blue,
     fontWeight: "700",
     fontSize: "0.9rem",
     textDecoration: "none",
@@ -210,7 +210,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    borderTop: "1px solid rgba(255, 255, 255, 0.15)",
+    borderTop: `1px solid ${colors.border}`,
     paddingTop: "30px"
   },
   footerImage: {
@@ -218,7 +218,7 @@ const styles = {
     maxWidth: "100%",
     height: "auto",
     borderRadius: "16px",
-    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.35)",
-    border: "1px solid rgba(255, 255, 255, 0.1)"
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`
   }
 };

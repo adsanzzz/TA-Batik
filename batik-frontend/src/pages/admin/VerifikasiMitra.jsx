@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getPendingMitras, updateMitraStatus, BASE_URL } from "../../services/api";
 import { getToken } from "../../services/auth";
 import { useNavigate } from "react-router-dom";
+import { colors, fonts } from "../../theme";
 
 export default function VerifikasiMitra() {
   const [pendingList, setPendingList] = useState([]);
@@ -47,7 +48,7 @@ export default function VerifikasiMitra() {
       <div style={styles.container}>
         <div style={styles.header}>
           <button onClick={() => navigate("/admin/dashboard")} style={styles.backBtn}>
-            ← Kembali ke Dashboard
+            Kembali ke Dashboard
           </button>
           <h1 style={styles.title}>Verifikasi Pengajuan Mitra</h1>
           <p style={styles.subtitle}>Tinjau berkas pendaftar sebelum memberikan izin masuk platform.</p>
@@ -90,7 +91,7 @@ export default function VerifikasiMitra() {
                         rel="noreferrer"
                         style={styles.fileLink}
                       >
-                        Lihat KTP ↗
+                        Lihat KTP
                       </a>
                     </td>
                     <td style={styles.td}>
@@ -100,7 +101,7 @@ export default function VerifikasiMitra() {
                         rel="noreferrer"
                         style={styles.fileLink}
                       >
-                        Lihat Bukti ↗
+                        Lihat Bukti
                       </a>
                     </td>
                     <td style={styles.td}>
@@ -135,15 +136,13 @@ export default function VerifikasiMitra() {
 const styles = {
   pageWrapper: {
     minHeight: "calc(100vh - 70px)",
-    background: "radial-gradient(circle at 10% 20%, #00117D 0%, #000B4D 90%)",
-    backgroundImage: "radial-gradient(circle at 10% 20%, #00117D 0%, #000B4D 90%), radial-gradient(rgba(200, 255, 1, 0.15) 1px, transparent 0)",
-    backgroundSize: "100% 100%, 24px 24px",
+    background: "transparent",
     padding: "40px 20px",
   },
   container: {
     maxWidth: "1100px",
     margin: "0 auto",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: fonts.body,
   },
   header: {
     marginBottom: "30px",
@@ -151,7 +150,7 @@ const styles = {
   backBtn: {
     background: "transparent",
     border: "none",
-    color: "#C8FF01",
+    color: colors.blue,
     fontWeight: "700",
     cursor: "pointer",
     fontSize: "1rem",
@@ -161,12 +160,12 @@ const styles = {
   title: {
     fontSize: "2.8rem",
     fontWeight: "800",
-    color: "#ffffff",
-    fontFamily: "'Outfit', sans-serif",
+    color: colors.textHead,
+    fontFamily: fonts.heading,
     margin: "10px 0",
   },
   subtitle: {
-    color: "#C8FF01",
+    color: colors.textBody,
     fontSize: "1rem",
   },
   error: {
@@ -181,24 +180,23 @@ const styles = {
     textAlign: "center",
     padding: "50px",
     fontSize: "1.1rem",
-    color: "#C8FF01",
+    color: colors.textBody,
   },
   emptyState: {
-    background: "rgba(255, 255, 255, 0.03)",
-    backdropFilter: "blur(20px)",
-    WebkitBackdropFilter: "blur(20px)",
+    background: colors.surface,
     borderRadius: "24px",
     padding: "50px",
     textAlign: "center",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
+    border: `1px solid ${colors.border}`,
+    boxShadow: colors.shadowSm,
+    color: colors.textBody,
   },
   tableContainer: {
-    background: "rgba(255, 255, 255, 0.03)",
-    backdropFilter: "blur(20px)",
-    WebkitBackdropFilter: "blur(20px)",
+    background: colors.surface,
     borderRadius: "24px",
     overflow: "hidden",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
+    border: `1px solid ${colors.border}`,
+    boxShadow: colors.shadow,
   },
   table: {
     width: "100%",
@@ -206,18 +204,19 @@ const styles = {
     textAlign: "left",
   },
   tableHeaderRow: {
-    borderBottom: "2px solid rgba(255, 255, 255, 0.08)",
+    background: colors.surfaceAlt,
+    borderBottom: `2px solid ${colors.border}`,
   },
   th: {
     padding: "16px 20px",
     fontWeight: "700",
-    color: "#C8FF01",
+    color: colors.textHead,
     fontSize: "0.9rem",
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
   tableRow: {
-    borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+    borderBottom: `1px solid ${colors.border}`,
     "&:last-child": {
       borderBottom: "none",
     }
@@ -225,11 +224,11 @@ const styles = {
   td: {
     padding: "18px 20px",
     fontSize: "0.95rem",
-    color: "#ffffff",
+    color: colors.textBody,
     verticalAlign: "middle",
   },
   fileLink: {
-    color: "#C8FF01",
+    color: colors.blue,
     textDecoration: "none",
     fontWeight: "600",
     fontSize: "0.9rem",
@@ -239,8 +238,8 @@ const styles = {
     gap: "10px",
   },
   approveBtn: {
-    background: "#C8FF01",
-    color: "#00117D",
+    background: colors.success,
+    color: "#ffffff",
     border: "none",
     padding: "8px 16px",
     borderRadius: "8px",

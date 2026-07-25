@@ -1,28 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import Home from "./pages/Home";
-import Katalog from "./pages/Katalog";
-import Scan from "./pages/Scan";
-import Login from "./pages/Login";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import InputBatik from "./pages/admin/InputBatik";
-import ManajemenBatik from "./pages/admin/ManajemenBatik";
-import ManajemenFrame from "./pages/admin/ManajemenFrame";
-import ManajemenInfoBatik from "./pages/admin/ManajemenInfoBatik";
-import ManajemenModel from "./pages/admin/ManajemenModel";
-import Photobox from "./pages/Photobox";
-import AIGenerative from "./pages/AIGenerative";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoadingLogo from "./components/LoadingLogo";
 import ornamentImage from "./assets/ornament.png";
 
+// Halaman di-lazy-load (code-splitting): tiap halaman jadi file JS terpisah,
+// hanya diunduh saat halamannya dibuka -> load awal jauh lebih ringan.
+const Home = lazy(() => import("./pages/Home"));
+const Katalog = lazy(() => import("./pages/Katalog"));
+const Scan = lazy(() => import("./pages/Scan"));
+const Login = lazy(() => import("./pages/Login"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const InputBatik = lazy(() => import("./pages/admin/InputBatik"));
+const ManajemenBatik = lazy(() => import("./pages/admin/ManajemenBatik"));
+const ManajemenFrame = lazy(() => import("./pages/admin/ManajemenFrame"));
+const ManajemenInfoBatik = lazy(() => import("./pages/admin/ManajemenInfoBatik"));
+const ManajemenModel = lazy(() => import("./pages/admin/ManajemenModel"));
+const Photobox = lazy(() => import("./pages/Photobox"));
+const AIGenerative = lazy(() => import("./pages/AIGenerative"));
+const VirtualTryOn = lazy(() => import("./pages/VirtualTryOn"));
+
 // Mitra & Admin-Mitra Pages
-import RegisterMitra from "./pages/RegisterMitra";
-import VerifikasiMitra from "./pages/admin/VerifikasiMitra";
-import MitraDashboard from "./pages/mitra/MitraDashboard";
-import InputBatikMitra from "./pages/mitra/InputBatikMitra";
-import ManajemenBatikMitra from "./pages/mitra/ManajemenBatikMitra";
+const RegisterMitra = lazy(() => import("./pages/RegisterMitra"));
+const VerifikasiMitra = lazy(() => import("./pages/admin/VerifikasiMitra"));
+const MitraDashboard = lazy(() => import("./pages/mitra/MitraDashboard"));
+const InputBatikMitra = lazy(() => import("./pages/mitra/InputBatikMitra"));
+const ManajemenBatikMitra = lazy(() => import("./pages/mitra/ManajemenBatikMitra"));
 
 function PageTransition({ children }) {
   const location = useLocation();
@@ -43,7 +47,7 @@ function PageTransition({ children }) {
         <div style={{
           position: "fixed",
           top: 0, left: 0, right: 0, bottom: 0,
-          background: "rgba(0, 17, 125, 0.3)",
+          background: "rgba(253, 250, 244, 0.75)",
           backdropFilter: "blur(4px)",
           display: "flex",
           alignItems: "center",
@@ -73,11 +77,17 @@ function App() {
         }} />
         <Navbar />
         <div style={{ minHeight: "calc(100vh - 70px)", position: "relative", zIndex: 1 }}>
+          <Suspense fallback={
+            <div style={{ minHeight: "70vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <LoadingLogo text={null} size={200} />
+            </div>
+          }>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/katalog" element={<Katalog />} />
             <Route path="/scan" element={<Scan />} />
             <Route path="/generative" element={<AIGenerative />} />
+            <Route path="/virtual-try-on" element={<VirtualTryOn />} />
             <Route path="/photobox" element={<Photobox />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register-mitra" element={<RegisterMitra />} />
@@ -166,6 +176,7 @@ function App() {
               } 
             />
           </Routes>
+          </Suspense>
         </div>
       </PageTransition>
     </BrowserRouter>

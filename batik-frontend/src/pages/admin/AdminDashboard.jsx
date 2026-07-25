@@ -1,16 +1,17 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { colors, fonts } from "../../theme";
 
 // Professional SVG Icons (Styled to match the new theme)
 const PlusIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8FF01" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#033EEE" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <line x1="12" y1="5" x2="12" y2="19"></line>
     <line x1="5" y1="12" x2="19" y2="12"></line>
   </svg>
 );
 
 const DatabaseIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8FF01" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#033EEE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
     <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
     <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
@@ -18,7 +19,7 @@ const DatabaseIcon = () => (
 );
 
 const FrameIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8FF01" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#033EEE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
     <circle cx="8.5" cy="8.5" r="1.5"></circle>
     <polyline points="21 15 16 10 5 21"></polyline>
@@ -26,7 +27,7 @@ const FrameIcon = () => (
 );
 
 const InfoIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8FF01" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#033EEE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10"></circle>
     <line x1="12" y1="16" x2="12" y2="12"></line>
     <line x1="12" y1="8" x2="12.01" y2="8"></line>
@@ -34,7 +35,7 @@ const InfoIcon = () => (
 );
 
 const UsersIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8FF01" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#033EEE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
     <circle cx="9" cy="7" r="4"></circle>
     <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -43,7 +44,7 @@ const UsersIcon = () => (
 );
 
 const CpuIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8FF01" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#033EEE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
     <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
     <line x1="12" y1="22.08" x2="12" y2="12"></line>
@@ -62,7 +63,7 @@ export default function AdminDashboard() {
       <div style={styles.container}>
         <div style={styles.header}>
           <h1 style={styles.title}>
-            Admin <span style={{ color: "#C8FF01" }}>Dashboard</span>
+            Admin <span style={{ color: colors.blue }}>Dashboard</span>
           </h1>
           <p style={styles.subtitle}>Selamat datang di panel kendali utama sistem BatikAI</p>
         </div>
@@ -220,7 +221,7 @@ export default function AdminDashboard() {
 const styles = {
   pageWrapper: {
     minHeight: "calc(100vh - 70px)",
-    background: "linear-gradient(135deg, #00117D 0%, #0122B4 100%)", // Matches the premium blue theme
+    background: "transparent",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -232,10 +233,10 @@ const styles = {
   pattern: {
     position: "absolute",
     inset: 0,
-    opacity: 0.15,
+    opacity: 0.5,
     backgroundImage: `
       radial-gradient(circle at center,
-      #C8FF01 2.5px,
+      ${colors.blueSoft2} 2.5px,
       transparent 2.5px)
     `,
     backgroundSize: "40px 40px",
@@ -246,7 +247,7 @@ const styles = {
     padding: "0 20px",
     width: "100%",
     maxWidth: "1050px",
-    fontFamily: "'Poppins', sans-serif",
+    fontFamily: fonts.body,
     position: "relative",
     zIndex: 1,
   },
@@ -257,13 +258,13 @@ const styles = {
   title: {
     fontSize: "2.8rem",
     fontWeight: "800",
-    color: "#ffffff",
-    fontFamily: "'Playfair Display', serif",
+    color: colors.textHead,
+    fontFamily: fonts.heading,
     marginBottom: "12px",
     letterSpacing: "-0.5px",
   },
   subtitle: {
-    color: "#D0E0FF",
+    color: colors.textBody,
     fontSize: "1.1rem",
     fontWeight: "400",
   },
@@ -274,11 +275,11 @@ const styles = {
     justifyContent: "center",
   },
   card: {
-    background: "rgba(255, 255, 255, 0.05)",
+    background: colors.surface,
     borderRadius: "24px",
     padding: "30px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`,
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
@@ -286,14 +287,14 @@ const styles = {
   },
   cardHover: {
     transform: "translateY(-6px)",
-    boxShadow: "0 15px 35px rgba(200, 255, 1, 0.15)",
-    borderColor: "rgba(200, 255, 1, 0.3)",
+    boxShadow: colors.shadow,
+    borderColor: colors.blueBorder,
   },
   iconWrapper: {
     width: "56px",
     height: "56px",
     borderRadius: "16px",
-    background: "rgba(200, 255, 1, 0.1)",
+    background: colors.blueSoft,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -302,11 +303,11 @@ const styles = {
   cardTitle: {
     fontSize: "1.25rem",
     fontWeight: "700",
-    color: "#ffffff",
+    color: colors.textHead,
     marginBottom: "10px",
   },
   cardDesc: {
-    color: "#D0E0FF",
+    color: colors.textBody,
     fontSize: "0.92rem",
     lineHeight: "1.6",
     marginBottom: "25px",
@@ -317,21 +318,21 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     textDecoration: "none",
-    background: "linear-gradient(90deg, #C8FF01 0%, #AEE600 100%)",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     padding: "12px 24px",
     borderRadius: "30px",
     fontSize: "0.95rem",
     fontWeight: "700",
     transition: "all 0.3s ease",
-    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.25)",
+    boxShadow: colors.shadowSm,
     width: "100%",
     boxSizing: "border-box",
     textAlign: "center",
   },
   actionButtonHover: {
-    background: "linear-gradient(90deg, #d4ff1a 0%, #b8f000 100%)",
+    background: colors.blueGradient,
     transform: "translateY(-2px)",
-    boxShadow: "0 6px 20px rgba(200, 255, 1, 0.4)",
+    boxShadow: colors.shadow,
   }
 };

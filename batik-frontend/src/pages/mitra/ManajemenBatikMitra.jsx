@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getMitraBatik, deleteBatikMitra, updateBatikMitra, BASE_URL } from "../../services/api";
 import { getToken } from "../../services/auth";
 import { useNavigate } from "react-router-dom";
+import { colors, fonts } from "../../theme";
 
 export default function ManajemenBatikMitra() {
   const [data, setData] = useState([]);
@@ -117,7 +118,7 @@ export default function ManajemenBatikMitra() {
       <div style={styles.container}>
         <div style={styles.header}>
           <button onClick={() => navigate("/mitra/dashboard")} style={styles.backBtn}>
-            ← Kembali ke Dashboard
+            Kembali ke Dashboard
           </button>
           <h1 style={styles.title}>Kelola Data Batik</h1>
           <p style={styles.subtitle}>Kelola (Edit/Hapus) koleksi batik yang telah Anda unggah.</p>
@@ -153,7 +154,7 @@ export default function ManajemenBatikMitra() {
                       <td style={styles.td}>
                         <img src={imgUrl} alt={item.nama} style={styles.imgMini} />
                       </td>
-                      <td style={styles.td}><strong>{item.nama}</strong> <br/><small style={{color:'#7f8c8d'}}>{item.motif_utama}</small></td>
+                      <td style={styles.td}><strong>{item.nama}</strong> <br/><small style={{color: colors.textMuted}}>{item.motif_utama}</small></td>
                       <td style={styles.td}>
                         <span style={item.jenis_acara === "Batik Keraton" ? styles.badgeKeraton : styles.badgeUmum}>
                           {item.jenis_acara || "Batik Umum"}
@@ -161,10 +162,10 @@ export default function ManajemenBatikMitra() {
                       </td>
                       <td style={styles.td}>{item.jenis_batik}</td>
                       <td style={styles.td}>
-                        {item.shopee_link ? <a href={item.shopee_link} target="_blank" rel="noreferrer" style={{color:'#d17b0f'}}>Ada ↗</a> : "-"}
+                        {item.shopee_link ? <a href={item.shopee_link} target="_blank" rel="noreferrer" style={{color:'#d17b0f'}}>Ada</a> : "-"}
                       </td>
                       <td style={styles.td}>
-                        {item.tokopedia_link ? <a href={item.tokopedia_link} target="_blank" rel="noreferrer" style={{color:'#1fb412'}}>Ada ↗</a> : "-"}
+                        {item.tokopedia_link ? <a href={item.tokopedia_link} target="_blank" rel="noreferrer" style={{color:'#1fb412'}}>Ada</a> : "-"}
                       </td>
                       <td style={styles.td}>
                         <div style={styles.actionBtns}>
@@ -177,7 +178,7 @@ export default function ManajemenBatikMitra() {
                 })}
                 {data.length === 0 && (
                   <tr>
-                    <td colSpan="7" style={{ textAlign: "center", padding: "40px", color: "#636e72" }}>
+                    <td colSpan="7" style={{ textAlign: "center", padding: "40px", color: colors.textMuted }}>
                       Belum ada data batik yang Anda unggah.
                     </td>
                   </tr>
@@ -262,13 +263,13 @@ export default function ManajemenBatikMitra() {
                   <div style={{ marginTop: "10px", display: "flex", gap: "15px", alignItems: "flex-end" }}>
                      {!editPreview && (
                        <div>
-                         <p style={{ margin: "0 0 8px", fontSize: "0.85rem", color: "#636e72" }}>Gambar Lama:</p>
+                         <p style={{ margin: "0 0 8px", fontSize: "0.85rem", color: colors.textMuted }}>Gambar Lama:</p>
                          <img src={editForm.gambarLama?.startsWith("http") ? editForm.gambarLama : `${BASE_URL}/${editForm.gambarLama}`} alt="lama" style={styles.imgPreview} />
                        </div>
                      )}
                      {editPreview && (
                        <div>
-                         <p style={{ margin: "0 0 8px", fontSize: "0.85rem", color: "#636e72" }}>Gambar Baru:</p>
+                         <p style={{ margin: "0 0 8px", fontSize: "0.85rem", color: colors.textMuted }}>Gambar Baru:</p>
                          <img src={editPreview} alt="baru" style={styles.imgPreview} />
                        </div>
                      )}
@@ -293,7 +294,7 @@ export default function ManajemenBatikMitra() {
 const styles = {
   pageWrapper: {
     minHeight: "calc(100vh - 70px)",
-    background: "linear-gradient(135deg, #FDFBF7 0%, #F4EAE0 100%)",
+    background: "transparent",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -304,7 +305,7 @@ const styles = {
     padding: "0 20px",
     width: "100%",
     maxWidth: "1100px",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: fonts.body,
   },
   header: {
     marginBottom: "30px",
@@ -312,7 +313,7 @@ const styles = {
   backBtn: {
     background: "transparent",
     border: "none",
-    color: "#8B5E34",
+    color: colors.blue,
     fontWeight: "700",
     cursor: "pointer",
     fontSize: "1rem",
@@ -322,54 +323,54 @@ const styles = {
   title: {
     fontSize: "2.8rem",
     fontWeight: "800",
-    color: "#2C1E16",
-    fontFamily: "'Playfair Display', serif",
+    color: colors.textHead,
+    fontFamily: fonts.heading,
     marginBottom: "12px",
     letterSpacing: "-0.5px",
   },
   subtitle: {
-    color: "#5a4a42",
+    color: colors.textBody,
     fontSize: "1.15rem",
   },
   loading: {
     textAlign: "center",
-    color: "#8B5E34",
+    color: colors.blue,
     fontWeight: "600",
     fontSize: "1.1rem",
     padding: "40px",
   },
   tableContainer: {
     overflowX: "auto",
-    background: "#ffffff",
+    background: colors.surface,
     borderRadius: "24px",
-    boxShadow: "0 4px 20px rgba(139, 94, 52, 0.05)",
-    border: "1px solid rgba(139, 94, 52, 0.08)",
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`,
   },
   table: {
     width: "100%",
     borderCollapse: "collapse",
   },
   trHeader: {
-    background: "#F9F5F0",
-    borderBottom: "1px solid rgba(139, 94, 52, 0.1)",
+    background: colors.surfaceAlt,
+    borderBottom: `1px solid ${colors.border}`,
   },
   th: {
     padding: "20px 24px",
     textAlign: "left",
-    color: "#2C1E16",
+    color: colors.textHead,
     fontWeight: "700",
     textTransform: "uppercase",
     fontSize: "0.85rem",
     letterSpacing: "0.5px",
   },
   trBody: {
-    borderBottom: "1px solid rgba(139, 94, 52, 0.08)",
+    borderBottom: `1px solid ${colors.border}`,
     transition: "background 0.2s",
   },
   td: {
     padding: "20px 24px",
     verticalAlign: "middle",
-    color: "#4a4a4a",
+    color: colors.textBody,
     fontSize: "0.95rem",
   },
   badgeKeraton: {
@@ -395,7 +396,7 @@ const styles = {
     height: "70px",
     objectFit: "cover",
     borderRadius: "12px",
-    border: "1px solid rgba(139, 94, 52, 0.1)",
+    border: `1px solid ${colors.border}`,
   },
   actionBtns: {
     display: "flex",
@@ -403,9 +404,9 @@ const styles = {
   },
   editBtn: {
     padding: "8px 18px",
-    background: "#ffffff",
-    color: "#8B5E34",
-    border: "1px solid #8B5E34",
+    background: colors.surface,
+    color: colors.blue,
+    border: `1px solid ${colors.blue}`,
     borderRadius: "8px",
     cursor: "pointer",
     fontWeight: "600",
@@ -424,14 +425,14 @@ const styles = {
     transition: "all 0.2s",
   },
   successMsg: {
-    background: "rgba(139, 94, 52, 0.1)",
-    color: "#2C1E16",
+    background: colors.blueSoft,
+    color: colors.textHead,
     padding: "15px",
     borderRadius: "12px",
     marginBottom: "20px",
     fontWeight: "600",
     textAlign: "center",
-    border: "1px solid rgba(139, 94, 52, 0.3)",
+    border: `1px solid ${colors.blueBorder}`,
   },
   errorMsg: {
     background: "#ff767522",
@@ -458,14 +459,14 @@ const styles = {
     padding: "20px",
   },
   modalContent: {
-    background: "#ffffff",
+    background: colors.surface,
     width: "100%",
     maxWidth: "650px",
     maxHeight: "90vh",
     overflowY: "auto",
     borderRadius: "24px",
     padding: "40px",
-    boxShadow: "0 20px 50px rgba(0,0,0,0.1)",
+    boxShadow: colors.shadow,
   },
   modalHeader: {
     display: "flex",
@@ -473,21 +474,21 @@ const styles = {
     alignItems: "center",
     marginBottom: "30px",
     paddingBottom: "15px",
-    borderBottom: "1px solid rgba(139, 94, 52, 0.1)"
+    borderBottom: `1px solid ${colors.border}`
   },
   modalTitle: {
     margin: 0,
     fontSize: "1.8rem",
     fontWeight: "800",
-    color: "#2C1E16",
-    fontFamily: "'Playfair Display', serif",
+    color: colors.textHead,
+    fontFamily: fonts.heading,
   },
   closeBtn: {
     background: "none",
     border: "none",
     fontSize: "2rem",
     cursor: "pointer",
-    color: "#636e72",
+    color: colors.textMuted,
     lineHeight: "1",
     transition: "color 0.2s",
   },
@@ -504,27 +505,27 @@ const styles = {
   label: {
     fontSize: "0.85rem",
     fontWeight: "700",
-    color: "#8B5E34",
+    color: colors.blue,
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
   input: {
     padding: "12px 15px",
-    border: "1px solid rgba(139, 94, 52, 0.2)",
+    border: `1px solid ${colors.border}`,
     borderRadius: "12px",
     outline: "none",
-    background: "#fafafa",
-    color: "#2C1E16",
+    background: colors.surface,
+    color: colors.textHead,
     fontSize: "0.95rem",
     transition: "border-color 0.2s",
   },
   textarea: {
     padding: "12px 15px",
-    border: "1px solid rgba(139, 94, 52, 0.2)",
+    border: `1px solid ${colors.border}`,
     borderRadius: "12px",
     outline: "none",
-    background: "#fafafa",
-    color: "#2C1E16",
+    background: colors.surface,
+    color: colors.textHead,
     fontSize: "0.95rem",
     minHeight: "120px",
     resize: "vertical",
@@ -536,25 +537,25 @@ const styles = {
     height: "100px",
     objectFit: "cover",
     borderRadius: "12px",
-    border: "1px solid rgba(139, 94, 52, 0.2)",
+    border: `1px solid ${colors.border}`,
   },
   saveBtn: {
     padding: "14px 28px",
-    background: "#8B5E34",
-    color: "white",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     border: "none",
     borderRadius: "12px",
     cursor: "pointer",
     fontWeight: "600",
     fontSize: "0.95rem",
-    boxShadow: "0 4px 15px rgba(139, 94, 52, 0.25)",
+    boxShadow: colors.shadowSm,
     transition: "all 0.2s",
   },
   cancelBtn: {
     padding: "14px 28px",
-    background: "#ffffff",
-    color: "#636e72",
-    border: "1px solid #dfe6e9",
+    background: colors.surface,
+    color: colors.textBody,
+    border: `1px solid ${colors.border}`,
     borderRadius: "12px",
     cursor: "pointer",
     fontWeight: "600",

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { BASE_URL } from "../../services/api";
+import { colors, fonts } from "../../theme";
 
 const PRESET_CLASSES = [
     "Kawung", "Mega Mendung", "Parang", 
@@ -82,7 +83,7 @@ export default function ManajemenInfoBatik() {
                             onChange={(e) => setFormData({...formData, nama: e.target.value})}
                             style={styles.select}
                         >
-                            {PRESET_CLASSES.map(c => <option key={c} value={c} style={{background: "#00117D", color: "#fff"}}>{c}</option>)}
+                            {PRESET_CLASSES.map(c => <option key={c} value={c} style={{background: "#FFFFFF", color: colors.textHead}}>{c}</option>)}
                         </select>
                     </div>
                     <div style={styles.inputGroup}>
@@ -134,133 +135,133 @@ export default function ManajemenInfoBatik() {
 const styles = {
     pageWrapper: {
         minHeight: "calc(100vh - 70px)",
-        background: "radial-gradient(circle at 10% 20%, #00117D 0%, #000B4D 90%)",
-        backgroundImage: "radial-gradient(circle at 10% 20%, #00117D 0%, #000B4D 90%), radial-gradient(rgba(200, 255, 1, 0.15) 1px, transparent 0)",
-        backgroundSize: "100% 100%, 24px 24px",
+        background: "transparent",
+        backgroundImage: `radial-gradient(${colors.blueSoft} 1px, transparent 0)`,
+        backgroundSize: "24px 24px",
         paddingTop: "40px",
         paddingBottom: "60px",
     },
-    container: { 
-        padding: "0 20px", 
-        maxWidth: "900px", 
-        margin: "0 auto", 
-        fontFamily: "'Inter', sans-serif" 
+    container: {
+        padding: "0 20px",
+        maxWidth: "900px",
+        margin: "0 auto",
+        fontFamily: fonts.body
     },
-    title: { 
-        fontSize: "2.8rem", 
-        fontWeight: "800", 
-        color: "#ffffff", 
-        fontFamily: "'Outfit', sans-serif",
+    title: {
+        fontSize: "2.8rem",
+        fontWeight: "800",
+        color: colors.textHead,
+        fontFamily: fonts.heading,
         marginBottom: "12px",
         letterSpacing: "-0.5px"
     },
-    subtitle: { 
-        color: "#C8FF01", 
+    subtitle: {
+        color: colors.textBody,
         fontSize: "1.15rem",
         fontWeight: "500",
-        marginBottom: "40px" 
+        marginBottom: "40px"
     },
-    form: { 
-        background: "rgba(255, 255, 255, 0.03)", 
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        padding: "30px", 
-        borderRadius: "24px", 
-        border: "1px solid rgba(255, 255, 255, 0.08)",
-        marginBottom: "40px" 
+    form: {
+        background: colors.surface,
+        padding: "30px",
+        borderRadius: "24px",
+        border: `1px solid ${colors.border}`,
+        boxShadow: colors.shadow,
+        marginBottom: "40px"
     },
-    inputGroup: { 
-        marginBottom: "20px", 
-        display: "flex", 
-        flexDirection: "column", 
-        gap: "8px" 
+    inputGroup: {
+        marginBottom: "20px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px"
     },
     label: {
         fontSize: "0.85rem",
         fontWeight: "700",
-        color: "#C8FF01",
+        color: colors.blue,
         textTransform: "uppercase",
         letterSpacing: "0.5px",
     },
-    select: { 
-        padding: "14px 15px", 
-        borderRadius: "12px", 
-        border: "1px solid rgba(255, 255, 255, 0.1)",
-        background: "rgba(255, 255, 255, 0.05)",
-        color: "#ffffff",
+    select: {
+        padding: "14px 15px",
+        borderRadius: "12px",
+        border: `1px solid ${colors.border}`,
+        background: "#FFFFFF",
+        color: colors.textHead,
         outline: "none",
         fontSize: "0.95rem"
     },
-    textarea: { 
-        padding: "14px 15px", 
-        borderRadius: "12px", 
-        border: "1px solid rgba(255, 255, 255, 0.1)",
-        background: "rgba(255, 255, 255, 0.05)",
-        color: "#ffffff",
+    textarea: {
+        padding: "14px 15px",
+        borderRadius: "12px",
+        border: `1px solid ${colors.border}`,
+        background: "#FFFFFF",
+        color: colors.textHead,
         outline: "none",
         fontSize: "0.95rem",
         minHeight: "120px",
         fontFamily: "inherit"
     },
-    button: { 
-        background: "#C8FF01", 
-        color: "#00117D", 
-        border: "none", 
-        padding: "16px 24px", 
-        borderRadius: "12px", 
-        cursor: "pointer", 
+    button: {
+        background: colors.blueGradient,
+        color: colors.onBlue,
+        border: "none",
+        padding: "16px 24px",
+        borderRadius: "12px",
+        cursor: "pointer",
         fontWeight: "700",
         width: "100%",
-        fontSize: "1rem"
+        fontSize: "1rem",
+        boxShadow: colors.shadowSm
     },
-    message: { 
-        marginTop: "15px", 
-        color: "#C8FF01", 
+    message: {
+        marginTop: "15px",
+        color: colors.blue,
         fontWeight: "600",
         textAlign: "center"
     },
     loading: {
-        color: "#C8FF01",
+        color: colors.blue,
         textAlign: "center"
     },
-    list: { 
-        background: "rgba(255, 255, 255, 0.03)", 
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        padding: "30px", 
-        borderRadius: "24px", 
-        border: "1px solid rgba(255, 255, 255, 0.08)"
+    list: {
+        background: colors.surface,
+        padding: "30px",
+        borderRadius: "24px",
+        border: `1px solid ${colors.border}`,
+        boxShadow: colors.shadow
     },
-    listTitle: { 
-        marginBottom: "20px", 
-        color: "#ffffff",
-        fontFamily: "'Outfit', sans-serif",
+    listTitle: {
+        marginBottom: "20px",
+        color: colors.textHead,
+        fontFamily: fonts.heading,
         fontSize: "1.5rem",
         fontWeight: "700"
     },
     tableResponsive: {
         overflowX: "auto"
     },
-    table: { 
-        width: "100%", 
-        borderCollapse: "collapse" 
+    table: {
+        width: "100%",
+        borderCollapse: "collapse"
     },
     tr: {
-        borderBottom: "1px solid rgba(255, 255, 255, 0.08)"
+        borderBottom: `1px solid ${colors.border}`
     },
-    th: { 
-        textAlign: "left", 
-        padding: "14px 12px", 
-        color: "#C8FF01",
+    th: {
+        textAlign: "left",
+        padding: "14px 12px",
+        background: colors.surfaceAlt,
+        color: colors.textHead,
         fontWeight: "700",
         fontSize: "0.9rem",
         textTransform: "uppercase",
         letterSpacing: "0.5px"
     },
-    td: { 
-        padding: "16px 12px", 
+    td: {
+        padding: "16px 12px",
         fontSize: "0.95rem",
-        color: "#ffffff"
+        color: colors.textBody
     },
     deleteBtn: { 
         background: "rgba(239, 68, 68, 0.15)", 
