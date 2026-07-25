@@ -16,3 +16,4 @@ gradio_client
 qdrant-client
 sentence-transformers
 huggingface_hub
+einops

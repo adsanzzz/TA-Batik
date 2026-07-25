@@ -133,53 +133,87 @@ def search_similar_batik(query: str, top_k: int = 3) -> List[Dict[str, Any]]:
 
     query_vector = get_text_embedding(query, is_query=True)
     
-    search_results = client.search(
-        collection_name=COLLECTION_NAME,
-        query_vector=query_vector,
-        limit=top_k
-    )
+    if hasattr(client, "query_points"):
+        response = client.query_points(
+            collection_name=COLLECTION_NAME,
+            query=query_vector,
+            limit=top_k
+        )
+        search_results = response.points
+    else:
+        search_results = client.search(
+            collection_name=COLLECTION_NAME,
+            query_vector=query_vector,
+            limit=top_k
+        )
 
     matches = []
     for hit in search_results:
         matches.append({
-            "score": hit.score,
-            "payload": hit.payload
+            "score": getattr(hit, "score", 0.0),
+            "payload": getattr(hit, "payload", {})
         })
     return matches
 
-async def ask_qwen_llm(prompt: str) -> str:
+async def ask_qwen_llm(prompt: str, fallback_items: List[Dict[str, Any]] = None) -> str:
     """
     Menembak API Hugging Face Inference untuk model Qwen/Qwen2.5-7B-Instruct.
+    Jika token HF bermasalah/403, akan otomatis merangkai rekomendasi cerdas dari data Qdrant.
     """
     token = os.getenv("HF_TOKEN")
-    if not token:
-        # Fallback jika token belum diisi di .env
-        return "⚠️ HF_TOKEN belum dikonfigurasi di file .env. Harap masukkan token Hugging Face Anda."
+    
+    if token:
+        try:
+            from huggingface_hub import InferenceClient
+            client = InferenceClient(model=HF_MODEL_ID, token=token)
+            response = client.chat_completion(
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=512,
+                temperature=0.7
+            )
+            if response and response.choices and response.choices[0].message.content:
+                return response.choices[0].message.content.strip()
+        except Exception as e:
+            print(f"[RAG] InferenceClient failed: {e}")
 
-    url = f"https://api-inference.huggingface.co/models/{HF_MODEL_ID}"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
-    }
+        # Try direct HTTP v1 OpenAI-compatible endpoint on HF
+        try:
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json"
+            }
+            payload = {
+                "model": HF_MODEL_ID,
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": 512,
+                "temperature": 0.7
+            }
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                res = await client.post("https://router.huggingface.co/v1/chat/completions", json=payload, headers=headers)
+                if res.status_code == 200:
+                    data = res.json()
+                    return data["choices"][0]["message"]["content"].strip()
+        except Exception as e:
+            print(f"[RAG] Direct HTTP failed: {e}")
 
-    payload = {
-        "inputs": prompt,
-        "parameters": {
-            "max_new_tokens": 512,
-            "temperature": 0.7,
-            "return_full_text": False
-        }
-    }
+    # Fallback RAG Synthesizer (jika HF Token belum diizinkan/error)
+    if fallback_items and len(fallback_items) > 0:
+        recommendations = ["Berdasarkan pencarian pencocokan makna & filosofi batik di basis data kami, berikut rekomendasi batik yang paling sesuai untuk Anda:\n"]
+        for idx, item in enumerate(fallback_items, 1):
+            payload = item.get("payload", {})
+            nama = payload.get("nama", "Batik Nusantara")
+            motif = payload.get("motif_utama", "Klasik")
+            acara = payload.get("jenis_acara", "Umum")
+            filosofi = payload.get("filosofi", "-")
+            
+            recommendations.append(
+                f"{idx}. Batik {nama}\n"
+                f"   • Motif Utama: {motif}\n"
+                f"   • Peruntukan: Acara {acara}\n"
+                f"   • Filosofi & Makna: {filosofi}\n"
+            )
+        recommendations.append("💡 Tips: Pilih motif di atas yang paling selaras dengan harapan dan nuansa acara Anda.")
+        return "\n".join(recommendations)
 
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.post(url, json=payload, headers=headers)
-        if response.status_code != 200:
-            return f"Error dari Hugging Face API ({response.status_code}): {response.text}"
-        
-        result = response.json()
-        if isinstance(result, list) and len(result) > 0:
-            return result[0].get("generated_text", "").strip()
-        elif isinstance(result, dict) and "generated_text" in result:
-            return result["generated_text"].strip()
-        else:
-            return str(result)
+    return "Maaf, belum ditemukan rekomendasi batik yang cocok untuk pertanyaan Anda. Cobalah kata kunci lain seperti 'pernikahan', 'lamaran', atau 'wisuda'."
+

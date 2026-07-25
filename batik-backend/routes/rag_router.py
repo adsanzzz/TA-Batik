@@ -74,8 +74,8 @@ async def get_batik_recommendation(req: RecommendationRequest):
             "Jawaban Rekomendasi Anda:"
         )
 
-        # 4. Panggil LLM Qwen di Hugging Face
-        llm_response = await rag_service.ask_qwen_llm(system_prompt)
+        # 4. Panggil LLM Qwen di Hugging Face (dengan fallback cerdas jika token HF belum diizinkan)
+        llm_response = await rag_service.ask_qwen_llm(system_prompt, fallback_items=retrieved_items)
 
         return {
             "status": "success",
