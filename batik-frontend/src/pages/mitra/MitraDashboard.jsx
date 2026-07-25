@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { colors, fonts } from "../../theme";
 
 const PlusIcon = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -20,16 +21,33 @@ export default function MitraDashboard() {
   const [hoverCard, setHoverCard] = useState(null);
 
   return (
-    <div style={styles.pageWrapper}>
-      <div style={styles.container}>
+    <div style={styles.pageWrapper} className="mitra-dash-wrapper">
+      <style>{`
+        .mitra-dash-container { box-sizing: border-box; }
+        @media (max-width: 1024px) {
+          .mitra-dash-wrapper { padding-top: 40px !important; padding-bottom: 40px !important; }
+          .mitra-dash-title { font-size: 2.2rem !important; }
+          .mitra-dash-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 24px !important; }
+        }
+        @media (max-width: 640px) {
+          .mitra-dash-wrapper { padding-top: 24px !important; padding-bottom: 32px !important; }
+          .mitra-dash-container { padding: 0 16px !important; }
+          .mitra-dash-title { font-size: 1.7rem !important; }
+          .mitra-dash-subtitle { font-size: 1rem !important; }
+          .mitra-dash-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+          .mitra-dash-card { padding: 24px !important; }
+        }
+      `}</style>
+      <div style={styles.container} className="mitra-dash-container">
         <div style={styles.header}>
-          <h1 style={styles.title}>Mitra Dashboard</h1>
-          <p style={styles.subtitle}>Selamat datang di panel kendali Mitra BatikAI. Kelola produk batik Anda di sini.</p>
+          <h1 style={styles.title} className="mitra-dash-title">Mitra Dashboard</h1>
+          <p style={styles.subtitle} className="mitra-dash-subtitle">Selamat datang di panel kendali Mitra BatikAI. Kelola produk batik Anda di sini.</p>
         </div>
 
-        <div style={styles.grid}>
+        <div style={styles.grid} className="mitra-dash-grid">
           {/* Card 1: Unggah Batik */}
-          <div 
+          <div
+            className="mitra-dash-card"
             style={{...styles.card, ...(hoverCard === 1 ? styles.cardHover : {})}}
             onMouseEnter={() => setHoverCard(1)}
             onMouseLeave={() => setHoverCard(null)}
@@ -45,7 +63,8 @@ export default function MitraDashboard() {
           </div>
 
           {/* Card 2: Kelola Batik */}
-          <div 
+          <div
+            className="mitra-dash-card"
             style={{...styles.card, ...(hoverCard === 2 ? styles.cardHover : {})}}
             onMouseEnter={() => setHoverCard(2)}
             onMouseLeave={() => setHoverCard(null)}
@@ -68,7 +87,7 @@ export default function MitraDashboard() {
 const styles = {
   pageWrapper: {
     minHeight: "calc(100vh - 70px)",
-    background: "linear-gradient(135deg, #FDFBF7 0%, #F4EAE0 100%)",
+    background: "transparent",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -79,7 +98,7 @@ const styles = {
     padding: "0 20px",
     width: "100%",
     maxWidth: "900px",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: fonts.body,
   },
   header: {
     marginBottom: "50px",
@@ -88,13 +107,13 @@ const styles = {
   title: {
     fontSize: "2.8rem",
     fontWeight: "800",
-    color: "#2C1E16",
-    fontFamily: "'Playfair Display', serif",
+    color: colors.textHead,
+    fontFamily: fonts.heading,
     marginBottom: "12px",
     letterSpacing: "-0.5px",
   },
   subtitle: {
-    color: "#5a4a42",
+    color: colors.textBody,
     fontSize: "1.15rem",
     fontWeight: "400",
   },
@@ -105,11 +124,11 @@ const styles = {
     justifyContent: "center",
   },
   card: {
-    background: "#ffffff",
+    background: colors.surface,
     borderRadius: "24px",
     padding: "40px",
-    boxShadow: "0 4px 20px rgba(139, 94, 52, 0.05)",
-    border: "1px solid rgba(139, 94, 52, 0.08)",
+    boxShadow: colors.shadowSm,
+    border: `1px solid ${colors.border}`,
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
@@ -117,15 +136,15 @@ const styles = {
   },
   cardHover: {
     transform: "translateY(-8px)",
-    boxShadow: "0 15px 35px rgba(139, 94, 52, 0.12)",
-    borderColor: "rgba(139, 94, 52, 0.2)",
+    boxShadow: colors.shadow,
+    borderColor: colors.blueBorder,
   },
   iconWrapper: {
     width: "64px",
     height: "64px",
     borderRadius: "16px",
-    background: "#F9F5F0",
-    color: "#8B5E34",
+    background: colors.blueSoft,
+    color: colors.blue,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -134,12 +153,12 @@ const styles = {
   cardTitle: {
     fontSize: "1.4rem",
     fontWeight: "700",
-    color: "#2C1E16",
+    color: colors.textHead,
     marginBottom: "12px",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: fonts.body,
   },
   cardDesc: {
-    color: "#636e72",
+    color: colors.textBody,
     fontSize: "1rem",
     lineHeight: "1.6",
     marginBottom: "30px",
@@ -150,14 +169,14 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     textDecoration: "none",
-    background: "#8B5E34",
-    color: "white",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     padding: "14px 28px",
     borderRadius: "12px",
     fontSize: "0.95rem",
     fontWeight: "600",
     transition: "all 0.3s ease",
-    boxShadow: "0 4px 15px rgba(139, 94, 52, 0.25)",
+    boxShadow: colors.shadowSm,
     width: "100%",
     boxSizing: "border-box",
   },

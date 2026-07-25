@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { registerMitra } from "../services/api";
 import Footer from "../components/Footer";
+import { colors, fonts } from "../theme";
 
 export default function RegisterMitra() {
   const [username, setUsername] = useState("");
@@ -67,10 +68,14 @@ export default function RegisterMitra() {
   if (success) {
     return (
       <>
-      <div style={styles.container}>
-          <div style={styles.card}>
-            <div style={styles.successIcon}>✓</div>
-            <h2 style={styles.title}>Registrasi Berhasil</h2>
+      <div style={styles.container} className="reg-mitra-container">
+          <div style={styles.card} className="reg-mitra-card">
+            <div style={styles.successIcon}>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <h2 style={styles.title} className="reg-mitra-title">Registrasi Berhasil</h2>
             <p style={styles.successMessage}>
               Pendaftaran Anda sebagai Mitra berhasil diajukan! Data Anda sedang dalam peninjauan oleh Admin. Anda akan diarahkan ke halaman Login.
             </p>
@@ -83,9 +88,22 @@ export default function RegisterMitra() {
 
   return (
     <>
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Registrasi Mitra Batik AI</h2>
+    <div style={styles.container} className="reg-mitra-container">
+      <style>{`
+        .reg-mitra-card { box-sizing: border-box; }
+        @media (max-width: 1024px) {
+          .reg-mitra-title { font-size: 2rem !important; }
+        }
+        @media (max-width: 640px) {
+          .reg-mitra-container { padding: 32px 16px !important; }
+          .reg-mitra-card { padding: 24px !important; max-width: 460px !important; }
+          .reg-mitra-title { font-size: 1.6rem !important; }
+          .reg-mitra-row { flex-direction: column !important; gap: 20px !important; }
+          .reg-mitra-submit { width: 100% !important; }
+        }
+      `}</style>
+      <div style={styles.card} className="reg-mitra-card">
+        <h2 style={styles.title} className="reg-mitra-title">Registrasi Mitra Batik AI</h2>
         <p style={styles.subtitle}>
           Bergabunglah sebagai mitra untuk mempromosikan produk batik Anda dengan teknologi AI.
         </p>
@@ -94,7 +112,7 @@ export default function RegisterMitra() {
 
         <form onSubmit={handleSubmit} style={styles.form}>
           {/* USERNAME & PASSWORD */}
-          <div style={styles.row}>
+          <div style={styles.row} className="reg-mitra-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>Username Baru</label>
               <input
@@ -120,7 +138,7 @@ export default function RegisterMitra() {
           </div>
 
           {/* NIK & NAMA */}
-          <div style={styles.row}>
+          <div style={styles.row} className="reg-mitra-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>NIK KTP</label>
               <input
@@ -159,7 +177,7 @@ export default function RegisterMitra() {
           </div>
 
           {/* FILE UPLOADS */}
-          <div style={styles.row}>
+          <div style={styles.row} className="reg-mitra-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>Upload KTP</label>
               <input
@@ -202,6 +220,7 @@ export default function RegisterMitra() {
           <button
             type="submit"
             disabled={loading}
+            className="reg-mitra-submit"
             style={loading ? { ...styles.submitBtn, opacity: 0.7 } : styles.submitBtn}
           >
             {loading ? "Mengirim Pendaftaran..." : "Daftar Sekarang"}
@@ -227,30 +246,29 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     padding: "60px 20px",
-    fontFamily: "Poppins, sans-serif",
+    background: "transparent",
+    fontFamily: fonts.body,
   },
   card: {
-    background: "#0122B4",
+    background: colors.surface,
     width: "100%",
     maxWidth: "700px",
     borderRadius: "24px",
-    boxShadow: "0 15px 40px rgba(0,0,0,0.3)",
-    border: "1px solid rgba(200, 255, 1, 0.2)",
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`,
     padding: "40px",
     boxSizing: "border-box",
   },
   title: {
     fontSize: "2.3rem",
     fontWeight: "800",
-    background: "linear-gradient(to bottom, #FFFFFF, #D0DBFF)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    fontFamily: "'Playfair Display', serif",
+    color: colors.textHead,
+    fontFamily: fonts.heading,
     marginBottom: "10px",
     textAlign: "center",
   },
   subtitle: {
-    color: "#D0E0FF",
+    color: colors.textBody,
     fontSize: "1rem",
     textAlign: "center",
     marginBottom: "35px",
@@ -275,20 +293,20 @@ const styles = {
   label: {
     fontSize: "0.85rem",
     fontWeight: "700",
-    color: "#C8FF01",
+    color: colors.textBody,
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
   input: {
     padding: "12px 16px",
     borderRadius: "10px",
-    border: "2px solid rgba(255, 255, 255, 0.15)",
+    border: `1px solid ${colors.border}`,
     outline: "none",
     fontSize: "0.95rem",
-    color: "#fff",
+    color: colors.textHead,
     transition: "all 0.3s ease",
     boxSizing: "border-box",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: colors.surface,
   },
   storeInputRow: {
     display: "flex",
@@ -307,8 +325,8 @@ const styles = {
   },
   addBtn: {
     background: "transparent",
-    color: "#C8FF01",
-    border: "2px dashed #C8FF01",
+    color: colors.blue,
+    border: `2px dashed ${colors.blueBorder}`,
     padding: "10px",
     borderRadius: "10px",
     cursor: "pointer",
@@ -319,14 +337,14 @@ const styles = {
   fileInput: {
     padding: "10px",
     borderRadius: "10px",
-    border: "2px dashed rgba(200, 255, 1, 0.25)",
-    backgroundColor: "rgba(0, 0, 0, 0.2)",
-    color: "#fff",
+    border: `2px dashed ${colors.blueBorder}`,
+    backgroundColor: colors.blueSoft,
+    color: colors.textBody,
     cursor: "pointer",
   },
   fileHint: {
     fontSize: "0.75rem",
-    color: "#D0E0FF",
+    color: colors.textMuted,
     marginTop: "2px",
   },
   checkboxContainer: {
@@ -339,18 +357,18 @@ const styles = {
     marginTop: "4px",
     width: "18px",
     height: "18px",
-    accentColor: "#C8FF01",
+    accentColor: colors.blue,
     cursor: "pointer",
   },
   checkboxLabel: {
     fontSize: "0.9rem",
-    color: "#D0E0FF",
+    color: colors.textBody,
     lineHeight: "1.4",
     cursor: "pointer",
   },
   submitBtn: {
-    background: "linear-gradient(135deg, #C8FF01, #AEE600)",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     border: "none",
     padding: "16px",
     borderRadius: "12px",
@@ -359,7 +377,7 @@ const styles = {
     cursor: "pointer",
     transition: "background 0.3s, transform 0.2s",
     marginTop: "15px",
-    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.3)",
+    boxShadow: colors.shadowSm,
   },
   error: {
     background: "#ff767522",
@@ -384,23 +402,23 @@ const styles = {
   },
   successMessage: {
     fontSize: "1.1rem",
-    color: "#fff",
+    color: colors.textBody,
     textAlign: "center",
     lineHeight: "1.6",
   },
   loginSection: {
     marginTop: "24px",
     paddingTop: "20px",
-    borderTop: "1px solid rgba(255, 255, 255, 0.15)",
+    borderTop: `1px solid ${colors.border}`,
     textAlign: "center",
   },
   loginText: {
-    color: "#D0E0FF",
+    color: colors.textMuted,
     fontSize: "0.85rem",
     marginBottom: "8px",
   },
   loginLink: {
-    color: "#C8FF01",
+    color: colors.blue,
     fontWeight: "700",
     fontSize: "0.9rem",
     textDecoration: "none",
@@ -412,7 +430,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    borderTop: "1px solid rgba(255, 255, 255, 0.15)",
+    borderTop: `1px solid ${colors.border}`,
     paddingTop: "30px"
   },
   footerImage: {
@@ -420,7 +438,7 @@ const styles = {
     maxWidth: "100%",
     height: "auto",
     borderRadius: "16px",
-    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.35)",
-    border: "1px solid rgba(255, 255, 255, 0.1)"
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`
   }
 };

@@ -2,9 +2,10 @@ import { useState } from "react";
 import { createBatikMitra } from "../../services/api";
 import { getToken } from "../../services/auth";
 import { useNavigate } from "react-router-dom";
+import { colors, fonts } from "../../theme";
 
 const UploadIcon = () => (
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#8B5E34", marginBottom: "10px" }}>
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: colors.blue, marginBottom: "10px" }}>
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
     <polyline points="17 8 12 3 7 8"></polyline>
     <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -74,14 +75,30 @@ export default function InputBatikMitra() {
   };
 
   return (
-    <div style={styles.pageWrapper}>
-      <div style={styles.container}>
+    <div style={styles.pageWrapper} className="input-batik-wrapper">
+      <style>{`
+        .input-batik-container { box-sizing: border-box; }
+        @media (max-width: 1024px) {
+          .input-batik-title { font-size: 2.2rem !important; }
+        }
+        @media (max-width: 640px) {
+          .input-batik-wrapper { padding-top: 24px !important; padding-bottom: 32px !important; }
+          .input-batik-container { padding: 0 16px !important; }
+          .input-batik-title { font-size: 1.7rem !important; }
+          .input-batik-subtitle { font-size: 1rem !important; }
+          .input-batik-form { padding: 24px !important; gap: 20px !important; }
+          .input-batik-row { grid-template-columns: 1fr !important; gap: 20px !important; }
+          .input-batik-uploadbox { height: 200px !important; }
+          .input-batik-submit { width: 100% !important; }
+        }
+      `}</style>
+      <div style={styles.container} className="input-batik-container">
         <div style={styles.header}>
           <button onClick={() => navigate("/mitra/dashboard")} style={styles.backBtn}>
-            ← Kembali ke Dashboard
+            Kembali ke Dashboard
           </button>
-          <h1 style={styles.title}>Unggah Koleksi Batik</h1>
-          <p style={styles.subtitle}>Bagikan keindahan motif batik Anda ke publik dengan link toko e-commerce.</p>
+          <h1 style={styles.title} className="input-batik-title">Unggah Koleksi Batik</h1>
+          <p style={styles.subtitle} className="input-batik-subtitle">Bagikan keindahan motif batik Anda ke publik dengan link toko e-commerce.</p>
         </div>
 
         {message.text && (
@@ -90,8 +107,8 @@ export default function InputBatikMitra() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.formRow}>
+        <form onSubmit={handleSubmit} style={styles.form} className="input-batik-form">
+          <div style={styles.formRow} className="input-batik-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>Nama/Motif Batik (Sesuai Kategori Model AI)</label>
               <select
@@ -139,7 +156,7 @@ export default function InputBatikMitra() {
             </div>
           </div>
 
-          <div style={styles.formRow}>
+          <div style={styles.formRow} className="input-batik-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>Jenis Batik</label>
               <select
@@ -172,7 +189,7 @@ export default function InputBatikMitra() {
           </div>
 
           {/* E-COMMERCE LINKS */}
-          <div style={styles.formRow}>
+          <div style={styles.formRow} className="input-batik-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>Link Shopee (Opsional)</label>
               <input
@@ -212,7 +229,7 @@ export default function InputBatikMitra() {
 
           <div style={styles.uploadSection}>
             <label style={styles.label}>Foto Produk Batik</label>
-            <div style={styles.uploadBox}>
+            <div style={styles.uploadBox} className="input-batik-uploadbox">
               <input
                 type="file"
                 accept="image/*"
@@ -234,9 +251,10 @@ export default function InputBatikMitra() {
             </div>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
+            className="input-batik-submit"
             style={loading ? {...styles.submitBtn, opacity: 0.7} : styles.submitBtn}
           >
             {loading ? "Mengunggah..." : "Unggah Batik"}
@@ -250,7 +268,7 @@ export default function InputBatikMitra() {
 const styles = {
   pageWrapper: {
     minHeight: "calc(100vh - 70px)",
-    background: "linear-gradient(135deg, #FDFBF7 0%, #F4EAE0 100%)",
+    background: "transparent",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -261,7 +279,7 @@ const styles = {
     padding: "0 20px",
     width: "100%",
     maxWidth: "900px",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: fonts.body,
   },
   header: {
     marginBottom: "30px",
@@ -269,7 +287,7 @@ const styles = {
   backBtn: {
     background: "transparent",
     border: "none",
-    color: "#8B5E34",
+    color: colors.blue,
     fontWeight: "700",
     cursor: "pointer",
     fontSize: "1rem",
@@ -279,21 +297,21 @@ const styles = {
   title: {
     fontSize: "2.8rem",
     fontWeight: "800",
-    color: "#2C1E16",
-    fontFamily: "'Playfair Display', serif",
+    color: colors.textHead,
+    fontFamily: fonts.heading,
     marginBottom: "12px",
     letterSpacing: "-0.5px",
   },
   subtitle: {
-    color: "#5a4a42",
+    color: colors.textBody,
     fontSize: "1.15rem",
   },
   form: {
-    background: "#ffffff",
+    background: colors.surface,
     padding: "40px",
     borderRadius: "24px",
-    boxShadow: "0 4px 20px rgba(139, 94, 52, 0.05)",
-    border: "1px solid rgba(139, 94, 52, 0.08)",
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`,
     display: "flex",
     flexDirection: "column",
     gap: "25px",
@@ -311,29 +329,29 @@ const styles = {
   label: {
     fontSize: "0.85rem",
     fontWeight: "700",
-    color: "#8B5E34",
+    color: colors.blue,
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
   input: {
     padding: "14px 15px",
     borderRadius: "12px",
-    border: "1px solid rgba(139, 94, 52, 0.2)",
+    border: `1px solid ${colors.border}`,
     outline: "none",
     fontSize: "0.95rem",
-    background: "#fafafa",
-    color: "#2C1E16",
+    background: colors.surface,
+    color: colors.textHead,
     transition: "border-color 0.2s",
   },
   textarea: {
     padding: "14px 15px",
     borderRadius: "12px",
-    border: "1px solid rgba(139, 94, 52, 0.2)",
+    border: `1px solid ${colors.border}`,
     outline: "none",
     fontSize: "0.95rem",
     minHeight: "130px",
-    background: "#fafafa",
-    color: "#2C1E16",
+    background: colors.surface,
+    color: colors.textHead,
     resize: "vertical",
     fontFamily: "inherit",
     transition: "border-color 0.2s",
@@ -342,10 +360,10 @@ const styles = {
     position: "relative",
     width: "100%",
     height: "250px",
-    border: "2px dashed rgba(139, 94, 52, 0.3)",
+    border: `2px dashed ${colors.blueBorder}`,
     borderRadius: "15px",
     overflow: "hidden",
-    background: "#fafafa",
+    background: colors.surface,
   },
   fileInput: {
     display: "none",
@@ -368,14 +386,14 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     gap: "5px",
-    color: "#5a4a42",
+    color: colors.textBody,
     fontWeight: "500",
     fontSize: "1rem",
   },
   submitBtn: {
     marginTop: "15px",
-    background: "#8B5E34",
-    color: "white",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     padding: "16px",
     borderRadius: "12px",
     border: "none",
@@ -383,17 +401,17 @@ const styles = {
     fontWeight: "600",
     cursor: "pointer",
     transition: "all 0.3s",
-    boxShadow: "0 4px 15px rgba(139, 94, 52, 0.25)",
+    boxShadow: colors.shadowSm,
   },
   successMsg: {
-    background: "rgba(139, 94, 52, 0.1)",
-    color: "#2C1E16",
+    background: colors.blueSoft,
+    color: colors.textHead,
     padding: "15px",
     borderRadius: "12px",
     marginBottom: "20px",
     fontWeight: "600",
     textAlign: "center",
-    border: "1px solid rgba(139, 94, 52, 0.3)",
+    border: `1px solid ${colors.blueBorder}`,
   },
   errorMsg: {
     background: "#ff767522",

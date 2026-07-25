@@ -3,7 +3,7 @@ export const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 export const createBatik = async (formData) => {
   const res = await fetch(`${BASE_URL}/admin/batik`, {
     method: "POST",
-    body: formData, // ⬅️ multipart/form-data, jangan set Content-Type manual
+    body: formData, // multipart/form-data, jangan set Content-Type manual
   });
 
   if (!res.ok) {
@@ -276,4 +276,4 @@ export const executeVton = async (formData) => {
 
   return res.json();
 };
-
+

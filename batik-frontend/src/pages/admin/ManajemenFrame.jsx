@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { getToken } from "../../services/auth";
 import { BASE_URL } from "../../services/api";
+import { colors, fonts } from "../../theme";
 
 const UploadIcon = () => (
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C8FF01" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "10px" }}>
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={colors.blue} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "10px" }}>
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
     <polyline points="17 8 12 3 7 8"></polyline>
     <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -111,16 +112,37 @@ export default function ManajemenFrame() {
   };
 
   return (
-    <div style={styles.pageWrapper}>
+    <div style={styles.pageWrapper} className="mf-page">
+      <style>{`
+        @media (max-width: 1024px) {
+          .mf-container { max-width: 100% !important; }
+          .mf-title { font-size: 2.2rem !important; }
+          .mf-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 640px) {
+          .mf-page { padding-top: 24px !important; padding-bottom: 32px !important; }
+          .mf-container { padding: 0 16px !important; box-sizing: border-box !important; }
+          .mf-title { font-size: 1.7rem !important; }
+          .mf-subtitle { font-size: 0.98rem !important; }
+          .mf-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+          .mf-card { padding: 20px !important; }
+          .mf-input, .mf-upload { width: 100% !important; box-sizing: border-box !important; }
+          .mf-submit { width: 100% !important; }
+          .mf-frame-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+        @media (max-width: 420px) {
+          .mf-frame-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
       {/* Background Dot Pattern */}
       <div style={styles.pattern}></div>
 
-      <div style={styles.container}>
+      <div style={styles.container} className="mf-container">
         <div style={styles.header}>
-          <h1 style={styles.title}>
-            Manajemen Frame <span style={{ color: "#C8FF01" }}>Photobox</span>
+          <h1 style={styles.title} className="mf-title">
+            Manajemen Frame <span style={{ color: colors.blue }}>Photobox</span>
           </h1>
-          <p style={styles.subtitle}>Upload foto motif batik murni. Sistem akan otomatis menyulapnya menjadi bingkai (frame) Photobox.</p>
+          <p style={styles.subtitle} className="mf-subtitle">Upload foto motif batik murni. Sistem akan otomatis menyulapnya menjadi bingkai (frame) Photobox.</p>
         </div>
 
         {message.text && (
@@ -129,9 +151,9 @@ export default function ManajemenFrame() {
           </div>
         )}
 
-        <div style={styles.contentGrid}>
+        <div style={styles.contentGrid} className="mf-grid">
           {/* Upload Form */}
-          <div style={styles.formContainer}>
+          <div style={styles.formContainer} className="mf-card">
             <h2 style={styles.sectionTitle}>Buat Frame Otomatis</h2>
             <form onSubmit={handleSubmit} style={styles.form}>
               <div style={styles.formGroup}>
@@ -143,13 +165,14 @@ export default function ManajemenFrame() {
                   placeholder="Contoh: Motif Mega Mendung"
                   onChange={handleChange}
                   style={styles.input}
+                  className="mf-input"
                   required
                 />
               </div>
 
               <div style={styles.formGroup}>
                 <label style={styles.label}>Upload Foto Motif (JPG/PNG)</label>
-                <div style={styles.uploadBox}>
+                <div style={styles.uploadBox} className="mf-upload">
                   <input
                     type="file"
                     accept="image/*"
@@ -173,8 +196,9 @@ export default function ManajemenFrame() {
               </div>
 
               <button 
-                type="submit" 
+                type="submit"
                 disabled={submitting || !file}
+                className="mf-submit"
                 onMouseEnter={() => setHoverBtn(true)}
                 onMouseLeave={() => setHoverBtn(false)}
                 style={{
@@ -188,14 +212,14 @@ export default function ManajemenFrame() {
           </div>
 
           {/* List Frames */}
-          <div style={styles.listContainer}>
+          <div style={styles.listContainer} className="mf-card">
             <h2 style={styles.sectionTitle}>Daftar Frame Tersedia</h2>
             {loading ? (
               <p style={styles.loading}>Memuat frame...</p>
             ) : frames.length === 0 ? (
               <p style={styles.empty}>Belum ada frame yang diunggah.</p>
             ) : (
-              <div style={styles.frameGrid}>
+              <div style={styles.frameGrid} className="mf-frame-grid">
                 {frames.map((frame) => (
                   <div key={frame.id} style={styles.frameCard}>
                     <img 
@@ -223,9 +247,9 @@ export default function ManajemenFrame() {
 const styles = {
   pageWrapper: {
     minHeight: "calc(100vh - 70px)",
-    background: "radial-gradient(circle at 10% 20%, #00117D 0%, #000B4D 90%)",
-    backgroundImage: "radial-gradient(circle at 10% 20%, #00117D 0%, #000B4D 90%), radial-gradient(rgba(200, 255, 1, 0.15) 1px, transparent 0)",
-    backgroundSize: "100% 100%, 24px 24px",
+    background: "transparent",
+    backgroundImage: `radial-gradient(${colors.blueSoft} 1px, transparent 0)`,
+    backgroundSize: "24px 24px",
     paddingTop: "40px",
     paddingBottom: "60px",
   },
@@ -234,7 +258,7 @@ const styles = {
     width: "100%",
     maxWidth: "1100px",
     margin: "0 auto",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: fonts.body,
   },
   header: {
     marginBottom: "40px",
@@ -243,25 +267,25 @@ const styles = {
   title: {
     fontSize: "2.8rem",
     fontWeight: "800",
-    color: "#ffffff",
-    fontFamily: "'Outfit', sans-serif",
+    color: colors.textHead,
+    fontFamily: fonts.heading,
     marginBottom: "12px",
     letterSpacing: "-0.5px",
   },
   subtitle: {
-    color: "#C8FF01",
+    color: colors.textBody,
     fontSize: "1.15rem",
     fontWeight: "500",
   },
   successMsg: {
-    background: "rgba(200, 255, 1, 0.1)",
-    color: "#C8FF01",
+    background: colors.blueSoft,
+    color: colors.blue,
     padding: "15px",
     borderRadius: "12px",
     marginBottom: "20px",
     fontWeight: "600",
     textAlign: "center",
-    border: "1px solid rgba(200, 255, 1, 0.3)",
+    border: `1px solid ${colors.blueBorder}`,
   },
   errorMsg: {
     background: "rgba(239, 68, 68, 0.15)",
@@ -280,26 +304,24 @@ const styles = {
     alignItems: "start",
   },
   formContainer: {
-    background: "rgba(255, 255, 255, 0.03)",
-    backdropFilter: "blur(20px)",
-    WebkitBackdropFilter: "blur(20px)",
+    background: colors.surface,
     padding: "30px",
     borderRadius: "24px",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
+    border: `1px solid ${colors.border}`,
+    boxShadow: colors.shadow,
   },
   listContainer: {
-    background: "rgba(255, 255, 255, 0.03)",
-    backdropFilter: "blur(20px)",
-    WebkitBackdropFilter: "blur(20px)",
+    background: colors.surface,
     padding: "30px",
     borderRadius: "24px",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
+    border: `1px solid ${colors.border}`,
+    boxShadow: colors.shadow,
   },
   sectionTitle: {
     fontSize: "1.5rem",
-    color: "#ffffff",
+    color: colors.textHead,
     marginBottom: "25px",
-    fontFamily: "'Outfit', sans-serif",
+    fontFamily: fonts.heading,
     fontWeight: "700",
   },
   formGroup: {
@@ -311,27 +333,27 @@ const styles = {
   label: {
     fontSize: "0.85rem",
     fontWeight: "700",
-    color: "#C8FF01",
+    color: colors.blue,
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
   input: {
     padding: "14px 15px",
     borderRadius: "12px",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
+    border: `1px solid ${colors.border}`,
     outline: "none",
     fontSize: "0.95rem",
-    background: "rgba(255, 255, 255, 0.05)",
-    color: "#ffffff",
+    background: "#FFFFFF",
+    color: colors.textHead,
   },
   uploadBox: {
     width: "100%",
     height: "200px",
-    border: "2px dashed rgba(200, 255, 1, 0.3)",
+    border: `2px dashed ${colors.blueBorder}`,
     borderRadius: "15px",
     overflow: "hidden",
     position: "relative",
-    background: "rgba(255, 255, 255, 0.02)",
+    background: colors.blueSoft,
   },
   fileInput: {
     display: "none",
@@ -368,15 +390,14 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    color: "#ffffff",
-    opacity: 0.7,
+    color: colors.textMuted,
     fontWeight: "500",
     gap: "8px",
   },
   submitBtn: {
     width: "100%",
-    background: "#C8FF01",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     padding: "16px",
     borderRadius: "12px",
     border: "none",
@@ -384,14 +405,21 @@ const styles = {
     fontWeight: "700",
     cursor: "pointer",
     transition: "transform 0.2s, box-shadow 0.2s",
+    boxShadow: colors.shadowSm,
+  },
+  submitBtnHover: {
+    background: colors.navy,
+    color: colors.onBlue,
+    transform: "translateY(-2px)",
+    boxShadow: colors.shadow,
   },
   loading: {
     textAlign: "center",
-    color: "#C8FF01",
+    color: colors.blue,
   },
   empty: {
     textAlign: "center",
-    color: "#a0aec0",
+    color: colors.textMuted,
     fontStyle: "italic",
   },
   frameGrid: {
@@ -400,14 +428,14 @@ const styles = {
     gap: "15px",
   },
   frameCard: {
-    border: "1px solid rgba(255, 255, 255, 0.1)",
+    border: `1px solid ${colors.border}`,
     borderRadius: "12px",
     overflow: "hidden",
     position: "relative",
     height: "180px",
     display: "flex",
     flexDirection: "column",
-    background: "rgba(255, 255, 255, 0.02)",
+    background: colors.surfaceAlt,
   },
   frameImg: {
     position: "relative",
@@ -417,18 +445,18 @@ const styles = {
     zIndex: 2,
   },
   frameInfo: {
-    background: "rgba(255, 255, 255, 0.05)",
+    background: colors.surface,
     padding: "8px 12px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+    borderTop: `1px solid ${colors.border}`,
     zIndex: 3,
   },
   frameName: {
     fontSize: "0.85rem",
     fontWeight: "600",
-    color: "#ffffff",
+    color: colors.textHead,
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",

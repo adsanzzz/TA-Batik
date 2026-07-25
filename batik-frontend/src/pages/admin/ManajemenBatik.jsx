@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getBatik, deleteBatik, updateBatik, BASE_URL } from "../../services/api";
 import { getToken } from "../../services/auth";
+import { colors, fonts } from "../../theme";
 
 export default function ManajemenBatik() {
   const [data, setData] = useState([]);
@@ -106,16 +107,33 @@ export default function ManajemenBatik() {
   };
 
   return (
-    <div style={styles.pageWrapper}>
+    <div style={styles.pageWrapper} className="mb-page">
+      <style>{`
+        @media (max-width: 1024px) {
+          .mb-container { max-width: 100% !important; }
+          .mb-title { font-size: 2.2rem !important; }
+        }
+        @media (max-width: 640px) {
+          .mb-page { padding-top: 24px !important; padding-bottom: 32px !important; }
+          .mb-container { padding: 0 16px !important; box-sizing: border-box !important; }
+          .mb-title { font-size: 1.7rem !important; }
+          .mb-subtitle { font-size: 0.98rem !important; }
+          .mb-table { min-width: 640px !important; }
+          .mb-modal { max-width: 90vw !important; max-height: 90vh !important; padding: 24px !important; }
+          .mb-modal-actions { flex-direction: column !important; }
+          .mb-modal-actions button { width: 100% !important; }
+          .mb-input, .mb-textarea { width: 100% !important; box-sizing: border-box !important; }
+        }
+      `}</style>
       {/* Background Dot Pattern */}
       <div style={styles.pattern}></div>
 
-      <div style={styles.container}>
+      <div style={styles.container} className="mb-container">
         <div style={styles.header}>
-          <h1 style={styles.title}>
-            Manajemen Data <span style={{ color: "#C8FF01" }}>Batik</span>
+          <h1 style={styles.title} className="mb-title">
+            Manajemen Data <span style={{ color: colors.blue }}>Batik</span>
           </h1>
-          <p style={styles.subtitle}>Kelola (Edit/Hapus) koleksi batik yang sudah ada di database.</p>
+          <p style={styles.subtitle} className="mb-subtitle">Kelola (Edit/Hapus) koleksi batik yang sudah ada di database.</p>
         </div>
 
         {message.text && (
@@ -127,8 +145,8 @@ export default function ManajemenBatik() {
         {loading ? (
           <p style={styles.loading}>Memuat data...</p>
         ) : (
-          <div style={styles.tableContainer}>
-            <table style={styles.table}>
+          <div style={styles.tableContainer} className="mb-table-wrap">
+            <table style={styles.table} className="mb-table">
               <thead>
                 <tr style={styles.trHeader}>
                   <th style={styles.th}>Gambar</th>
@@ -166,7 +184,7 @@ export default function ManajemenBatik() {
                 })}
                 {data.length === 0 && (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: "center", padding: "40px", color: "#D0E0FF" }}>Tidak ada data koleksi batik.</td>
+                    <td colSpan="6" style={{ textAlign: "center", padding: "40px", color: colors.textMuted }}>Tidak ada data koleksi batik.</td>
                   </tr>
                 )}
               </tbody>
@@ -177,7 +195,7 @@ export default function ManajemenBatik() {
         {/* MODAL EDIT */}
         {editModal && editForm && (
           <div style={styles.modalOverlay} onClick={closeEditModal}>
-            <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.modalContent} className="mb-modal" onClick={(e) => e.stopPropagation()}>
               <div style={styles.modalHeader}>
                 <h2 style={styles.modalTitle}>Edit Batik</h2>
                 <button style={styles.closeBtn} onClick={closeEditModal}>&times;</button>
@@ -186,7 +204,7 @@ export default function ManajemenBatik() {
               <form onSubmit={handleEditSubmit} style={styles.form}>
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Nama Batik</label>
-                  <select name="nama" value={editForm.nama} onChange={handleEditChange} style={styles.input} required>
+                  <select name="nama" value={editForm.nama} onChange={handleEditChange} style={styles.input} className="mb-input" required>
                     <option value="" disabled>-- Pilih Jenis Motif Batik --</option>
                     <option value="Bali">Bali</option>
                     <option value="Betawi">Betawi</option>
@@ -212,18 +230,18 @@ export default function ManajemenBatik() {
                 </div>
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Motif Utama</label>
-                  <input type="text" name="motif_utama" value={editForm.motif_utama} onChange={handleEditChange} style={styles.input} required />
+                  <input type="text" name="motif_utama" value={editForm.motif_utama} onChange={handleEditChange} style={styles.input} className="mb-input" required />
                 </div>
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Jenis Batik</label>
-                    <select name="jenis_batik" value={editForm.jenis_batik} onChange={handleEditChange} style={styles.input} required>
+                    <select name="jenis_batik" value={editForm.jenis_batik} onChange={handleEditChange} style={styles.input} className="mb-input" required>
                       <option value="Batik Umum">Batik Umum</option>
                       <option value="Batik Keraton">Batik Keraton</option>
                     </select>
                 </div>
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Jenis Acara</label>
-                    <select name="jenis_acara" value={editForm.jenis_acara} onChange={handleEditChange} style={styles.input} required>
+                    <select name="jenis_acara" value={editForm.jenis_acara} onChange={handleEditChange} style={styles.input} className="mb-input" required>
                       <option value="Pernikahan">Pernikahan</option>
                       <option value="Acara Adat">Acara Adat</option>
                       <option value="Acara Formal">Acara Formal</option>
@@ -238,29 +256,29 @@ export default function ManajemenBatik() {
                 </div>
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Filosofi Mendalam</label>
-                  <textarea name="filosofi" value={editForm.filosofi} onChange={handleEditChange} style={styles.textarea} required />
+                  <textarea name="filosofi" value={editForm.filosofi} onChange={handleEditChange} style={styles.textarea} className="mb-textarea" required />
                 </div>
                 
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Ganti Gambar (Opsional)</label>
-                  <input type="file" accept="image/*" onChange={handleEditFileChange} style={styles.input} />
+                  <input type="file" accept="image/*" onChange={handleEditFileChange} style={styles.input} className="mb-input" />
                   <div style={{ marginTop: "10px", display: "flex", gap: "15px", alignItems: "flex-end" }}>
                      {!editPreview && (
                        <div>
-                         <p style={{ margin: "0 0 8px", fontSize: "0.85rem", color: "#D0E0FF" }}>Gambar Lama:</p>
+                         <p style={{ margin: "0 0 8px", fontSize: "0.85rem", color: colors.textMuted }}>Gambar Lama:</p>
                          <img src={editForm.gambarLama?.startsWith("http") ? editForm.gambarLama : `${BASE_URL}/${editForm.gambarLama}`} alt="lama" style={styles.imgPreview} />
                        </div>
                      )}
                      {editPreview && (
                        <div>
-                         <p style={{ margin: "0 0 8px", fontSize: "0.85rem", color: "#D0E0FF" }}>Gambar Baru:</p>
+                         <p style={{ margin: "0 0 8px", fontSize: "0.85rem", color: colors.textMuted }}>Gambar Baru:</p>
                          <img src={editPreview} alt="baru" style={styles.imgPreview} />
                        </div>
                      )}
                   </div>
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "30px" }}>
+                <div className="mb-modal-actions" style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "30px" }}>
                   <button type="button" onClick={closeEditModal} style={styles.cancelBtn}>Batal</button>
                   <button type="submit" disabled={submitting} style={submitting ? {...styles.saveBtn, opacity: 0.7} : styles.saveBtn}>
                     {submitting ? "Menyimpan..." : "Simpan Perubahan"}
@@ -278,7 +296,7 @@ export default function ManajemenBatik() {
 const styles = {
   pageWrapper: {
     minHeight: "calc(100vh - 70px)",
-    background: "linear-gradient(135deg, #00117D 0%, #0122B4 100%)",
+    background: "transparent",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -290,10 +308,10 @@ const styles = {
   pattern: {
     position: "absolute",
     inset: 0,
-    opacity: 0.15,
+    opacity: 0.06,
     backgroundImage: `
       radial-gradient(circle at center,
-      #C8FF01 2.5px,
+      ${colors.blue} 2.5px,
       transparent 2.5px)
     `,
     backgroundSize: "40px 40px",
@@ -304,7 +322,7 @@ const styles = {
     padding: "0 20px",
     width: "100%",
     maxWidth: "1100px",
-    fontFamily: "'Poppins', sans-serif",
+    fontFamily: fonts.body,
     position: "relative",
     zIndex: 1,
   },
@@ -315,55 +333,55 @@ const styles = {
   title: {
     fontSize: "2.8rem",
     fontWeight: "800",
-    color: "#ffffff",
-    fontFamily: "'Playfair Display', serif",
+    color: colors.textHead,
+    fontFamily: fonts.heading,
     marginBottom: "12px",
     letterSpacing: "-0.5px",
   },
   subtitle: {
-    color: "#D0E0FF",
+    color: colors.textBody,
     fontSize: "1.1rem",
     fontWeight: "400",
   },
   loading: {
     textAlign: "center",
-    color: "#C8FF01",
+    color: colors.blue,
     fontWeight: "600",
     fontSize: "1.1rem",
     padding: "40px",
   },
   tableContainer: {
     overflowX: "auto",
-    background: "rgba(255, 255, 255, 0.05)",
+    background: colors.surface,
     borderRadius: "24px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`,
   },
   table: {
     width: "100%",
     borderCollapse: "collapse",
   },
   trHeader: {
-    background: "rgba(255, 255, 255, 0.05)",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.15)",
+    background: colors.surfaceAlt,
+    borderBottom: `1px solid ${colors.border}`,
   },
   th: {
     padding: "20px 24px",
     textAlign: "left",
-    color: "#C8FF01",
+    color: colors.textHead,
     fontWeight: "700",
     textTransform: "uppercase",
     fontSize: "0.85rem",
     letterSpacing: "0.5px",
   },
   trBody: {
-    borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
+    borderBottom: `1px solid ${colors.border}`,
     transition: "background 0.2s",
   },
   td: {
     padding: "20px 24px",
     verticalAlign: "middle",
-    color: "#ffffff",
+    color: colors.textBody,
     fontSize: "0.95rem",
   },
   badgeKeraton: {
@@ -389,7 +407,7 @@ const styles = {
     height: "70px",
     objectFit: "cover",
     borderRadius: "12px",
-    border: "1px solid rgba(255, 255, 255, 0.15)",
+    border: `1px solid ${colors.border}`,
   },
   actionBtns: {
     display: "flex",
@@ -398,8 +416,8 @@ const styles = {
   editBtn: {
     padding: "8px 18px",
     background: "transparent",
-    color: "#C8FF01",
-    border: "1px solid #C8FF01",
+    color: colors.blue,
+    border: `1px solid ${colors.blueBorder}`,
     borderRadius: "8px",
     cursor: "pointer",
     fontWeight: "600",
@@ -418,14 +436,14 @@ const styles = {
     transition: "all 0.2s",
   },
   successMsg: {
-    background: "rgba(200, 255, 1, 0.1)",
-    color: "#C8FF01",
+    background: colors.blueSoft,
+    color: colors.blue,
     padding: "15px",
     borderRadius: "12px",
     marginBottom: "20px",
     fontWeight: "600",
     textAlign: "center",
-    border: "1px solid rgba(200, 255, 1, 0.3)",
+    border: `1px solid ${colors.blueBorder}`,
   },
   errorMsg: {
     background: "#ff767522",
@@ -445,7 +463,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: "rgba(0, 17, 125, 0.85)",
+    background: "rgba(12, 27, 77, 0.45)",
     backdropFilter: "blur(10px)",
     display: "flex",
     justifyContent: "center",
@@ -454,15 +472,15 @@ const styles = {
     padding: "20px",
   },
   modalContent: {
-    background: "#0122B4",
+    background: colors.surface,
     width: "100%",
     maxWidth: "650px",
     maxHeight: "90vh",
     overflowY: "auto",
     borderRadius: "24px",
     padding: "40px",
-    boxShadow: "0 25px 60px rgba(0,0,0,0.6)",
-    border: "1px solid rgba(200, 255, 1, 0.2)",
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`,
   },
   modalHeader: {
     display: "flex",
@@ -470,21 +488,21 @@ const styles = {
     alignItems: "center",
     marginBottom: "30px",
     paddingBottom: "15px",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.1)"
+    borderBottom: `1px solid ${colors.border}`
   },
   modalTitle: {
     margin: 0,
     fontSize: "1.8rem",
     fontWeight: "800",
-    color: "#ffffff",
-    fontFamily: "'Playfair Display', serif",
+    color: colors.textHead,
+    fontFamily: fonts.heading,
   },
   closeBtn: {
     background: "none",
     border: "none",
     fontSize: "2rem",
     cursor: "pointer",
-    color: "#C8FF01",
+    color: colors.blue,
     lineHeight: "1",
     transition: "color 0.2s",
   },
@@ -501,27 +519,27 @@ const styles = {
   label: {
     fontSize: "0.85rem",
     fontWeight: "700",
-    color: "#C8FF01",
+    color: colors.blue,
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
   input: {
     padding: "12px 15px",
-    border: "2px solid rgba(255, 255, 255, 0.15)",
+    border: `1px solid ${colors.border}`,
     borderRadius: "12px",
     outline: "none",
-    background: "rgba(0, 0, 0, 0.3)",
-    color: "#ffffff",
+    background: "#FFFFFF",
+    color: colors.textHead,
     fontSize: "0.95rem",
     transition: "all 0.3s ease",
   },
   textarea: {
     padding: "12px 15px",
-    border: "2px solid rgba(255, 255, 255, 0.15)",
+    border: `1px solid ${colors.border}`,
     borderRadius: "12px",
     outline: "none",
-    background: "rgba(0, 0, 0, 0.3)",
-    color: "#ffffff",
+    background: "#FFFFFF",
+    color: colors.textHead,
     fontSize: "0.95rem",
     minHeight: "120px",
     resize: "vertical",
@@ -533,18 +551,28 @@ const styles = {
     height: "100px",
     objectFit: "cover",
     borderRadius: "12px",
-    border: "1px solid rgba(255, 255, 255, 0.15)",
+    border: `1px solid ${colors.border}`,
+  },
+  cancelBtn: {
+    padding: "14px 28px",
+    background: "transparent",
+    color: colors.textBody,
+    border: `1px solid ${colors.border}`,
+    borderRadius: "30px",
+    cursor: "pointer",
+    fontWeight: "700",
+    fontSize: "0.95rem",
   },
   saveBtn: {
     padding: "14px 28px",
-    background: "linear-gradient(90deg, #C8FF01 0%, #AEE600 100%)",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     border: "none",
     borderRadius: "30px",
     cursor: "pointer",
     fontWeight: "700",
     fontSize: "0.95rem",
-    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.25)",
+    boxShadow: colors.shadowSm,
   }
 };
 

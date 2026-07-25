@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { colors, fonts } from "../theme";
 
 export default function Footer() {
   return (
@@ -34,7 +35,7 @@ export default function Footer() {
               melestarikan keindahan motif Batik Nusantara.
             </p>
             <div style={styles.tagBadge}>
-              ✦ Artificial Intelligence for Indonesian Heritage
+              Artificial Intelligence for Indonesian Heritage
             </div>
           </div>
 
@@ -104,10 +105,12 @@ export default function Footer() {
 
 const styles = {
   footer: {
-    fontFamily: "Poppins, sans-serif",
+    fontFamily: fonts.body,
     position: "relative",
     zIndex: 10,
     overflow: "hidden", // Ensure pattern doesn't overflow
+    background: colors.surfaceAlt,
+    borderTop: `1px solid ${colors.border}`,
   },
   footerPattern: {
     width: "100%",
@@ -117,7 +120,7 @@ const styles = {
     bottom: 0,
     left: 0,
     zIndex: -1,
-    opacity: 0.5, // Adjustable depending on design
+    opacity: 0.25, // Adjustable depending on design
   },
   inner: {
     maxWidth: "1200px",
@@ -142,16 +145,16 @@ const styles = {
     width: "44px",
     height: "44px",
     objectFit: "contain",
-    filter: "drop-shadow(0 2px 8px rgba(200, 255, 1, 0.3))",
+    filter: "drop-shadow(0 2px 8px rgba(3, 62, 238, 0.2))",
   },
   logoText: {
     fontSize: "1.5rem",
     fontWeight: "700",
-    color: "#C8FF01",
-    fontFamily: "'Playfair Display', serif",
+    color: colors.navy,
+    fontFamily: fonts.heading,
   },
   desc: {
-    color: "#D0DBFF",
+    color: colors.textBody,
     fontSize: "1rem",
     lineHeight: "1.75",
     marginBottom: "16px",
@@ -160,22 +163,22 @@ const styles = {
   tagBadge: {
     display: "inline-block",
     padding: "8px 16px",
-    border: "1px solid rgba(200, 255, 1, 0.25)",
+    border: `1px solid ${colors.blueBorder}`,
     borderRadius: "20px",
-    color: "#C8FF01",
-    background: "rgba(200, 255, 1, 0.06)",
+    color: colors.blue,
+    background: colors.blueSoft,
     fontSize: "0.85rem",
     lineHeight: "1.5",
   },
   widgetTitle: {
-    color: "#C8FF01",
+    color: colors.navy,
     fontSize: "0.9rem",
     fontWeight: "800",
     letterSpacing: "1.5px",
     marginBottom: "16px",
     marginTop: 0,
     textTransform: "uppercase",
-    borderBottom: "1px solid rgba(200, 255, 1, 0.15)",
+    borderBottom: `1px solid ${colors.border}`,
     paddingBottom: "8px",
   },
   navList: {
@@ -187,20 +190,20 @@ const styles = {
     gap: "10px",
   },
   navLink: {
-    color: "#D0DBFF",
+    color: colors.textBody,
     textDecoration: "none",
     fontSize: "1rem",
     transition: "color 0.2s ease",
   },
   contactText: {
-    color: "#D0DBFF",
+    color: colors.textBody,
     fontSize: "1rem",
     lineHeight: "1.7",
     margin: 0,
   },
   bottomBar: {
-    borderTop: "1px solid rgba(255, 255, 255, 0.08)",
-    background: "rgba(0, 17, 125, 0.4)",
+    borderTop: `1px solid ${colors.border}`,
+    background: "rgba(3, 62, 238, 0.04)",
   },
   bottomInner: {
     maxWidth: "1200px",
@@ -213,7 +216,7 @@ const styles = {
     gap: "12px",
   },
   copyright: {
-    color: "rgba(208, 219, 255, 0.6)",
+    color: colors.textMuted,
     fontSize: "0.9rem",
     margin: 0,
   },
@@ -232,9 +235,9 @@ const styles = {
     width: "36px",
     height: "36px",
     borderRadius: "50%",
-    border: "1px solid rgba(200, 255, 1, 0.25)",
-    color: "#D0DBFF",
-    background: "rgba(255, 255, 255, 0.04)",
+    border: `1px solid ${colors.blueBorder}`,
+    color: colors.blue,
+    background: colors.surface,
     textDecoration: "none",
   },
 };
