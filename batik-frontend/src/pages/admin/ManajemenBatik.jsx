@@ -107,16 +107,33 @@ export default function ManajemenBatik() {
   };
 
   return (
-    <div style={styles.pageWrapper}>
+    <div style={styles.pageWrapper} className="mb-page">
+      <style>{`
+        @media (max-width: 1024px) {
+          .mb-container { max-width: 100% !important; }
+          .mb-title { font-size: 2.2rem !important; }
+        }
+        @media (max-width: 640px) {
+          .mb-page { padding-top: 24px !important; padding-bottom: 32px !important; }
+          .mb-container { padding: 0 16px !important; box-sizing: border-box !important; }
+          .mb-title { font-size: 1.7rem !important; }
+          .mb-subtitle { font-size: 0.98rem !important; }
+          .mb-table { min-width: 640px !important; }
+          .mb-modal { max-width: 90vw !important; max-height: 90vh !important; padding: 24px !important; }
+          .mb-modal-actions { flex-direction: column !important; }
+          .mb-modal-actions button { width: 100% !important; }
+          .mb-input, .mb-textarea { width: 100% !important; box-sizing: border-box !important; }
+        }
+      `}</style>
       {/* Background Dot Pattern */}
       <div style={styles.pattern}></div>
 
-      <div style={styles.container}>
+      <div style={styles.container} className="mb-container">
         <div style={styles.header}>
-          <h1 style={styles.title}>
+          <h1 style={styles.title} className="mb-title">
             Manajemen Data <span style={{ color: colors.blue }}>Batik</span>
           </h1>
-          <p style={styles.subtitle}>Kelola (Edit/Hapus) koleksi batik yang sudah ada di database.</p>
+          <p style={styles.subtitle} className="mb-subtitle">Kelola (Edit/Hapus) koleksi batik yang sudah ada di database.</p>
         </div>
 
         {message.text && (
@@ -128,8 +145,8 @@ export default function ManajemenBatik() {
         {loading ? (
           <p style={styles.loading}>Memuat data...</p>
         ) : (
-          <div style={styles.tableContainer}>
-            <table style={styles.table}>
+          <div style={styles.tableContainer} className="mb-table-wrap">
+            <table style={styles.table} className="mb-table">
               <thead>
                 <tr style={styles.trHeader}>
                   <th style={styles.th}>Gambar</th>
@@ -178,7 +195,7 @@ export default function ManajemenBatik() {
         {/* MODAL EDIT */}
         {editModal && editForm && (
           <div style={styles.modalOverlay} onClick={closeEditModal}>
-            <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.modalContent} className="mb-modal" onClick={(e) => e.stopPropagation()}>
               <div style={styles.modalHeader}>
                 <h2 style={styles.modalTitle}>Edit Batik</h2>
                 <button style={styles.closeBtn} onClick={closeEditModal}>&times;</button>
@@ -187,7 +204,7 @@ export default function ManajemenBatik() {
               <form onSubmit={handleEditSubmit} style={styles.form}>
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Nama Batik</label>
-                  <select name="nama" value={editForm.nama} onChange={handleEditChange} style={styles.input} required>
+                  <select name="nama" value={editForm.nama} onChange={handleEditChange} style={styles.input} className="mb-input" required>
                     <option value="" disabled>-- Pilih Jenis Motif Batik --</option>
                     <option value="Bali">Bali</option>
                     <option value="Betawi">Betawi</option>
@@ -213,18 +230,18 @@ export default function ManajemenBatik() {
                 </div>
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Motif Utama</label>
-                  <input type="text" name="motif_utama" value={editForm.motif_utama} onChange={handleEditChange} style={styles.input} required />
+                  <input type="text" name="motif_utama" value={editForm.motif_utama} onChange={handleEditChange} style={styles.input} className="mb-input" required />
                 </div>
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Jenis Batik</label>
-                    <select name="jenis_batik" value={editForm.jenis_batik} onChange={handleEditChange} style={styles.input} required>
+                    <select name="jenis_batik" value={editForm.jenis_batik} onChange={handleEditChange} style={styles.input} className="mb-input" required>
                       <option value="Batik Umum">Batik Umum</option>
                       <option value="Batik Keraton">Batik Keraton</option>
                     </select>
                 </div>
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Jenis Acara</label>
-                    <select name="jenis_acara" value={editForm.jenis_acara} onChange={handleEditChange} style={styles.input} required>
+                    <select name="jenis_acara" value={editForm.jenis_acara} onChange={handleEditChange} style={styles.input} className="mb-input" required>
                       <option value="Pernikahan">Pernikahan</option>
                       <option value="Acara Adat">Acara Adat</option>
                       <option value="Acara Formal">Acara Formal</option>
@@ -239,12 +256,12 @@ export default function ManajemenBatik() {
                 </div>
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Filosofi Mendalam</label>
-                  <textarea name="filosofi" value={editForm.filosofi} onChange={handleEditChange} style={styles.textarea} required />
+                  <textarea name="filosofi" value={editForm.filosofi} onChange={handleEditChange} style={styles.textarea} className="mb-textarea" required />
                 </div>
                 
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Ganti Gambar (Opsional)</label>
-                  <input type="file" accept="image/*" onChange={handleEditFileChange} style={styles.input} />
+                  <input type="file" accept="image/*" onChange={handleEditFileChange} style={styles.input} className="mb-input" />
                   <div style={{ marginTop: "10px", display: "flex", gap: "15px", alignItems: "flex-end" }}>
                      {!editPreview && (
                        <div>
@@ -261,7 +278,7 @@ export default function ManajemenBatik() {
                   </div>
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "30px" }}>
+                <div className="mb-modal-actions" style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "30px" }}>
                   <button type="button" onClick={closeEditModal} style={styles.cancelBtn}>Batal</button>
                   <button type="submit" disabled={submitting} style={submitting ? {...styles.saveBtn, opacity: 0.7} : styles.saveBtn}>
                     {submitting ? "Menyimpan..." : "Simpan Perubahan"}

@@ -130,14 +130,33 @@ export default function ManajemenModel() {
   const isAnyCustomModelActive = modelsList.some((m) => m.is_active);
 
   return (
-    <div style={styles.pageWrapper}>
+    <div style={styles.pageWrapper} className="mmodel-page">
+      <style>{`
+        .mmodel-page, .mmodel-page * { box-sizing: border-box; }
+        .mmodel-table-wrap { overflow-x: auto !important; }
+        .mmodel-table { min-width: 720px; }
+        @media (max-width: 1024px) {
+          .mmodel-page { padding: 32px 20px !important; }
+        }
+        @media (max-width: 640px) {
+          .mmodel-page { padding: 24px 16px !important; }
+          .mmodel-title { font-size: 1.9rem !important; }
+          .mmodel-card { padding: 22px !important; }
+          .mmodel-input, .mmodel-file-input { width: 100% !important; }
+          .mmodel-upload-btn { align-self: stretch !important; width: 100% !important; }
+          .mmodel-list-header { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+          .mmodel-reset-btn { width: 100% !important; }
+          .mmodel-action-group { flex-direction: column !important; align-items: stretch !important; }
+          .mmodel-action-group button { width: 100% !important; }
+        }
+      `}</style>
       <div style={styles.container}>
         {/* HEADER */}
         <div style={styles.header}>
           <button onClick={() => navigate("/admin/dashboard")} style={styles.backBtn}>
             Kembali ke Dashboard
           </button>
-          <h1 style={styles.title}>Kontrol Model AI</h1>
+          <h1 style={styles.title} className="mmodel-title">Kontrol Model AI</h1>
           <p style={styles.subtitle}>Upload model klasifikasi baru dan atur model mana yang akan aktif digunakan.</p>
         </div>
 
@@ -146,7 +165,7 @@ export default function ManajemenModel() {
         {successMsg && <div style={styles.success}>{successMsg}</div>}
 
         {/* UPLOAD PANEL */}
-        <div style={styles.card}>
+        <div style={styles.card} className="mmodel-card">
           <h3 style={styles.cardTitle}>Upload Model Baru</h3>
           <form onSubmit={handleUpload} style={styles.form}>
             <div style={styles.inputGroup}>
@@ -157,6 +176,7 @@ export default function ManajemenModel() {
                 value={modelName}
                 onChange={(e) => setModelName(e.target.value)}
                 style={styles.input}
+                className="mmodel-input"
                 disabled={uploading}
               />
             </div>
@@ -168,11 +188,12 @@ export default function ManajemenModel() {
                 accept=".keras,.h5"
                 onChange={handleFileChange}
                 style={styles.fileInput}
+                className="mmodel-file-input"
                 disabled={uploading}
               />
               <span style={styles.helperText}>Pastikan file yang diupload memiliki ekstensi .keras atau .h5 yang valid.</span>
             </div>
-            <button type="submit" style={styles.uploadBtn} disabled={uploading}>
+            <button type="submit" style={styles.uploadBtn} className="mmodel-upload-btn" disabled={uploading}>
               {uploading ? "Mengupload..." : "Upload & Simpan"}
             </button>
           </form>
@@ -180,12 +201,13 @@ export default function ManajemenModel() {
 
         {/* LIST OF MODELS */}
         <div style={styles.listSection}>
-          <div style={styles.listHeader}>
+          <div style={styles.listHeader} className="mmodel-list-header">
             <h3 style={styles.cardTitle}>Daftar Model Klasifikasi</h3>
             {isAnyCustomModelActive && (
               <button 
                 onClick={handleDeactivateAll} 
                 style={styles.resetBtn}
+                className="mmodel-reset-btn"
                 disabled={actionLoadingId === "deactivate-all"}
               >
                 {actionLoadingId === "deactivate-all" ? "Memproses..." : "Kembali ke Model Bawaan"}
@@ -196,8 +218,8 @@ export default function ManajemenModel() {
           {loading ? (
             <div style={styles.loader}>Memuat daftar model...</div>
           ) : (
-            <div style={styles.tableContainer}>
-              <table style={styles.table}>
+            <div style={styles.tableContainer} className="mmodel-table-wrap">
+              <table style={styles.table} className="mmodel-table">
                 <thead>
                   <tr style={styles.tableHeaderRow}>
                     <th style={styles.th}>Model</th>
@@ -260,7 +282,7 @@ export default function ManajemenModel() {
                         )}
                       </td>
                       <td style={styles.td}>
-                        <div style={styles.actionGroup}>
+                        <div style={styles.actionGroup} className="mmodel-action-group">
                           {!m.is_active && (
                             <button
                               disabled={actionLoadingId !== null}

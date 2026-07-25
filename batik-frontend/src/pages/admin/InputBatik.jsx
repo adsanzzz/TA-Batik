@@ -81,16 +81,34 @@ export default function InputBatik() {
   };
 
   return (
-    <div style={styles.pageWrapper}>
+    <div style={styles.pageWrapper} className="ib-page">
+      <style>{`
+        @media (max-width: 1024px) {
+          .ib-container { max-width: 100% !important; }
+          .ib-form { padding: 30px !important; }
+          .ib-title { font-size: 2.2rem !important; }
+        }
+        @media (max-width: 640px) {
+          .ib-page { padding-top: 24px !important; padding-bottom: 32px !important; }
+          .ib-container { padding: 0 16px !important; box-sizing: border-box !important; }
+          .ib-form { padding: 20px !important; gap: 18px !important; border-radius: 18px !important; }
+          .ib-form-row { grid-template-columns: 1fr !important; gap: 18px !important; }
+          .ib-title { font-size: 1.7rem !important; }
+          .ib-subtitle { font-size: 0.98rem !important; }
+          .ib-input, .ib-textarea { width: 100% !important; box-sizing: border-box !important; }
+          .ib-upload { height: 200px !important; }
+          .ib-submit { width: 100% !important; }
+        }
+      `}</style>
       {/* Background Dot Pattern */}
       <div style={styles.pattern}></div>
 
-      <div style={styles.container}>
+      <div style={styles.container} className="ib-container">
         <div style={styles.header}>
-          <h1 style={styles.title}>
+          <h1 style={styles.title} className="ib-title">
             Input Koleksi <span style={{ color: colors.blue }}>Batik</span>
           </h1>
-          <p style={styles.subtitle}>Tambahkan data batik baru ke dalam katalog sistem.</p>
+          <p style={styles.subtitle} className="ib-subtitle">Tambahkan data batik baru ke dalam katalog sistem.</p>
         </div>
 
         {message.text && (
@@ -99,8 +117,8 @@ export default function InputBatik() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.formRow}>
+        <form onSubmit={handleSubmit} style={styles.form} className="ib-form">
+          <div style={styles.formRow} className="ib-form-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>Nama Batik</label>
               <select
@@ -108,6 +126,7 @@ export default function InputBatik() {
                 value={form.nama}
                 onChange={handleChange}
                 style={styles.input}
+                className="ib-input"
                 required
               >
                 <option value="" disabled>-- Pilih Jenis Motif Batik --</option>
@@ -143,12 +162,13 @@ export default function InputBatik() {
                 placeholder="Contoh: Awan, Lereng, Parang"
                 onChange={handleChange}
                 style={styles.input}
+                className="ib-input"
                 required
               />
             </div>
           </div>
 
-          <div style={styles.formRow}>
+          <div style={styles.formRow} className="ib-form-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>Jenis Batik</label>
               <select
@@ -156,6 +176,7 @@ export default function InputBatik() {
                 value={form.jenis_batik}
                 onChange={handleChange}
                 style={styles.input}
+                className="ib-input"
                 required
               >
                 <option value="Batik Umum">Batik Umum</option>
@@ -170,6 +191,7 @@ export default function InputBatik() {
                 value={form.jenis_acara}
                 onChange={handleChange}
                 style={styles.input}
+                className="ib-input"
                 required
               >
                 <option value="Pernikahan">Pernikahan</option>
@@ -194,12 +216,13 @@ export default function InputBatik() {
               placeholder="Jelaskan nilai filosofis dibalik motif ini..."
               onChange={handleChange}
               style={styles.textarea}
+              className="ib-textarea"
               required
             />
           </div>
 
           {/* Shopee & Tokopedia Links */}
-          <div style={styles.formRow}>
+          <div style={styles.formRow} className="ib-form-row">
             <div style={styles.inputGroup}>
               <label style={styles.label}>Link Shopee (Opsional)</label>
               <input
@@ -209,6 +232,7 @@ export default function InputBatik() {
                 placeholder="https://shopee.co.id/..."
                 onChange={handleChange}
                 style={styles.input}
+                className="ib-input"
               />
             </div>
             <div style={styles.inputGroup}>
@@ -220,13 +244,14 @@ export default function InputBatik() {
                 placeholder="https://tokopedia.com/..."
                 onChange={handleChange}
                 style={styles.input}
+                className="ib-input"
               />
             </div>
           </div>
 
           <div style={styles.uploadSection}>
             <label style={styles.label}>Foto Batik</label>
-            <div style={styles.uploadBox}>
+            <div style={styles.uploadBox} className="ib-upload">
               <input
                 type="file"
                 accept="image/*"
@@ -249,8 +274,9 @@ export default function InputBatik() {
           </div>
 
           <button 
-            type="submit" 
+            type="submit"
             disabled={loading}
+            className="ib-submit"
             onMouseEnter={() => setHoverBtn(true)}
             onMouseLeave={() => setHoverBtn(false)}
             style={{

@@ -34,9 +34,20 @@ export default function Login() {
 
   return (
     <>
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Login</h2>
+    <div style={styles.container} className="login-container">
+      <style>{`
+        @media (max-width: 600px) {
+          .login-container { padding: 32px 16px !important; }
+          .login-card { padding: 28px 22px !important; border-radius: 16px !important; }
+          .login-title { font-size: 1.9rem !important; }
+        }
+        @media (max-width: 360px) {
+          .login-card { padding: 24px 18px !important; }
+          .login-title { font-size: 1.7rem !important; }
+        }
+      `}</style>
+      <div style={styles.card} className="login-card">
+        <h2 style={styles.title} className="login-title">Login</h2>
         <p style={styles.subtitle}>Masuk sebagai Admin atau Mitra BatikAI</p>
         
         {error && <div style={styles.error}>{error}</div>}
@@ -113,11 +124,12 @@ const styles = {
     background: colors.surface,
     padding: "40px",
     borderRadius: "20px",
-    boxShadow: colors.shadow,
+    boxShadow: "0 20px 50px rgba(10, 25, 80, 0.12)",
     border: `1px solid ${colors.border}`,
     width: "100%",
     maxWidth: "400px",
     textAlign: "center",
+    boxSizing: "border-box",
   },
   title: {
     fontSize: "2.3rem",

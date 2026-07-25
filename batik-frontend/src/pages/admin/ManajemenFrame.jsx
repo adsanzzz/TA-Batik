@@ -112,16 +112,37 @@ export default function ManajemenFrame() {
   };
 
   return (
-    <div style={styles.pageWrapper}>
+    <div style={styles.pageWrapper} className="mf-page">
+      <style>{`
+        @media (max-width: 1024px) {
+          .mf-container { max-width: 100% !important; }
+          .mf-title { font-size: 2.2rem !important; }
+          .mf-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 640px) {
+          .mf-page { padding-top: 24px !important; padding-bottom: 32px !important; }
+          .mf-container { padding: 0 16px !important; box-sizing: border-box !important; }
+          .mf-title { font-size: 1.7rem !important; }
+          .mf-subtitle { font-size: 0.98rem !important; }
+          .mf-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+          .mf-card { padding: 20px !important; }
+          .mf-input, .mf-upload { width: 100% !important; box-sizing: border-box !important; }
+          .mf-submit { width: 100% !important; }
+          .mf-frame-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+        @media (max-width: 420px) {
+          .mf-frame-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
       {/* Background Dot Pattern */}
       <div style={styles.pattern}></div>
 
-      <div style={styles.container}>
+      <div style={styles.container} className="mf-container">
         <div style={styles.header}>
-          <h1 style={styles.title}>
+          <h1 style={styles.title} className="mf-title">
             Manajemen Frame <span style={{ color: colors.blue }}>Photobox</span>
           </h1>
-          <p style={styles.subtitle}>Upload foto motif batik murni. Sistem akan otomatis menyulapnya menjadi bingkai (frame) Photobox.</p>
+          <p style={styles.subtitle} className="mf-subtitle">Upload foto motif batik murni. Sistem akan otomatis menyulapnya menjadi bingkai (frame) Photobox.</p>
         </div>
 
         {message.text && (
@@ -130,9 +151,9 @@ export default function ManajemenFrame() {
           </div>
         )}
 
-        <div style={styles.contentGrid}>
+        <div style={styles.contentGrid} className="mf-grid">
           {/* Upload Form */}
-          <div style={styles.formContainer}>
+          <div style={styles.formContainer} className="mf-card">
             <h2 style={styles.sectionTitle}>Buat Frame Otomatis</h2>
             <form onSubmit={handleSubmit} style={styles.form}>
               <div style={styles.formGroup}>
@@ -144,13 +165,14 @@ export default function ManajemenFrame() {
                   placeholder="Contoh: Motif Mega Mendung"
                   onChange={handleChange}
                   style={styles.input}
+                  className="mf-input"
                   required
                 />
               </div>
 
               <div style={styles.formGroup}>
                 <label style={styles.label}>Upload Foto Motif (JPG/PNG)</label>
-                <div style={styles.uploadBox}>
+                <div style={styles.uploadBox} className="mf-upload">
                   <input
                     type="file"
                     accept="image/*"
@@ -174,8 +196,9 @@ export default function ManajemenFrame() {
               </div>
 
               <button 
-                type="submit" 
+                type="submit"
                 disabled={submitting || !file}
+                className="mf-submit"
                 onMouseEnter={() => setHoverBtn(true)}
                 onMouseLeave={() => setHoverBtn(false)}
                 style={{
@@ -189,14 +212,14 @@ export default function ManajemenFrame() {
           </div>
 
           {/* List Frames */}
-          <div style={styles.listContainer}>
+          <div style={styles.listContainer} className="mf-card">
             <h2 style={styles.sectionTitle}>Daftar Frame Tersedia</h2>
             {loading ? (
               <p style={styles.loading}>Memuat frame...</p>
             ) : frames.length === 0 ? (
               <p style={styles.empty}>Belum ada frame yang diunggah.</p>
             ) : (
-              <div style={styles.frameGrid}>
+              <div style={styles.frameGrid} className="mf-frame-grid">
                 {frames.map((frame) => (
                   <div key={frame.id} style={styles.frameCard}>
                     <img 
