@@ -58,12 +58,16 @@ _il_module.InputLayer.from_config = _make_patched_from_config(
 
 # Load Model
 MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "models", "model_94ebc873b24c497cba3157eb944d2db7.keras")
-print("Loading Keras Classification model locally...")
-try:
-    classifier_model = tf.keras.models.load_model(MODEL_PATH)
-except Exception as e:
-    print(f"Failed to load model: {e}")
-    classifier_model = None
+# Lazy-load: bobot model TIDAK dimuat saat startup (hemat RAM saat idle & startup cepat).
+# Baru dimuat + di-cache saat request /predict pertama.
+classifier_model = None
+
+def get_classifier_model():
+    global classifier_model
+    if classifier_model is None:
+        print("Loading Keras Classification model (lazy, first request)...")
+        classifier_model = tf.keras.models.load_model(MODEL_PATH)
+    return classifier_model
 
 router = APIRouter()
 
@@ -111,18 +115,16 @@ def get_db():
 
 @router.post("/predict")
 async def predict(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    if classifier_model is None:
-        raise HTTPException(status_code=500, detail="Model klasifikasi tidak diload dengan benar.")
-        
     try:
+        model = get_classifier_model()
         contents = await file.read()
         img = Image.open(io.BytesIO(contents)).convert("RGB")
         img = img.resize((224, 224))
         img_array = np.array(img, dtype=np.float32)
         img_array = np.expand_dims(img_array, axis=0)
         img_array = preprocess_input(img_array)
-        
-        predictions = classifier_model.predict(img_array)[0]
+
+        predictions = model.predict(img_array)[0]
         max_index = np.argmax(predictions)
         predicted_class_name = CLASS_NAMES[max_index]
         confidence = float(predictions[max_index])

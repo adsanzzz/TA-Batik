@@ -136,23 +136,27 @@ export default function Navbar() {
 
       {/* MENU */}
       <div style={styles.links} className={`navbar-links ${isMobileMenuOpen ? "open" : ""}`} onClick={() => setIsMobileMenuOpen(false)}>
-        <Link to="/" style={isActive("/") ? styles.linkActive : styles.link} className="nav-link">
+        <Link to="/" style={isActive("/") ? styles.linkActive : styles.link} className={`nav-link ${isActive("/") ? "active" : ""}`}>
           Home
         </Link>
 
-        <Link to="/katalog" style={isActive("/katalog") ? styles.linkActive : styles.link} className="nav-link">
+        <Link to="/katalog" style={isActive("/katalog") ? styles.linkActive : styles.link} className={`nav-link ${isActive("/katalog") ? "active" : ""}`}>
           Katalog
         </Link>
 
-        <Link to="/scan" style={isActive("/scan") ? styles.linkActive : styles.link} className="nav-link">
+        <Link to="/scan" style={isActive("/scan") ? styles.linkActive : styles.link} className={`nav-link ${isActive("/scan") ? "active" : ""}`}>
           Scan AI
         </Link>
 
-        <Link to="/generative" style={isActive("/generative") ? styles.linkActive : styles.link} className="nav-link">
+        <Link to="/generative" style={isActive("/generative") ? styles.linkActive : styles.link} className={`nav-link ${isActive("/generative") ? "active" : ""}`}>
           AI Generative
         </Link>
 
-        <Link to="/photobox" style={isActive("/photobox") ? styles.linkActive : styles.link} className="nav-link">
+        <Link to="/virtual-try-on" style={isActive("/virtual-try-on") ? styles.linkActive : styles.link} className={`nav-link ${isActive("/virtual-try-on") ? "active" : ""}`}>
+          Virtual Try-On
+        </Link>
+
+        <Link to="/photobox" style={isActive("/photobox") ? styles.linkActive : styles.link} className={`nav-link ${isActive("/photobox") ? "active" : ""}`}>
           Photobox
         </Link>
 

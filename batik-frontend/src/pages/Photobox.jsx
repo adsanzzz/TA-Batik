@@ -121,7 +121,7 @@ export default function Photobox() {
   const [selectedApiFrame, setSelectedApiFrame] = useState(null);
   const [finalCollage, setFinalCollage] = useState(null);
 
-  const [countdown, setCountdown] = useState(null); // null | 3 | 2 | 1 | "📸"
+  const [countdown, setCountdown] = useState(null); // null | 3 | 2 | 1 | "SMILE!"
   const [isCapturing, setIsCapturing] = useState(false);
   const [flash, setFlash] = useState(false);
 
@@ -164,7 +164,7 @@ export default function Photobox() {
     if (countdownRef.current) clearInterval(countdownRef.current);
   };
 
-  /* ── Step 1 → 2 ── */
+  /* ── Step 1 2 ── */
   const handleSelectLayout = async (lay) => {
     layoutRef.current = lay; // set ref SEBELUM async apapun
     setLayout(lay);
@@ -213,7 +213,7 @@ export default function Photobox() {
         setCountdown(n);
       } else {
         clearInterval(countdownRef.current);
-        setCountdown("📸");
+        setCountdown("SMILE!");
         setTimeout(() => {
           capturePhoto();
           setCountdown(null);
@@ -330,7 +330,7 @@ export default function Photobox() {
       ? "rgba(90, 62, 40, 0.6)"
       : "rgba(255, 255, 255, 0.6)";
     ctx.textAlign = "center";
-    ctx.fillText("✦ BatikAI Photobox ✦", canvasW / 2, canvasH - padY / 2);
+    ctx.fillText("BatikAI Photobox", canvasW / 2, canvasH - padY / 2);
 
     setFinalCollage(canvas.toDataURL("image/png"));
   }, [photos, selectedColor, selectedApiFrame, layout]);
@@ -339,7 +339,7 @@ export default function Photobox() {
     if (step === 3 || step === 4) buildCollage();
   }, [step, selectedColor, selectedApiFrame]);
 
-  /* ── Step 3 → 4 ── */
+  /* ── Step 3 4 ── */
   const confirmFrame = async () => {
     await buildCollage();
     setStep(4);
@@ -589,7 +589,7 @@ export default function Photobox() {
 
             {apiFrames.length > 0 && (
               <>
-                <h3 style={{ ...S.sidebarTitle, marginTop: 24 }}>🖼️ Bingkai Custom</h3>
+                <h3 style={{ ...S.sidebarTitle, marginTop: 24 }}>Bingkai Custom</h3>
                 <div style={S.apiFrameList}>
                   {apiFrames.map(fr => (
                     <div

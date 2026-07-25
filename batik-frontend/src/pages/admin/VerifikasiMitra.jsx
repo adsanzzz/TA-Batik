@@ -48,7 +48,7 @@ export default function VerifikasiMitra() {
       <div style={styles.container}>
         <div style={styles.header}>
           <button onClick={() => navigate("/admin/dashboard")} style={styles.backBtn}>
-            ← Kembali ke Dashboard
+            Kembali ke Dashboard
           </button>
           <h1 style={styles.title}>Verifikasi Pengajuan Mitra</h1>
           <p style={styles.subtitle}>Tinjau berkas pendaftar sebelum memberikan izin masuk platform.</p>
@@ -91,7 +91,7 @@ export default function VerifikasiMitra() {
                         rel="noreferrer"
                         style={styles.fileLink}
                       >
-                        Lihat KTP ↗
+                        Lihat KTP
                       </a>
                     </td>
                     <td style={styles.td}>
@@ -101,7 +101,7 @@ export default function VerifikasiMitra() {
                         rel="noreferrer"
                         style={styles.fileLink}
                       >
-                        Lihat Bukti ↗
+                        Lihat Bukti
                       </a>
                     </td>
                     <td style={styles.td}>

@@ -1,0 +1,26 @@
+# Python
+__pycache__
+*.pyc
+*.pyo
+.venv
+venv
+env
+
+# Local data that must NOT bloat the image (uploads live in a Docker volume)
+uploads
+
+# Secrets & local config
+.env
+.env.*
+
+# Models are downloaded during build via wget; don't copy local copies in
+models
+
+# Dev tooling
+.git
+.gitignore
+.vscode
+.idea
+.DS_Store
+README.md
+*.log

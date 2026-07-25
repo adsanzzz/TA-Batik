@@ -79,7 +79,7 @@ export default function InputBatikMitra() {
       <div style={styles.container}>
         <div style={styles.header}>
           <button onClick={() => navigate("/mitra/dashboard")} style={styles.backBtn}>
-            ← Kembali ke Dashboard
+            Kembali ke Dashboard
           </button>
           <h1 style={styles.title}>Unggah Koleksi Batik</h1>
           <p style={styles.subtitle}>Bagikan keindahan motif batik Anda ke publik dengan link toko e-commerce.</p>

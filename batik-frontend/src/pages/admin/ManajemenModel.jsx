@@ -135,7 +135,7 @@ export default function ManajemenModel() {
         {/* HEADER */}
         <div style={styles.header}>
           <button onClick={() => navigate("/admin/dashboard")} style={styles.backBtn}>
-            ← Kembali ke Dashboard
+            Kembali ke Dashboard
           </button>
           <h1 style={styles.title}>Kontrol Model AI</h1>
           <p style={styles.subtitle}>Upload model klasifikasi baru dan atur model mana yang akan aktif digunakan.</p>

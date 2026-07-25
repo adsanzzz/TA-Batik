@@ -118,7 +118,7 @@ export default function ManajemenBatikMitra() {
       <div style={styles.container}>
         <div style={styles.header}>
           <button onClick={() => navigate("/mitra/dashboard")} style={styles.backBtn}>
-            ← Kembali ke Dashboard
+            Kembali ke Dashboard
           </button>
           <h1 style={styles.title}>Kelola Data Batik</h1>
           <p style={styles.subtitle}>Kelola (Edit/Hapus) koleksi batik yang telah Anda unggah.</p>
@@ -162,10 +162,10 @@ export default function ManajemenBatikMitra() {
                       </td>
                       <td style={styles.td}>{item.jenis_batik}</td>
                       <td style={styles.td}>
-                        {item.shopee_link ? <a href={item.shopee_link} target="_blank" rel="noreferrer" style={{color:'#d17b0f'}}>Ada ↗</a> : "-"}
+                        {item.shopee_link ? <a href={item.shopee_link} target="_blank" rel="noreferrer" style={{color:'#d17b0f'}}>Ada</a> : "-"}
                       </td>
                       <td style={styles.td}>
-                        {item.tokopedia_link ? <a href={item.tokopedia_link} target="_blank" rel="noreferrer" style={{color:'#1fb412'}}>Ada ↗</a> : "-"}
+                        {item.tokopedia_link ? <a href={item.tokopedia_link} target="_blank" rel="noreferrer" style={{color:'#1fb412'}}>Ada</a> : "-"}
                       </td>
                       <td style={styles.td}>
                         <div style={styles.actionBtns}>

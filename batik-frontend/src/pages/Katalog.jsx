@@ -340,12 +340,12 @@ export default function Katalog() {
                   }}
                   onClick={() => setShowVtonModal(true)}
                 >
-                  Coba Virtual Try-On ✨
+                  Coba Virtual Try-On
                 </button>
                 
                 {selectedBatik.jenis_acara === "Batik Keraton" && (
                   <div style={styles.warningBox}>
-                    <strong>⚠️ Perhatian:</strong> Batik ini termasuk dalam kategori <strong>Batik Keraton</strong> yang memiliki aturan khusus. Batik ini hanya boleh digunakan oleh keturunan keraton jika berada di area keraton.
+                    <strong>Perhatian:</strong> Batik ini termasuk dalam kategori <strong>Batik Keraton</strong> yang memiliki aturan khusus. Batik ini hanya boleh digunakan oleh keturunan keraton jika berada di area keraton.
                   </div>
                 )}
 
@@ -510,7 +510,7 @@ const styles = {
   },
   modalBody: {
     flex: "1",
-    padding: "40px",
+    padding: "40px 24px 24px 40px",
     display: "flex",
     flexDirection: "column",
     minWidth: "350px",
@@ -539,8 +539,10 @@ const styles = {
   },
   modalScrollArea: {
     overflowY: "auto",
-    paddingRight: "15px",
+    paddingRight: "16px",
+    paddingBottom: "20px",
     flex: 1,
+    minHeight: 0,
     scrollbarWidth: "thin",
     scrollbarColor: `${colors.blue} ${colors.surfaceAlt}`,
   },
@@ -757,4 +759,4 @@ const styles = {
     border: `1px solid ${colors.border}`
   }
 };
-
+

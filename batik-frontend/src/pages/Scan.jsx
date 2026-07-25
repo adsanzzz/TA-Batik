@@ -168,7 +168,7 @@ export default function Scan() {
             <li style={styles.infoListLi}><strong>11. Tambal</strong> - Motif potongan kain perca bermakna memperbaiki diri</li>
           </ul>
           <div style={styles.infoFooter}>
-            ✦ Pastikan motif batik terfokus dan memiliki pencahayaan cukup untuk hasil prediksi maksimal.
+            Pastikan motif batik terfokus dan memiliki pencahayaan cukup untuk hasil prediksi maksimal.
           </div>
         </div>
 
@@ -220,7 +220,7 @@ export default function Scan() {
                   </span>
 
                   <div style={styles.aiBadge}>
-                    ✦ Powered by Batik Intelligence AI
+                    Powered by Batik Intelligence AI
                   </div>
                 </div>
               )}
@@ -385,7 +385,7 @@ export default function Scan() {
 
                 {selectedBatik.jenis_acara === "Batik Keraton" && (
                   <div style={styles.warningBox}>
-                    <strong>⚠️ Perhatian:</strong> Batik ini termasuk dalam kategori <strong>Batik Keraton</strong> yang memiliki aturan khusus. Batik ini hanya boleh digunakan oleh keturunan keraton jika berada di area keraton.
+                    <strong>Perhatian:</strong> Batik ini termasuk dalam kategori <strong>Batik Keraton</strong> yang memiliki aturan khusus. Batik ini hanya boleh digunakan oleh keturunan keraton jika berada di area keraton.
                   </div>
                 )}
 

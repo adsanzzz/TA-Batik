@@ -5,14 +5,12 @@ import { colors, fonts } from '../theme';
 export default function Home() {
   return (
     <section style={styles.hero}>
-      {/* Decorative script watermark ala ASKARA */}
-      <span style={styles.scriptWatermark} className="home-script">Nusantara</span>
       {/* Background Pattern */}
       <style>{`
         /* RESPONSIVE DESIGN FOR HOME */
         .home-script { user-select: none; }
         @media (max-width: 1024px) {
-          .home-script { top: 3% !important; }
+          .home-script { bottom: 2% !important; }
           .home-content { padding: 40px 5% !important; flex-direction: column !important; justify-content: center !important; gap: 40px !important; text-align: center !important; }
           .home-left { flex: none !important; width: 100% !important; display: flex !important; flex-direction: column !important; align-items: center !important; }
           .home-right { flex: none !important; width: 100% !important; max-width: 600px !important; margin: 0 auto !important; }
@@ -61,10 +59,12 @@ export default function Home() {
         }
       `}</style>
       <div style={styles.content} className="home-content">
+        {/* Decorative script watermark ala ASKARA — bawah, center */}
+        <span style={styles.scriptWatermark} className="home-script">Nusantara</span>
         {/* LEFT */}
         <div style={styles.left} className="home-left">
           <div style={styles.badge} className="home-badge">
-            ✦ Artificial Intelligence for Indonesian Heritage
+            Artificial Intelligence for Indonesian Heritage
           </div>
 
           <h1 style={styles.title} className="home-title">
@@ -83,7 +83,7 @@ export default function Home() {
 
           <div style={styles.buttons} className="home-buttons">
             <a href="/scan" style={styles.primaryBtn} className="home-primary-btn">
-              Mulai Identifikasi →
+              Mulai Identifikasi
             </a>
 
             <a href="/katalog" style={styles.secondaryBtn} className="home-secondary-btn">
@@ -122,24 +122,24 @@ const styles = {
 
   scriptWatermark: {
     position: 'absolute',
-    top: '9%',
+    // Di band bawah hero, center — mengisi ruang kosong di atas footer
+    bottom: '48px',
     left: '50%',
     transform: 'translateX(-50%)',
     fontFamily: "'Dancing Script', cursive",
-    fontSize: 'clamp(2rem, 10vw, 6rem)',
-    lineHeight: 1.3,
-    maxWidth: '100vw',
+    fontSize: 'clamp(3rem, 13vw, 9rem)',
+    lineHeight: 1.2,
     fontWeight: 700,
     // Efek shine: streak putih bergerak melintasi teks
     backgroundImage:
-      'linear-gradient(100deg, #CBD4F2 0%, #CBD4F2 38%, #FFFFFF 50%, #CBD4F2 62%, #CBD4F2 100%)',
+      'linear-gradient(100deg, #A9BAEC 0%, #A9BAEC 38%, #FFFFFF 50%, #A9BAEC 62%, #A9BAEC 100%)',
     backgroundSize: '200% 100%',
     WebkitBackgroundClip: 'text',
     backgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     color: 'transparent',
     animation: 'shineText 5s linear infinite',
-    opacity: 0.7,
+    opacity: 0.55,
     whiteSpace: 'nowrap',
     pointerEvents: 'none',
     zIndex: 0,
@@ -164,7 +164,7 @@ const styles = {
     minHeight: '100vh',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '0 8%',
+    padding: '0 8% 140px',
     position: 'relative',
     zIndex: 2,
   },

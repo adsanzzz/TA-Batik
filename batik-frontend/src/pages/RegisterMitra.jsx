@@ -70,7 +70,11 @@ export default function RegisterMitra() {
       <>
       <div style={styles.container}>
           <div style={styles.card}>
-            <div style={styles.successIcon}>✓</div>
+            <div style={styles.successIcon}>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
             <h2 style={styles.title}>Registrasi Berhasil</h2>
             <p style={styles.successMessage}>
               Pendaftaran Anda sebagai Mitra berhasil diajukan! Data Anda sedang dalam peninjauan oleh Admin. Anda akan diarahkan ke halaman Login.

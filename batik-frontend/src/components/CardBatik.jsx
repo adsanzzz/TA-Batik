@@ -91,7 +91,7 @@ export default function CardBatik({ batik, onClick }) {
                   onClick={(e) => e.stopPropagation()}
                   style={styles.shopeeBtn}
                 >
-                  Shopee ↗
+                  Shopee
                 </a>
               )}
               {batik.tokopedia_link && (
@@ -102,7 +102,7 @@ export default function CardBatik({ batik, onClick }) {
                   onClick={(e) => e.stopPropagation()}
                   style={styles.tokopediaBtn}
                 >
-                  Tokopedia ↗
+                  Tokopedia
                 </a>
               )}
             </div>
@@ -233,4 +233,4 @@ const styles = {
     fontWeight: "bold",
     transition: "opacity 0.2s",
   },
-};
+};

@@ -35,7 +35,7 @@ export default function Footer() {
               melestarikan keindahan motif Batik Nusantara.
             </p>
             <div style={styles.tagBadge}>
-              ✦ Artificial Intelligence for Indonesian Heritage
+              Artificial Intelligence for Indonesian Heritage
             </div>
           </div>
 

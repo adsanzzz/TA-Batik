@@ -18,6 +18,11 @@ const FemaleBlouseIcon = ({ active }) => (
 );
 
 const RESPONSIVE_CSS = `
+  .vton-option-card:hover {
+    border-color: #033EEE !important;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 26px rgba(3, 62, 238, 0.14);
+  }
   @media (max-width: 768px) {
     .vton-modal-content * {
       box-sizing: border-box !important;
@@ -300,8 +305,8 @@ export default function VtonModal({ batik, onClose }) {
                   onClick={() => setTemplateType("male_shirt")}
                 >
                   <MaleShirtIcon active={templateType === "male_shirt"} />
-                  <h4 style={templateType === "male_shirt" ? {color: colors.blue} : {}}>Kemeja Pria</h4>
-                  <p>Lengan Pendek Berkerah</p>
+                  <h4 style={{...styles.optionTitle, ...(templateType === "male_shirt" ? {color: colors.blue} : {})}}>Kemeja Pria</h4>
+                  <p style={styles.optionDesc}>Lengan Pendek Berkerah</p>
                 </div>
                 <div 
                   style={{...styles.optionCard, ...(templateType === "female_blouse" ? styles.optionActive : {})}}
@@ -309,8 +314,8 @@ export default function VtonModal({ batik, onClose }) {
                   onClick={() => setTemplateType("female_blouse")}
                 >
                   <FemaleBlouseIcon active={templateType === "female_blouse"} />
-                  <h4 style={templateType === "female_blouse" ? {color: colors.blue} : {}}>Blus Wanita</h4>
-                  <p>Atasan Lengan Pendek</p>
+                  <h4 style={{...styles.optionTitle, ...(templateType === "female_blouse" ? {color: colors.blue} : {})}}>Blus Wanita</h4>
+                  <p style={styles.optionDesc}>Atasan Lengan Pendek</p>
                 </div>
               </div>
 
@@ -542,20 +547,38 @@ const styles = {
   optionCard: {
     flex: 1,
     maxWidth: "250px",
-    background: colors.surfaceAlt,
-    border: `1px solid ${colors.border}`,
+    minHeight: "190px",
+    background: colors.surface,
+    border: `2px solid ${colors.border}`,
     borderRadius: "16px",
-    padding: "20px 15px",
+    padding: "24px 16px",
     textAlign: "center",
     cursor: "pointer",
     transition: "all 0.3s",
     color: colors.textHead,
     boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
   },
   optionActive: {
     borderColor: colors.blue,
     background: colors.blueSoft,
     boxShadow: colors.shadowSm,
+  },
+  optionTitle: {
+    margin: "6px 0 8px",
+    fontSize: "1.05rem",
+    fontWeight: 700,
+    fontFamily: fonts.body,
+    color: colors.textHead,
+  },
+  optionDesc: {
+    margin: 0,
+    fontSize: "0.85rem",
+    lineHeight: 1.4,
+    color: colors.textBody,
   },
   optionIcon: {
     fontSize: "3rem",

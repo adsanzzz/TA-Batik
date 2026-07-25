@@ -4,7 +4,7 @@
 // =============================================================
 
 export const colors = {
-  // Backgrounds (cream → biru, terang)
+  // Backgrounds (cream biru, terang)
   bg: "#FDFAF4",
   bgGradient: "linear-gradient(165deg, #FDFAF4 0%, #EAF0FF 55%, #CFDDFF 100%)",
   surface: "#FFFFFF",

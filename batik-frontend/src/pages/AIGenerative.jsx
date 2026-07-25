@@ -509,7 +509,7 @@ export default function AIGenerative() {
                 </button>
                 
                 {!imageA || !imageB ? (
-                  <p style={styles.hintText}>✦ Harap generate Motif A & B terlebih dahulu di kolom kiri</p>
+                  <p style={styles.hintText}>Harap generate Motif A & B terlebih dahulu di kolom kiri</p>
                 ) : null}
               </>
             ) : (
@@ -564,7 +564,7 @@ export default function AIGenerative() {
                 </button>
                 
                 {!contentFile || !styleFile ? (
-                  <p style={styles.hintText}>✦ Harap upload kedua foto batik terlebih dahulu</p>
+                  <p style={styles.hintText}>Harap upload kedua foto batik terlebih dahulu</p>
                 ) : null}
               </>
             )}
@@ -636,7 +636,7 @@ export default function AIGenerative() {
 
                       <div style={styles.actionButtons}>
                         <button type="submit" disabled={saveLoading || isSaved} style={styles.btnSave}>
-                          <SaveIcon size={14} color={colors.onBlue} /> {saveLoading ? "Menyimpan..." : isSaved ? "Tersimpan di Katalog ✓" : "Simpan ke Katalog"}
+                          <SaveIcon size={14} color={colors.onBlue} /> {saveLoading ? "Menyimpan..." : isSaved ? "Tersimpan di Katalog" : "Simpan ke Katalog"}
                         </button>
                         
                         <button
