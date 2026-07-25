@@ -130,28 +130,13 @@ code {
 /* ── NAV LINKS ─────────────────────────────────────── */
 .nav-link {
   position: relative;
-  transition: color 0.18s ease, opacity 0.18s ease;
+  transition: color 0.18s ease, background 0.18s ease;
 }
 
-/* Underline tumbuh dari kiri — clean & subtle */
-.nav-link:not(.active)::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 0;
-  height: 1.5px;
-  background: #033EEE;
-  border-radius: 2px;
-  transition: width 0.22s ease;
-}
-
-.nav-link:hover {
+/* Hover halus: teks biru + background lembut (tanpa garis bawah) */
+.nav-link:not(.active):hover {
   color: #033EEE;
-}
-
-.nav-link:hover::after {
-  width: 100%;
+  background: rgba(3, 62, 238, 0.06);
 }
 
 /* ── BUTTONS ───────────────────────────────────────── */

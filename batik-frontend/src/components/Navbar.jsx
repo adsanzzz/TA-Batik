@@ -64,7 +64,7 @@ export default function Navbar() {
           gap: 28px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .navbar-container {
             padding: 0 20px !important;
             backdrop-filter: none !important;
@@ -91,20 +91,34 @@ export default function Navbar() {
             transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
             box-shadow: -10px 0 30px rgba(10,25,80,0.12);
             z-index: 9998;
+            box-sizing: border-box;
+            overflow-x: hidden;
           }
           .navbar-links.open {
             transform: translateX(0);
           }
           .nav-link {
             width: 100%;
+            box-sizing: border-box !important;
             text-align: center;
-            padding: 18px !important;
-            font-size: 1.25rem !important;
-            border-bottom: 1px solid #E1E7F5;
+            padding: 16px !important;
+            font-size: 1.1rem !important;
+            font-weight: 500 !important;
+            border-bottom: 1px solid #EEF2FB;
             color: #0C1B4D !important;
+          }
+          /* Item aktif di menu HP: highlight lembut, bukan balok biru penuh */
+          .navbar-links .nav-link.active {
+            color: #033EEE !important;
+            background: rgba(3, 62, 238, 0.07) !important;
+            font-weight: 700 !important;
+            border-radius: 0 !important;
+            border-bottom: 1px solid #EEF2FB !important;
+            box-shadow: none !important;
           }
           .nav-btn-outline, .nav-btn-primary {
             width: 85% !important;
+            box-sizing: border-box !important;
             text-align: center;
             padding: 14px !important;
             font-size: 1.1rem !important;
@@ -246,17 +260,19 @@ const styles = {
   links: {
     display: "flex",
     alignItems: "center",
-    gap: "8px",
+    gap: "6px",
+    flexWrap: "nowrap",
   },
 
   link: {
     textDecoration: "none",
     color: colors.textBody,
     fontWeight: "500",
-    fontSize: "0.95rem",
+    fontSize: "0.92rem",
     position: "relative",
-    padding: "8px 16px",
+    padding: "8px 14px",
     borderRadius: "999px",
+    whiteSpace: "nowrap",
     transition: "all 0.25s ease",
   },
 
@@ -264,10 +280,11 @@ const styles = {
     textDecoration: "none",
     color: colors.onBlue,
     fontWeight: "600",
-    fontSize: "0.95rem",
+    fontSize: "0.92rem",
     position: "relative",
-    padding: "8px 18px",
+    padding: "8px 16px",
     borderRadius: "999px",
+    whiteSpace: "nowrap",
     background: colors.blue,
     boxShadow: "0 6px 16px rgba(3, 62, 238, 0.28)",
   },

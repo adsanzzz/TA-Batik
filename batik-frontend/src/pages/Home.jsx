@@ -10,7 +10,7 @@ export default function Home() {
         /* RESPONSIVE DESIGN FOR HOME */
         .home-script { user-select: none; }
         @media (max-width: 1024px) {
-          .home-script { bottom: 2% !important; }
+          .home-script { top: 5% !important; bottom: auto !important; font-size: 15vw !important; opacity: 0.4 !important; }
           .home-content { padding: 40px 5% !important; flex-direction: column !important; justify-content: center !important; gap: 40px !important; text-align: center !important; }
           .home-left { flex: none !important; width: 100% !important; display: flex !important; flex-direction: column !important; align-items: center !important; }
           .home-right { flex: none !important; width: 100% !important; max-width: 600px !important; margin: 0 auto !important; }
@@ -173,6 +173,8 @@ const styles = {
     flex: 1,
     color: colors.textBody,
     animation: 'fadeUp 0.8s ease-out both',
+    position: 'relative',
+    zIndex: 1,
   },
 
   badge: {
@@ -246,6 +248,8 @@ const styles = {
     flex: 1,
     display: 'flex',
     justifyContent: 'center',
+    position: 'relative',
+    zIndex: 1,
   },
 
   imageContainer: {
