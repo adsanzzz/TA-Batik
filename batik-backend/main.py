@@ -87,6 +87,13 @@ try:
 except Exception as e:
     print(f"❌ StyleGAN route failed: {e}")
 
+try:
+    from routes import rag_router
+    app.include_router(rag_router.router)
+    print("✅ RAG Batik Recommendation route loaded.")
+except Exception as e:
+    print(f"❌ RAG route failed: {e}")
+
 print("=== STARTUP COMPLETE - App is running ===")
 
 @app.get("/health")
