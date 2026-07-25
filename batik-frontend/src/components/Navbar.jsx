@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { isAuthenticated, logout, getRole } from "../services/auth";
+import { colors, fonts } from "../theme";
 
 export default function Navbar() {
   const location = useLocation(); // Triggers re-render on route changes to refresh auth status
   const auth = isAuthenticated();
   const role = getRole();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const isActive = (path) =>
+    path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
 
   return (
     <>
@@ -32,7 +36,7 @@ export default function Navbar() {
           display: block;
           width: 24px;
           height: 2.5px;
-          background-color: #C8FF01;
+          background-color: #00117D;
           border-radius: 2px;
           transition: all 0.3s cubic-bezier(0.77, 0, 0.175, 1);
         }
@@ -65,7 +69,7 @@ export default function Navbar() {
             padding: 0 20px !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
-            background: rgba(2, 38, 146, 0.98) !important;
+            background: #FFFFFF !important;
           }
           .hamburger-btn {
             display: flex !important;
@@ -78,14 +82,14 @@ export default function Navbar() {
             width: 80%;
             max-width: 320px;
             height: 100vh;
-            background: linear-gradient(135deg, rgba(2, 38, 146, 0.98) 0%, rgba(1, 25, 100, 0.98) 100%);
+            background: linear-gradient(160deg, #FFFFFF 0%, #EAF0FF 100%);
             backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(200, 255, 1, 0.15);
+            border-left: 1px solid #E1E7F5;
             flex-direction: column;
             justify-content: flex-start;
             padding-top: 100px;
             transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-            box-shadow: -10px 0 30px rgba(0,0,0,0.6);
+            box-shadow: -10px 0 30px rgba(10,25,80,0.12);
             z-index: 9998;
           }
           .navbar-links.open {
@@ -96,8 +100,8 @@ export default function Navbar() {
             text-align: center;
             padding: 18px !important;
             font-size: 1.25rem !important;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            color: #fff !important;
+            border-bottom: 1px solid #E1E7F5;
+            color: #0C1B4D !important;
           }
           .nav-btn-outline, .nav-btn-primary {
             width: 85% !important;
@@ -132,23 +136,23 @@ export default function Navbar() {
 
       {/* MENU */}
       <div style={styles.links} className={`navbar-links ${isMobileMenuOpen ? "open" : ""}`} onClick={() => setIsMobileMenuOpen(false)}>
-        <Link to="/" style={styles.link} className="nav-link">
+        <Link to="/" style={isActive("/") ? styles.linkActive : styles.link} className="nav-link">
           Home
         </Link>
 
-        <Link to="/katalog" style={styles.link} className="nav-link">
+        <Link to="/katalog" style={isActive("/katalog") ? styles.linkActive : styles.link} className="nav-link">
           Katalog
         </Link>
 
-        <Link to="/scan" style={styles.link} className="nav-link">
+        <Link to="/scan" style={isActive("/scan") ? styles.linkActive : styles.link} className="nav-link">
           Scan AI
         </Link>
 
-        <Link to="/generative" style={styles.link} className="nav-link">
+        <Link to="/generative" style={isActive("/generative") ? styles.linkActive : styles.link} className="nav-link">
           AI Generative
         </Link>
 
-        <Link to="/photobox" style={styles.link} className="nav-link">
+        <Link to="/photobox" style={isActive("/photobox") ? styles.linkActive : styles.link} className="nav-link">
           Photobox
         </Link>
 
@@ -193,18 +197,24 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "0 50px",
-    height: "85px",
+    padding: "10px 32px",
+    height: "68px",
 
-    background: "rgba(2, 38, 146, 0.92)",
-    backdropFilter: "blur(12px)",
+    background: "rgba(255, 255, 255, 0.85)",
+    backdropFilter: "blur(14px)",
+    WebkitBackdropFilter: "blur(14px)",
 
-    boxShadow: "0 2px 20px rgba(0,0,0,0.25)",
-    borderBottom: "1px solid rgba(200, 255, 1, 0.15)",
+    boxShadow: colors.shadowSm,
+    border: `1px solid ${colors.border}`,
+    borderRadius: "999px",
 
     position: "sticky",
-    top: 0,
+    top: "16px",
     zIndex: 9999,
+    margin: "16px auto 0",
+    maxWidth: "1200px",
+    width: "calc(100% - 40px)",
+    boxSizing: "border-box",
   },
 
   logoWrapper: {
@@ -214,63 +224,80 @@ const styles = {
   },
 
   logoImg: {
-    width: "42px",
-    height: "42px",
+    width: "40px",
+    height: "40px",
     objectFit: "contain",
     borderRadius: "8px",
-    filter: "drop-shadow(0 2px 8px rgba(200, 255, 1, 0.3))",
+    filter: "drop-shadow(0 2px 8px rgba(3, 62, 238, 0.2))",
   },
 
   logoText: {
     fontSize: "1.4rem",
     fontWeight: "700",
-    color: "#C8FF01",
-    fontFamily: "'Playfair Display', serif",
+    color: colors.navy,
+    fontFamily: fonts.heading,
+    letterSpacing: "0.5px",
   },
 
   links: {
     display: "flex",
     alignItems: "center",
-    gap: "28px",
+    gap: "8px",
   },
 
   link: {
     textDecoration: "none",
-    color: "#F8F4EE",
+    color: colors.textBody,
     fontWeight: "500",
     fontSize: "0.95rem",
     position: "relative",
-    paddingBottom: "4px",
+    padding: "8px 16px",
+    borderRadius: "999px",
+    transition: "all 0.25s ease",
+  },
+
+  linkActive: {
+    textDecoration: "none",
+    color: colors.onBlue,
+    fontWeight: "600",
+    fontSize: "0.95rem",
+    position: "relative",
+    padding: "8px 18px",
+    borderRadius: "999px",
+    background: colors.blue,
+    boxShadow: "0 6px 16px rgba(3, 62, 238, 0.28)",
   },
 
   adminLink: {
     textDecoration: "none",
-    color: "#C8FF01",
+    color: colors.blue,
     fontWeight: "600",
     fontSize: "0.95rem",
+    padding: "8px 16px",
   },
 
   loginBtn: {
     textDecoration: "none",
 
-    background: "#C8FF01",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
 
-    padding: "8px 20px",
-    borderRadius: "20px",
+    padding: "9px 22px",
+    borderRadius: "999px",
 
     fontSize: "0.9rem",
     fontWeight: "600",
 
+    boxShadow: "0 6px 16px rgba(3, 62, 238, 0.25)",
     transition: "all 0.3s ease",
   },
 
   mitraBtn: {
     textDecoration: "none",
-    border: "1px solid #C8FF01",
-    color: "#C8FF01",
-    padding: "7px 18px",
-    borderRadius: "20px",
+    border: `1px solid ${colors.blueBorder}`,
+    color: colors.blue,
+    padding: "8px 18px",
+    borderRadius: "999px",
     fontSize: "0.9rem",
     fontWeight: "600",
     transition: "all 0.3s ease",
@@ -279,11 +306,11 @@ const styles = {
   logoutBtn: {
     background: "transparent",
 
-    border: "1px solid #C8FF01",
-    color: "#C8FF01",
+    border: `1px solid ${colors.blueBorder}`,
+    color: colors.blue,
 
-    padding: "6px 16px",
-    borderRadius: "20px",
+    padding: "7px 18px",
+    borderRadius: "999px",
 
     cursor: "pointer",
 

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { BASE_URL } from "../services/api";
 import jsPDF from "jspdf";
 import Footer from "../components/Footer";
+import { colors, fonts } from "../theme";
 
 /* ─── Icons ─────────────────────────────────────────────── */
 const IconCamera = () => (
@@ -45,7 +46,7 @@ const LAYOUTS = [
     count: 1, label: "1 Foto", desc: "Single",
     preview: () => (
       <svg viewBox="0 0 60 80" style={{ width: 60, height: 80 }}>
-        <rect x="4" y="4" width="52" height="72" rx="3" fill="rgba(200, 255, 1, 0.08)" stroke="#C8FF01" strokeWidth="2" />
+        <rect x="4" y="4" width="52" height="72" rx="3" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
       </svg>
     )
   },
@@ -53,8 +54,8 @@ const LAYOUTS = [
     count: 2, label: "2 Foto", desc: "Duo",
     preview: () => (
       <svg viewBox="0 0 60 80" style={{ width: 60, height: 80 }}>
-        <rect x="4" y="4" width="52" height="34" rx="3" fill="rgba(200, 255, 1, 0.08)" stroke="#C8FF01" strokeWidth="2" />
-        <rect x="4" y="42" width="52" height="34" rx="3" fill="rgba(200, 255, 1, 0.08)" stroke="#C8FF01" strokeWidth="2" />
+        <rect x="4" y="4" width="52" height="34" rx="3" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
+        <rect x="4" y="42" width="52" height="34" rx="3" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
       </svg>
     )
   },
@@ -62,9 +63,9 @@ const LAYOUTS = [
     count: 3, label: "3 Foto", desc: "Strip",
     preview: () => (
       <svg viewBox="0 0 60 80" style={{ width: 60, height: 80 }}>
-        <rect x="4" y="4" width="52" height="22" rx="3" fill="rgba(200, 255, 1, 0.08)" stroke="#C8FF01" strokeWidth="2" />
-        <rect x="4" y="30" width="52" height="22" rx="3" fill="rgba(200, 255, 1, 0.08)" stroke="#C8FF01" strokeWidth="2" />
-        <rect x="4" y="56" width="52" height="22" rx="3" fill="rgba(200, 255, 1, 0.08)" stroke="#C8FF01" strokeWidth="2" />
+        <rect x="4" y="4" width="52" height="22" rx="3" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
+        <rect x="4" y="30" width="52" height="22" rx="3" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
+        <rect x="4" y="56" width="52" height="22" rx="3" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
       </svg>
     )
   },
@@ -72,10 +73,10 @@ const LAYOUTS = [
     count: 4, label: "4 Foto", desc: "Grid",
     preview: () => (
       <svg viewBox="0 0 60 80" style={{ width: 60, height: 80 }}>
-        <rect x="4" y="4" width="24" height="34" rx="2" fill="rgba(200, 255, 1, 0.08)" stroke="#C8FF01" strokeWidth="2" />
-        <rect x="32" y="4" width="24" height="34" rx="2" fill="rgba(200, 255, 1, 0.08)" stroke="#C8FF01" strokeWidth="2" />
-        <rect x="4" y="42" width="24" height="34" rx="2" fill="rgba(200, 255, 1, 0.08)" stroke="#C8FF01" strokeWidth="2" />
-        <rect x="32" y="42" width="24" height="34" rx="2" fill="rgba(200, 255, 1, 0.08)" stroke="#C8FF01" strokeWidth="2" />
+        <rect x="4" y="4" width="24" height="34" rx="2" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
+        <rect x="32" y="4" width="24" height="34" rx="2" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
+        <rect x="4" y="42" width="24" height="34" rx="2" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
+        <rect x="32" y="42" width="24" height="34" rx="2" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
       </svg>
     )
   },
@@ -388,12 +389,12 @@ export default function Photobox() {
         @keyframes flash { 0%{opacity:0} 30%{opacity:1} 100%{opacity:0} }
         @keyframes slide-in { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
         @keyframes fade-in { from{opacity:0} to{opacity:1} }
-        .photobox-card:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 20px 50px rgba(200, 255, 1, 0.15) !important; border-color: #C8FF01 !important; }
+        .photobox-card:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 20px 50px rgba(10, 25, 80, 0.14) !important; border-color: #033EEE !important; }
         .frame-opt:hover { transform: scale(1.05); }
-        .btn-primary:hover { background: #a8872a !important; transform: translateY(-1px); }
-        .btn-secondary:hover { background: #f5e6d3 !important; }
-        .btn-dark:hover { background: #1a1008 !important; transform: translateY(-1px); }
-        .capture-btn:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 8px 30px rgba(212,175,55,0.5) !important; }
+        .btn-primary:hover { background: #0A46D6 !important; transform: translateY(-1px); }
+        .btn-secondary:hover { background: #EEF3FF !important; }
+        .btn-dark:hover { background: #000B4D !important; transform: translateY(-1px); }
+        .capture-btn:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 8px 30px rgba(3,62,238,0.35) !important; }
         .capture-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* RESPONSIVE DESIGN FOR PHOTOBOX */
@@ -436,7 +437,7 @@ export default function Photobox() {
       <div style={S.header}>
         <img src="/logo.png" alt="Logo" style={S.logoImage} />
         <h1 style={S.headerTitle} className="photobox-header-title">
-          <SparklesIcon size={28} color="#C8FF01" /> Photobox <span style={{ color: "#C8FF01", WebkitTextFillColor: "#C8FF01" }}>Nusantara</span>
+          <SparklesIcon size={28} color={colors.blue} /> Photobox <span style={{ color: colors.blue }}>Nusantara</span>
         </h1>
         <p style={S.headerSub} className="photobox-subtitle">Abadikan momen indah dengan bingkai batik khas Indonesia</p>
       </div>
@@ -452,8 +453,8 @@ export default function Photobox() {
               <div style={{ ...S.stepCircle, ...(done ? S.stepDone : active ? S.stepActive : S.stepFuture) }}>
                 {done ? <IconCheck /> : n}
               </div>
-              <span style={{ ...S.stepLabel, color: active ? "#C8FF01" : done ? "#D0DBFF" : "#b0a090" }}>{label}</span>
-              {i < 3 && <div className="photobox-step-line" style={{ ...S.stepLine, background: done ? "#C8FF01" : "rgba(255,255,255,0.15)" }} />}
+              <span style={{ ...S.stepLabel, color: active ? colors.blue : done ? colors.textBody : colors.textMuted }}>{label}</span>
+              {i < 3 && <div className="photobox-step-line" style={{ ...S.stepLine, background: done ? colors.blue : colors.border }} />}
             </div>
           );
         })}
@@ -518,7 +519,7 @@ export default function Photobox() {
                 </span>
               </button>
             </div>
-            <p style={{ textAlign: "center", color: "#C8FF01", fontSize: "0.85rem", marginTop: 8 }}>
+            <p style={{ textAlign: "center", color: colors.blue, fontSize: "0.85rem", marginTop: 8 }}>
               Klik tombol lalu bersiaplah — hitung mundur 3 detik akan dimulai
             </p>
           </div>
@@ -548,7 +549,7 @@ export default function Photobox() {
             <div style={S.previewBox}>
               {finalCollage
                 ? <img src={finalCollage} alt="preview" style={S.previewImg} />
-                : <div style={{ color: "#aaa", textAlign: "center" }}>Memuat preview...</div>
+                : <div style={{ color: colors.textMuted, textAlign: "center" }}>Memuat preview...</div>
               }
             </div>
             <div className="photobox-action-btns" style={{ display: "flex", gap: 12, marginTop: 16 }}>
@@ -570,14 +571,14 @@ export default function Photobox() {
                   style={{
                     ...S.frameColorChip,
                     background: fc.color || "#f9f9f9",
-                    border: selectedColor.id === fc.id ? "3px solid #C8FF01" : "2px solid rgba(0,0,0,0.1)",
-                    boxShadow: selectedColor.id === fc.id ? "0 0 0 2px #C8FF01" : "none",
+                    border: selectedColor.id === fc.id ? `3px solid ${colors.blue}` : `2px solid ${colors.border}`,
+                    boxShadow: selectedColor.id === fc.id ? `0 0 0 2px ${colors.blue}` : "none",
                   }}
                   onClick={() => { setSelectedColor(fc); setSelectedApiFrame(null); }}
                   title={fc.label}
                 >
                   {selectedColor.id === fc.id && (
-                    <div style={{ position: "absolute", top: 4, right: 4, background: "#C8FF01", borderRadius: "50%", padding: 2, color: "#00117D" }}>
+                    <div style={{ position: "absolute", top: 4, right: 4, background: colors.blue, borderRadius: "50%", padding: 2, color: colors.onBlue }}>
                       <IconCheck />
                     </div>
                   )}
@@ -596,8 +597,8 @@ export default function Photobox() {
                       className="frame-opt"
                       style={{
                         ...S.apiFrameItem,
-                        border: selectedApiFrame?.id === fr.id ? "3px solid #C8FF01" : "2px solid transparent",
-                        boxShadow: selectedApiFrame?.id === fr.id ? "0 4px 16px rgba(200,255,1,0.3)" : "0 2px 8px rgba(0,0,0,0.06)",
+                        border: selectedApiFrame?.id === fr.id ? `3px solid ${colors.blue}` : "2px solid transparent",
+                        boxShadow: selectedApiFrame?.id === fr.id ? colors.shadow : colors.shadowSm,
                       }}
                       onClick={() => { setSelectedApiFrame(fr); setSelectedColor(FRAME_COLORS[0]); }}
                     >
@@ -651,9 +652,10 @@ export default function Photobox() {
 const S = {
   page: {
     minHeight: "100vh",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: fonts.body,
     padding: "60px 40px",
-    color: "#F8F4EE",
+    background: "transparent",
+    color: colors.textBody,
     position: "relative",
     overflow: "hidden",
   },
@@ -663,7 +665,7 @@ const S = {
     opacity: 0.25,
     backgroundImage: `
       radial-gradient(circle at center,
-      #C8FF01 2.5px,
+      ${colors.blueSoft} 2.5px,
       transparent 2.5px)
     `,
     backgroundSize: "40px 40px",
@@ -682,22 +684,20 @@ const S = {
     height: "55px",
     width: "auto",
     marginBottom: "15px",
-    filter: "drop-shadow(0px 4px 10px rgba(0,0,0,0.25))"
+    filter: "drop-shadow(0px 4px 10px rgba(10,25,80,0.12))"
   },
   headerTitle: {
-    fontFamily: "'Playfair Display', serif",
+    fontFamily: fonts.heading,
     fontSize: "2.8rem",
     fontWeight: 700,
-    background: "linear-gradient(to bottom, #FFFFFF, #D0DBFF)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
+    color: colors.textHead,
     margin: "0 0 10px",
     paddingTop: "10px",
     paddingBottom: "10px",
     lineHeight: "1.3",
   },
   headerSub: {
-    color: "#D0E0FF",
+    color: colors.textBody,
     fontSize: "1rem",
     fontWeight: 500,
     margin: 0,
@@ -733,19 +733,19 @@ const S = {
     zIndex: 1,
   },
   stepActive: {
-    background: "linear-gradient(135deg, #C8FF01, #AEE600)",
-    color: "#00117D",
-    boxShadow: "0 4px 14px rgba(200,255,1,0.4)",
+    background: colors.blueGradient,
+    color: colors.onBlue,
+    boxShadow: colors.shadowSm,
   },
   stepDone: {
-    background: "#0122B4",
-    color: "#fff",
-    border: "2px solid #C8FF01",
+    background: colors.blue,
+    color: colors.onBlue,
+    border: `2px solid ${colors.blue}`,
   },
   stepFuture: {
-    background: "#0122B4",
-    color: "#D0E0FF",
-    border: "2px solid rgba(255,255,255,0.15)",
+    background: colors.surfaceAlt,
+    color: colors.textMuted,
+    border: `2px solid ${colors.border}`,
   },
   stepLabel: {
     fontSize: "0.72rem",
@@ -771,18 +771,16 @@ const S = {
     textAlign: "center",
   },
   sectionTitle: {
-    fontFamily: "'Playfair Display', serif",
+    fontFamily: fonts.heading,
     fontSize: "1.7rem",
-    background: "linear-gradient(to bottom, #FFFFFF, #D0DBFF)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
+    color: colors.textHead,
     marginBottom: 6,
     paddingTop: "5px",
     paddingBottom: "5px",
     lineHeight: "1.3",
   },
   sectionSub: {
-    color: "#D0E0FF",
+    color: colors.textBody,
     fontSize: "0.95rem",
     marginBottom: 32,
   },
@@ -792,15 +790,15 @@ const S = {
     gap: 20,
   },
   layoutCard: {
-    background: "rgba(255, 255, 255, 0.08)",
+    background: colors.surface,
     borderRadius: 20,
     padding: "32px 20px 24px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     cursor: "pointer",
-    border: "1.5px solid rgba(255, 255, 255, 0.15)",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+    border: `1.5px solid ${colors.border}`,
+    boxShadow: colors.shadow,
     transition: "all 0.25s ease",
   },
   layoutPreview: {
@@ -810,14 +808,14 @@ const S = {
     fontSize: "0.7rem",
     fontWeight: 700,
     letterSpacing: "0.1em",
-    color: "#C8FF01",
-    background: "rgba(200, 255, 1, 0.08)",
+    color: colors.blue,
+    background: colors.blueSoft,
     padding: "3px 10px",
     borderRadius: 20,
     marginBottom: 8,
   },
   layoutLabel: {
-    color: "#fff",
+    color: colors.textHead,
     fontSize: "1.05rem",
     fontWeight: 700,
     margin: 0,
@@ -843,7 +841,7 @@ const S = {
     background: "#111",
     borderRadius: 20,
     overflow: "hidden",
-    boxShadow: "0 16px 48px rgba(0,0,0,0.2)",
+    boxShadow: colors.shadow,
   },
   video: {
     width: "100%",
@@ -864,10 +862,10 @@ const S = {
   countdownNum: {
     fontSize: "6rem",
     fontWeight: 900,
-    color: "#C8FF01",
-    fontFamily: "'Playfair Display', serif",
+    color: colors.blue,
+    fontFamily: fonts.heading,
     animation: "countdown-pop 0.5s ease",
-    textShadow: "0 4px 20px rgba(200,255,1,0.5)",
+    textShadow: "0 4px 20px rgba(3,62,238,0.4)",
   },
   flashEffect: {
     position: "absolute",
@@ -895,9 +893,9 @@ const S = {
     transition: "all 0.3s",
   },
   dotFilled: {
-    background: "#C8FF01",
-    borderColor: "#C8FF01",
-    boxShadow: "0 0 8px rgba(200,255,1,0.6)",
+    background: colors.blue,
+    borderColor: colors.blue,
+    boxShadow: "0 0 8px rgba(3,62,238,0.5)",
   },
   cameraControls: {
     display: "flex",
@@ -911,15 +909,15 @@ const S = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "linear-gradient(135deg, #C8FF01, #AEE600)",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     border: "none",
     padding: "14px 32px",
     borderRadius: 50,
     fontSize: "1rem",
     fontWeight: 700,
     cursor: "pointer",
-    boxShadow: "0 6px 24px rgba(200,255,1,0.35)",
+    boxShadow: colors.shadowSm,
     transition: "all 0.2s",
     gap: 8,
   },
@@ -927,18 +925,17 @@ const S = {
   // Strip panel
   stripPanel: {
     flex: "0 0 180px",
-    background: "rgba(255, 255, 255, 0.1)",
-    backdropFilter: "blur(10px)",
+    background: colors.surface,
     borderRadius: 20,
     padding: "20px 16px",
-    border: "1px solid rgba(255, 255, 255, 0.15)",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+    border: `1px solid ${colors.border}`,
+    boxShadow: colors.shadow,
     minWidth: 160,
   },
   stripTitle: {
     fontSize: "0.85rem",
     fontWeight: 700,
-    color: "#C8FF01",
+    color: colors.blue,
     textAlign: "center",
     marginBottom: 14,
     margin: "0 0 14px",
@@ -953,8 +950,8 @@ const S = {
     aspectRatio: "16/9",
     borderRadius: 10,
     overflow: "hidden",
-    background: "rgba(0,0,0,0.3)",
-    border: "2px dashed #C8FF01",
+    background: colors.surfaceAlt,
+    border: `2px dashed ${colors.blueBorder}`,
   },
   stripImg: {
     width: "100%",
@@ -969,7 +966,7 @@ const S = {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    color: "#D0E0FF",
+    color: colors.textMuted,
     opacity: 0.6,
   },
 
@@ -991,10 +988,11 @@ const S = {
   },
   previewBox: {
     width: "100%",
-    background: "#0122B4",
+    background: colors.surfaceAlt,
     borderRadius: 20,
     overflow: "hidden",
-    boxShadow: "0 16px 48px rgba(0,0,0,0.3)",
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -1007,22 +1005,21 @@ const S = {
   },
   frameSidebar: {
     flex: "0 0 260px",
-    background: "#0122B4",
-    backdropFilter: "blur(10px)",
+    background: colors.surface,
     borderRadius: 20,
     padding: "22px 18px",
-    border: "1px solid rgba(200, 255, 1, 0.2)",
-    boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
+    border: `1px solid ${colors.border}`,
+    boxShadow: colors.shadow,
     maxHeight: "80vh",
     overflowY: "auto",
   },
   sidebarTitle: {
     fontSize: "1rem",
     fontWeight: 700,
-    color: "#fff",
+    color: colors.textHead,
     marginBottom: 14,
     margin: "0 0 14px",
-    fontFamily: "'Playfair Display', serif",
+    fontFamily: fonts.heading,
   },
   frameColorGrid: {
     display: "grid",
@@ -1057,7 +1054,7 @@ const S = {
     cursor: "pointer",
     transition: "all 0.2s",
     height: 80,
-    background: "rgba(0,0,0,0.2)",
+    background: colors.surfaceAlt,
   },
   apiFrameThumb: {
     width: "100%",
@@ -1093,20 +1090,20 @@ const S = {
     gap: 0,
   },
   resultBadge: {
-    background: "linear-gradient(90deg, #C8FF01, #AEE600)",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     padding: "8px 24px",
     borderRadius: 30,
     fontWeight: 700,
     fontSize: "0.9rem",
     marginBottom: 20,
-    boxShadow: "0 4px 16px rgba(200,255,1,0.3)",
+    boxShadow: colors.shadowSm,
   },
   resultImgWrap: {
     width: "100%",
     borderRadius: 20,
     overflow: "hidden",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
+    boxShadow: colors.shadow,
     marginBottom: 24,
   },
   resultImg: {
@@ -1126,24 +1123,24 @@ const S = {
     display: "flex",
     alignItems: "center",
     gap: 8,
-    background: "linear-gradient(135deg, #C8FF01, #AEE600)",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     border: "none",
     padding: "13px 28px",
     borderRadius: 50,
     fontSize: "0.95rem",
     fontWeight: 700,
     cursor: "pointer",
-    boxShadow: "0 4px 16px rgba(200,255,1,0.3)",
+    boxShadow: colors.shadowSm,
     transition: "all 0.2s",
   },
   btnSecondary: {
     display: "flex",
     alignItems: "center",
     gap: 6,
-    background: "rgba(255, 255, 255, 0.1)",
-    color: "#fff",
-    border: "2.5px solid rgba(255, 255, 255, 0.2)",
+    background: colors.surface,
+    color: colors.textBody,
+    border: `1.5px solid ${colors.border}`,
     padding: "13px 22px",
     borderRadius: 50,
     fontSize: "0.9rem",
@@ -1155,15 +1152,15 @@ const S = {
     display: "flex",
     alignItems: "center",
     gap: 8,
-    background: "#00117D",
-    color: "#C8FF01",
+    background: colors.navy,
+    color: colors.onBlue,
     border: "none",
     padding: "13px 28px",
     borderRadius: 50,
     fontSize: "0.95rem",
     fontWeight: 700,
     cursor: "pointer",
-    boxShadow: "0 4px 16px rgba(0,17,125,0.2)",
+    boxShadow: colors.shadowSm,
     transition: "all 0.2s",
   },
   footerContainer: {
@@ -1173,7 +1170,7 @@ const S = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    borderTop: "1px solid rgba(255, 255, 255, 0.15)",
+    borderTop: `1px solid ${colors.border}`,
     paddingTop: "30px"
   },
   footerImage: {
@@ -1181,7 +1178,7 @@ const S = {
     maxWidth: "850px",
     height: "auto",
     borderRadius: "16px",
-    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.35)",
-    border: "1px solid rgba(255, 255, 255, 0.1)"
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`
   }
 };

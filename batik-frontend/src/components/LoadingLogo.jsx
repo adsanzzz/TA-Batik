@@ -1,4 +1,5 @@
 import React from "react";
+import { colors, fonts } from "../theme";
 
 export default function LoadingLogo({ text = "Memuat...", size = 60 }) {
   return (
@@ -16,7 +17,7 @@ export default function LoadingLogo({ text = "Memuat...", size = 60 }) {
           }
           .spinning-logo {
             animation: spinLogo 2s infinite linear;
-            filter: drop-shadow(0 0 15px rgba(200, 255, 1, 0.4));
+            filter: drop-shadow(0 0 15px rgba(3, 62, 238, 0.3));
           }
           .loading-text {
             animation: pulseText 1.5s infinite ease-in-out;
@@ -45,8 +46,8 @@ const styles = {
     boxSizing: "border-box",
   },
   text: {
-    color: "#C8FF01",
-    fontFamily: "'Poppins', sans-serif",
+    color: colors.blue,
+    fontFamily: fonts.body,
     fontSize: "1rem",
     fontWeight: "500",
     letterSpacing: "1px",

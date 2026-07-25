@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { generateGarment, executeVton, BASE_URL } from "../services/api";
+import { colors, fonts } from "../theme";
 
 const MaleShirtIcon = ({ active }) => (
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={active ? "#C8FF01" : "#fff"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: "10px"}}>
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={active ? colors.blue : colors.textMuted} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: "10px"}}>
     <path d="M4 10l-2-2 3-5h14l3 5-2 2"></path>
     <path d="M7 6v14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6"></path>
     <path d="M12 3v5"></path>
@@ -11,7 +12,7 @@ const MaleShirtIcon = ({ active }) => (
 );
 
 const FemaleBlouseIcon = ({ active }) => (
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={active ? "#C8FF01" : "#fff"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: "10px"}}>
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={active ? colors.blue : colors.textMuted} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: "10px"}}>
     <path d="M5 8l-2 3a2 2 0 0 0 2 2h2v7a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-7h2a2 2 0 0 0 2-2l-2-3c-1.5-2.25-3-3-5-3-2 0-2 2-4 2s-2-2-4-2c-2 0-3.5.75-5 3z"></path>
   </svg>
 );
@@ -98,7 +99,7 @@ const RESPONSIVE_CSS = `
 `;
 
 const UploadIcon = () => (
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: "15px", opacity: 0.7}}>
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: "15px", opacity: 0.7}}>
     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
     <circle cx="8.5" cy="8.5" r="1.5"></circle>
     <polyline points="21 15 16 10 5 21"></polyline>
@@ -106,7 +107,7 @@ const UploadIcon = () => (
 );
 
 const CameraIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: "10px", opacity: 0.7}}>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: "10px", opacity: 0.7}}>
     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
     <circle cx="12" cy="13" r="4"></circle>
   </svg>
@@ -299,7 +300,7 @@ export default function VtonModal({ batik, onClose }) {
                   onClick={() => setTemplateType("male_shirt")}
                 >
                   <MaleShirtIcon active={templateType === "male_shirt"} />
-                  <h4 style={templateType === "male_shirt" ? {color: "#C8FF01"} : {}}>Kemeja Pria</h4>
+                  <h4 style={templateType === "male_shirt" ? {color: colors.blue} : {}}>Kemeja Pria</h4>
                   <p>Lengan Pendek Berkerah</p>
                 </div>
                 <div 
@@ -308,7 +309,7 @@ export default function VtonModal({ batik, onClose }) {
                   onClick={() => setTemplateType("female_blouse")}
                 >
                   <FemaleBlouseIcon active={templateType === "female_blouse"} />
-                  <h4 style={templateType === "female_blouse" ? {color: "#C8FF01"} : {}}>Blus Wanita</h4>
+                  <h4 style={templateType === "female_blouse" ? {color: colors.blue} : {}}>Blus Wanita</h4>
                   <p>Atasan Lengan Pendek</p>
                 </div>
               </div>
@@ -438,7 +439,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0, 17, 125, 0.85)",
+    backgroundColor: "rgba(10, 25, 80, 0.45)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -447,7 +448,7 @@ const styles = {
     backdropFilter: "blur(10px)",
   },
   modalContent: {
-    background: "#0122B4",
+    background: colors.surface,
     borderRadius: "24px",
     width: "100%",
     maxWidth: "1050px",
@@ -455,17 +456,17 @@ const styles = {
     position: "relative",
     display: "flex",
     flexDirection: "column",
-    boxShadow: "0 25px 60px rgba(0,0,0,0.6)",
-    border: "1px solid rgba(200, 255, 1, 0.2)",
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`,
     overflow: "hidden",
-    fontFamily: "Poppins, sans-serif",
+    fontFamily: fonts.body,
   },
   closeBtn: {
     position: "absolute",
     top: "20px",
     right: "20px",
     fontSize: "1.4rem",
-    background: "rgba(255, 255, 255, 0.1)",
+    background: colors.blueSoft,
     border: "none",
     borderRadius: "50%",
     width: "36px",
@@ -474,15 +475,15 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     cursor: "pointer",
-    color: "#C8FF01",
+    color: colors.blue,
     zIndex: 100,
     lineHeight: "1",
     transition: "all 0.3s",
   },
   modalHeader: {
     padding: "20px 25px",
-    background: "rgba(255, 255, 255, 0.03)",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+    background: colors.surfaceAlt,
+    borderBottom: `1px solid ${colors.border}`,
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -490,23 +491,23 @@ const styles = {
   },
   modalTitle: {
     fontSize: "1.35rem",
-    color: "#fff",
+    color: colors.textHead,
     margin: 0,
     fontWeight: "700",
-    fontFamily: "Poppins, sans-serif",
+    fontFamily: fonts.body,
     paddingRight: "40px", // space for absolute close button
   },
   subtitle: {
-    color: "#E0E0E0",
+    color: colors.textBody,
     margin: "3px 0 0 0",
     fontSize: "0.85rem",
   },
   errorBox: {
     margin: "15px 40px 0",
     padding: "12px",
-    background: "rgba(255, 0, 0, 0.1)",
-    borderLeft: "4px solid #ff4444",
-    color: "#ffdddd",
+    background: "rgba(226, 59, 78, 0.08)",
+    borderLeft: `4px solid ${colors.danger}`,
+    color: colors.danger,
     borderRadius: "0 8px 8px 0",
     fontSize: "0.85rem",
   },
@@ -519,13 +520,13 @@ const styles = {
     alignItems: "center",
   },
   stepTitle: {
-    color: "#fff",
+    color: colors.textHead,
     fontSize: "1.3rem",
     marginBottom: "5px",
     marginTop: 0,
   },
   stepDesc: {
-    color: "#ccc",
+    color: colors.textBody,
     fontSize: "0.88rem",
     textAlign: "center",
     marginBottom: "15px",
@@ -541,42 +542,42 @@ const styles = {
   optionCard: {
     flex: 1,
     maxWidth: "250px",
-    background: "rgba(255, 255, 255, 0.05)",
-    border: "1px solid rgba(255, 255, 255, 0.2)",
+    background: colors.surfaceAlt,
+    border: `1px solid ${colors.border}`,
     borderRadius: "16px",
     padding: "20px 15px",
     textAlign: "center",
     cursor: "pointer",
     transition: "all 0.3s",
-    color: "#fff",
+    color: colors.textHead,
     boxSizing: "border-box",
   },
   optionActive: {
-    borderColor: "#C8FF01",
-    background: "rgba(200, 255, 1, 0.08)",
-    boxShadow: "0 8px 20px rgba(200, 255, 1, 0.2)",
+    borderColor: colors.blue,
+    background: colors.blueSoft,
+    boxShadow: colors.shadowSm,
   },
   optionIcon: {
     fontSize: "3rem",
     marginBottom: "15px",
   },
   primaryBtn: {
-    background: "linear-gradient(90deg, #C8FF01 0%, #AEE600 100%)",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     border: "none",
     padding: "12px 35px",
     borderRadius: "30px",
     fontSize: "1.05rem",
     fontWeight: "bold",
     cursor: "pointer",
-    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.3)",
+    boxShadow: colors.shadowSm,
     transition: "all 0.3s",
-    fontFamily: "Poppins, sans-serif",
+    fontFamily: fonts.body,
   },
   secondaryBtn: {
     background: "transparent",
-    color: "#C8FF01",
-    border: "2px solid #C8FF01",
+    color: colors.blue,
+    border: `2px solid ${colors.blue}`,
     padding: "10px 25px",
     borderRadius: "30px",
     fontSize: "0.95rem",
@@ -602,14 +603,14 @@ const styles = {
     flexDirection: "column",
   },
   garmentPreviewBox: {
-    background: "rgba(255,255,255,0.05)",
+    background: colors.surfaceAlt,
     borderRadius: "16px",
     padding: "15px",
     height: "270px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    border: "1px dashed rgba(200, 255, 1, 0.3)",
+    border: `1px dashed ${colors.blueBorder}`,
   },
   garmentImg: {
     maxHeight: "100%",
@@ -619,7 +620,7 @@ const styles = {
   },
   uploadBox: {
     position: "relative",
-    background: "rgba(255,255,255,0.05)",
+    background: colors.surfaceAlt,
     borderRadius: "16px",
     padding: "15px",
     height: "270px",
@@ -627,7 +628,7 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    border: "1px dashed rgba(255,255,255,0.3)",
+    border: `1px dashed ${colors.border}`,
     cursor: "pointer",
     overflow: "hidden",
     transition: "all 0.3s",
@@ -637,7 +638,7 @@ const styles = {
     marginBottom: "10px",
   },
   uploadText: {
-    color: "#aaa",
+    color: colors.textMuted,
     fontSize: "0.9rem",
     textAlign: "center",
     padding: "0 20px",
@@ -696,8 +697,8 @@ const styles = {
     gap: "10px",
   },
   captureBtn: {
-    background: "#C8FF01",
-    color: "#00117D",
+    background: colors.blue,
+    color: colors.onBlue,
     border: "none",
     padding: "6px 12px",
     borderRadius: "20px",
@@ -730,27 +731,27 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     padding: "15px",
-    background: "rgba(255, 255, 255, 0.05)",
-    border: "1px dashed rgba(255, 255, 255, 0.3)",
+    background: colors.surfaceAlt,
+    border: `1px dashed ${colors.border}`,
     borderRadius: "12px",
     width: "80%",
     cursor: "pointer",
     transition: "0.3s",
   },
   orDivider: {
-    color: "#aaa",
+    color: colors.textMuted,
     fontSize: "0.8rem",
   },
   finalResultBox: {
     width: "100%",
     maxWidth: "400px",
     height: "450px",
-    background: "#000",
+    background: colors.surfaceAlt,
     borderRadius: "16px",
     overflow: "hidden",
     marginBottom: "30px",
-    border: "2px solid #C8FF01",
-    boxShadow: "0 10px 30px rgba(200, 255, 1, 0.2)",
+    border: `2px solid ${colors.blue}`,
+    boxShadow: colors.shadow,
   },
   finalResultImg: {
     width: "100%",

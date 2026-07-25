@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { colors, fonts } from "../theme";
 import CardBatik from "../components/CardBatik";
 import { BASE_URL } from "../services/api";
 import VtonModal from "../components/VtonModal";
@@ -7,7 +8,7 @@ import Footer from "../components/Footer";
 import LoadingLogo from "../components/LoadingLogo";
 
 const CrownIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: "8px", verticalAlign: "middle", color: "#C8FF01" }}>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: "8px", verticalAlign: "middle", color: colors.blue }}>
     <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"></path>
   </svg>
 );
@@ -137,7 +138,7 @@ export default function Scan() {
       <div style={styles.header}>
         <img src="/logo.png" alt="Logo" style={styles.logoImage} />
         <h1 style={styles.title} className="scan-title">
-          <SparklesIcon size={28} color="#C8FF01" /> Batik <span style={styles.gold}>Recognition</span>
+          <SparklesIcon size={28} color={colors.blue} /> Batik <span style={styles.gold}>Recognition</span>
         </h1>
         <p style={styles.subtitle} className="scan-subtitle">
           Analisis motif batik berbasis kecerdasan buatan
@@ -296,7 +297,7 @@ export default function Scan() {
               </div>
 
               {result.warning && (
-                <div style={{ marginTop: "15px", color: "#FFD700", fontSize: "0.95rem", lineHeight: "1.6" }}>
+                <div style={{ marginTop: "15px", color: colors.danger, fontSize: "0.95rem", lineHeight: "1.6" }}>
                   <strong>Perhatian:</strong> {result.warning}
                 </div>
               )}
@@ -316,13 +317,13 @@ export default function Scan() {
           </div>
         )}
         <div style={{display: "flex", gap: "10px", marginTop: "15px"}}>
-          <button 
-            onClick={() => setShowVtonModal(true)} 
-            style={{...styles.okButton, background: "linear-gradient(135deg, #C8FF01, #AEE600)", color: "#00117D"}}
+          <button
+            onClick={() => setShowVtonModal(true)}
+            style={{...styles.okButton, background: colors.blueGradient, color: colors.onBlue}}
           >
             Coba Virtual Try-On
           </button>
-          <button onClick={closeResultModal} style={{...styles.okButton, background: "rgba(255,255,255,0.1)", color: "#C8FF01", border: "1px solid #C8FF01"}}>
+          <button onClick={closeResultModal} style={{...styles.okButton, background: colors.surface, color: colors.blue, border: `1px solid ${colors.blueBorder}`}}>
             Lihat Katalog Lengkap
           </button>
         </div>
@@ -344,11 +345,11 @@ export default function Scan() {
               width: 8px;
             }
             .modal-scroll-area::-webkit-scrollbar-track {
-              background: rgba(255, 255, 255, 0.05);
+              background: #EEF3FF;
               border-radius: 10px;
             }
             .modal-scroll-area::-webkit-scrollbar-thumb {
-              background: #C8FF01;
+              background: #033EEE;
               border-radius: 10px;
             }
           `}</style>
@@ -430,8 +431,9 @@ const styles = {
   container: {
     minHeight: "100vh",
     padding: "60px 40px",
-    color: "#fff",
-    fontFamily: "Poppins, sans-serif",
+    background: "transparent",
+    color: colors.textBody,
+    fontFamily: fonts.body,
     position: "relative",
     overflow: "hidden",
   },
@@ -441,7 +443,7 @@ const styles = {
     opacity: 0.18,
     backgroundImage: `
       radial-gradient(circle at center,
-      #C8FF01 2.5px,
+      ${colors.blue} 2.5px,
       transparent 2.5px)
     `,
     backgroundSize: "40px 40px",
@@ -461,25 +463,24 @@ const styles = {
     height: "55px",
     width: "auto",
     marginBottom: "15px",
-    filter: "drop-shadow(0px 4px 10px rgba(0,0,0,0.25))"
+    filter: "drop-shadow(0px 4px 10px rgba(10,25,80,0.12))"
   },
   title: {
     fontSize: "2.8rem",
     fontWeight: "700",
-    fontFamily: "'Playfair Display', serif",
-    background: "linear-gradient(to bottom, #FFFFFF, #D0DBFF)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
+    fontFamily: fonts.heading,
+    color: colors.textHead,
+    WebkitTextFillColor: colors.textHead,
     paddingTop: "10px",
     paddingBottom: "10px",
     lineHeight: "1.3",
   },
   gold: {
-    color: "#C8FF01",
-    WebkitTextFillColor: "#C8FF01",
+    color: colors.blue,
+    WebkitTextFillColor: colors.blue,
   },
   subtitle: {
-    color: "#D0DBFF",
+    color: colors.textBody,
     marginTop: "10px",
   },
 
@@ -500,16 +501,15 @@ const styles = {
   resultTitle: {
     fontSize: "2.5rem",
     fontWeight: "700",
-    fontFamily: "'Playfair Display', serif",
-    background: "linear-gradient(to bottom, #FFFFFF, #D0DBFF)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
+    fontFamily: fonts.heading,
+    color: colors.textHead,
+    WebkitTextFillColor: colors.textHead,
     paddingTop: "10px",
     paddingBottom: "10px",
     lineHeight: "1.3",
   },
   confidence: {
-    color: "#C8FF01",
+    color: colors.blue,
     fontWeight: "600",
   },
 
@@ -521,17 +521,17 @@ const styles = {
 
   empty: {
     padding: "20px",
-    background: "rgba(255, 255, 255, 0.05)",
-    border: "1px solid rgba(200, 255, 1, 0.2)",
+    background: colors.surface,
+    border: `1px solid ${colors.border}`,
     borderRadius: "10px",
     textAlign: "center",
-    color: "#E0E0E0",
+    color: colors.textBody,
   },
 
   modalOverlay: {
     position: "fixed",
     inset: 0,
-    background: "rgba(0, 17, 125, 0.85)",
+    background: "rgba(10, 25, 80, 0.45)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -540,7 +540,7 @@ const styles = {
     backdropFilter: "blur(5px)",
   },
   modalContent: {
-    background: "#0122B4",
+    background: colors.surface,
     borderRadius: "24px",
     width: "100%",
     maxWidth: "1000px",
@@ -548,9 +548,9 @@ const styles = {
     position: "relative",
     display: "flex",
     flexDirection: "column",
-    boxShadow: "0 25px 60px rgba(0,0,0,0.5)",
+    boxShadow: colors.shadow,
     overflow: "hidden",
-    border: "1px solid rgba(200, 255, 1, 0.2)",
+    border: `1px solid ${colors.border}`,
     animation: "modalSlideUp 0.4s ease-out",
   },
   modalFlex: {
@@ -591,19 +591,19 @@ const styles = {
   modalTitle: {
     fontSize: "2rem",
     fontWeight: "700",
-    color: "#fff",
+    color: colors.textHead,
     margin: "0 0 10px 0",
-    fontFamily: "'Playfair Display', serif",
+    fontFamily: fonts.heading,
   },
   modalBadge: {
     display: "inline-block",
-    background: "rgba(200, 255, 1, 0.08)",
-    color: "#C8FF01",
+    background: colors.blueSoft,
+    color: colors.blue,
     padding: "4px 12px",
     borderRadius: "20px",
     fontSize: "0.85rem",
     fontWeight: "700",
-    border: "1px solid rgba(200, 255, 1, 0.3)",
+    border: `1px solid ${colors.blueBorder}`,
   },
   modalScrollArea: {
     overflowY: "auto",
@@ -615,8 +615,8 @@ const styles = {
     top: "15px",
     right: "15px",
     fontSize: "2rem",
-    background: "rgba(255,255,255,0.2)",
-    border: "none",
+    background: colors.surfaceAlt,
+    border: `1px solid ${colors.border}`,
     borderRadius: "50%",
     width: "35px",
     height: "35px",
@@ -624,7 +624,7 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     cursor: "pointer",
-    color: "#fff",
+    color: colors.textHead,
     zIndex: 100,
     lineHeight: "1",
   },
@@ -635,32 +635,32 @@ const styles = {
     display: "block",
     fontSize: "0.8rem",
     fontWeight: "800",
-    color: "#C8FF01",
+    color: colors.blue,
     marginBottom: "8px",
     textTransform: "uppercase",
     letterSpacing: "1px",
   },
   modalText: {
     fontSize: "1rem",
-    color: "#E0E0E0",
+    color: colors.textBody,
     lineHeight: "1.7",
     margin: 0,
   },
   modalContentAI: {
-    background: "#0122B4",
-    border: "1px solid rgba(200, 255, 1, 0.2)",
+    background: colors.surface,
+    border: `1px solid ${colors.border}`,
     borderRadius: "24px",
     maxWidth: "650px",
     width: "90%",
     overflow: "hidden",
-    boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+    boxShadow: colors.shadow,
     animation: "modalSlideUp 0.3s ease",
   },
   modalHeaderAI: {
     padding: "20px 25px",
-    background: "rgba(255, 255, 255, 0.05)",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-    color: "#fff",
+    background: colors.surfaceAlt,
+    borderBottom: `1px solid ${colors.border}`,
+    color: colors.textHead,
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -669,12 +669,12 @@ const styles = {
     margin: 0,
     fontSize: "1.3rem",
     fontWeight: "700",
-    fontFamily: "Poppins, sans-serif",
+    fontFamily: fonts.body,
   },
   closeBtnAI: {
     background: "none",
     border: "none",
-    color: "#C8FF01",
+    color: colors.blue,
     fontSize: "1.8rem",
     cursor: "pointer",
     lineHeight: 1,
@@ -686,27 +686,27 @@ const styles = {
   predictionHighlight: {
     marginBottom: "25px",
     padding: "20px",
-    background: "rgba(255, 255, 255, 0.05)",
+    background: colors.blueSoft,
     borderRadius: "16px",
-    border: "1px solid rgba(200, 255, 1, 0.2)",
+    border: `1px solid ${colors.blueBorder}`,
   },
   highlightText: {
     margin: "0 0 10px 0",
-    color: "#E0E0E0",
+    color: colors.textBody,
     fontSize: "0.9rem",
   },
   highlightLabel: {
     margin: "0 0 10px 0",
     fontSize: "2rem",
-    color: "#fff",
-    fontFamily: "'Playfair Display', serif",
+    color: colors.textHead,
+    fontFamily: fonts.heading,
   },
   confidenceBadge: {
     display: "inline-block",
     padding: "6px 12px",
-    background: "rgba(200, 255, 1, 0.15)",
-    color: "#C8FF01",
-    border: "1px solid rgba(200, 255, 1, 0.3)",
+    background: colors.blueSoft2,
+    color: colors.blue,
+    border: `1px solid ${colors.blueBorder}`,
     borderRadius: "20px",
     fontSize: "0.85rem",
     fontWeight: "600",
@@ -714,18 +714,18 @@ const styles = {
   infoSectionAI: {
     textAlign: "left",
     marginBottom: "25px",
-    color: "#fff",
+    color: colors.textHead,
   },
   descriptionAI: {
     fontSize: "0.95rem",
     lineHeight: "1.6",
-    color: "#E0E0E0",
+    color: colors.textBody,
   },
   okButton: {
     width: "100%",
     padding: "14px",
-    background: "linear-gradient(135deg, #C8FF01, #AEE600)",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     border: "none",
     borderRadius: "12px",
     fontWeight: "700",
@@ -733,24 +733,24 @@ const styles = {
     transition: "all 0.3s ease",
   },
   warningBox: {
-    background: "rgba(200, 255, 1, 0.1)",
-    borderLeft: "5px solid #C8FF01",
+    background: colors.blueSoft,
+    borderLeft: `5px solid ${colors.blue}`,
     padding: "20px",
     borderRadius: "0 12px 12px 0",
-    color: "#E0E0E0",
+    color: colors.textBody,
     fontSize: "0.95rem",
     lineHeight: "1.6",
     marginBottom: "25px",
-    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
+    boxShadow: colors.shadowSm,
     textAlign: "left",
   },
   uploadCard: {
-    background: "rgba(255, 255, 255, 0.05)",
+    background: colors.surface,
     backdropFilter: "blur(12px)",
     borderRadius: "30px",
     padding: "35px",
-    border: "1px solid rgba(255, 255, 255, 0.12)",
-    boxShadow: "0 30px 80px rgba(0,0,0,0.35)",
+    border: `1px solid ${colors.border}`,
+    boxShadow: colors.shadow,
     position: "relative",
     maxWidth: "100%",
     margin: "0 auto",
@@ -763,17 +763,17 @@ const styles = {
     left: 0,
     right: 0,
     height: "5px",
-    background: "linear-gradient(90deg, #C8FF01, #E5FF80, #C8FF01)",
+    background: colors.blueGradient,
   },
 
   uploadArea: {
     minHeight: "420px",
-    border: "2px dashed rgba(255, 255, 255, 0.2)",
+    border: `2px dashed ${colors.blueBorder}`,
     borderRadius: "24px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "rgba(255,255,255,0.04)",
+    background: colors.surfaceAlt,
     cursor: "pointer",
     transition: "0.3s",
   },
@@ -786,31 +786,31 @@ const styles = {
     width: "120px",
     height: "120px",
     borderRadius: "50%",
-    background: "rgba(255, 255, 255, 0.05)",
-    border: "1px solid rgba(255, 255, 255, 0.15)",
+    background: colors.blueSoft,
+    border: `1px solid ${colors.blueBorder}`,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     fontSize: "3rem",
     margin: "0 auto 25px",
-    color: "#C8FF01",
+    color: colors.blue,
   },
 
   uploadTitle: {
-    color: "#F8F4EE",
+    color: colors.textHead,
     fontSize: "2rem",
     marginBottom: "10px",
-    fontFamily: "'Playfair Display', serif",
+    fontFamily: fonts.heading,
   },
 
   placeholderText: {
-    color: "#F8F4EE",
+    color: colors.textBody,
     fontSize: "1.05rem",
     marginBottom: "10px",
   },
 
   subPlaceholder: {
-    color: "#C8FF01",
+    color: colors.blue,
     display: "block",
     marginBottom: "25px",
   },
@@ -819,10 +819,10 @@ const styles = {
     display: "inline-block",
     padding: "10px 18px",
     borderRadius: "999px",
-    background: "rgba(200, 255, 1, 0.1)",
-    color: "#C8FF01",
+    background: colors.blueSoft,
+    color: colors.blue,
     fontSize: "0.9rem",
-    border: "1px solid rgba(200, 255, 1, 0.2)",
+    border: `1px solid ${colors.blueBorder}`,
   },
 
   previewWrapper: {
@@ -857,9 +857,9 @@ const styles = {
     cursor: "pointer",
     fontWeight: "700",
     fontSize: "1rem",
-    color: "#00117D",
-    background: "linear-gradient(135deg, #C8FF01, #AEE600)",
-    boxShadow: "0 15px 35px rgba(200, 255, 1, 0.25)",
+    color: colors.onBlue,
+    background: colors.blueGradient,
+    boxShadow: colors.shadow,
   },
   mainLayout: {
     display: "flex",
@@ -873,12 +873,12 @@ const styles = {
   },
   infoPanel: {
     flex: "1 1 350px",
-    background: "rgba(255, 255, 255, 0.05)",
+    background: colors.surface,
     backdropFilter: "blur(12px)",
     borderRadius: "30px",
     padding: "35px",
-    border: "1px solid rgba(255, 255, 255, 0.12)",
-    boxShadow: "0 30px 80px rgba(0,0,0,0.35)",
+    border: `1px solid ${colors.border}`,
+    boxShadow: colors.shadow,
     position: "relative",
     overflow: "hidden",
     display: "flex",
@@ -887,13 +887,13 @@ const styles = {
   infoTitle: {
     fontSize: "1.8rem",
     fontWeight: "700",
-    color: "#C8FF01",
-    fontFamily: "'Playfair Display', serif",
+    color: colors.textHead,
+    fontFamily: fonts.heading,
     marginBottom: "15px",
     marginTop: "10px",
   },
   infoDesc: {
-    color: "#E0E0E0",
+    color: colors.textBody,
     fontSize: "0.95rem",
     lineHeight: "1.6",
     marginBottom: "20px",
@@ -909,21 +909,21 @@ const styles = {
   },
   infoListLi: {
     fontSize: "0.95rem",
-    color: "#F8F4EE",
+    color: colors.textBody,
     lineHeight: "1.4",
-    borderBottom: "1px solid rgba(200, 255, 1, 0.1)",
+    borderBottom: `1px solid ${colors.border}`,
     paddingBottom: "8px",
   },
   infoFooter: {
     marginTop: "25px",
     fontSize: "0.85rem",
-    color: "#C8FF01",
+    color: colors.blue,
     fontStyle: "italic",
     lineHeight: "1.4",
-    background: "rgba(200, 255, 1, 0.05)",
+    background: colors.blueSoft,
     padding: "12px 18px",
     borderRadius: "12px",
-    border: "1px solid rgba(200, 255, 1, 0.15)",
+    border: `1px solid ${colors.blueBorder}`,
   },
   uploadCardWrapper: {
     flex: "1.3 1 450px",
@@ -933,7 +933,7 @@ const styles = {
     textAlign: "left",
   },
   recommendTitle: {
-    color: "#fff",
+    color: colors.textHead,
     fontSize: "1rem",
     marginBottom: "10px",
   },
@@ -945,12 +945,12 @@ const styles = {
     padding: 0,
   },
   recommendItem: {
-    background: "rgba(255, 255, 255, 0.1)",
+    background: colors.blueSoft,
     padding: "6px 12px",
     borderRadius: "20px",
     fontSize: "0.85rem",
-    color: "#fff",
-    border: "1px solid rgba(255, 255, 255, 0.2)",
+    color: colors.blue,
+    border: `1px solid ${colors.blueBorder}`,
   },
   footerContainer: {
     width: "100%",
@@ -959,7 +959,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    borderTop: "1px solid rgba(255, 255, 255, 0.15)",
+    borderTop: `1px solid ${colors.border}`,
     paddingTop: "30px"
   },
   footerImage: {
@@ -967,7 +967,7 @@ const styles = {
     maxWidth: "850px",
     height: "auto",
     borderRadius: "16px",
-    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.35)",
-    border: "1px solid rgba(255, 255, 255, 0.1)"
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`
   }
 };

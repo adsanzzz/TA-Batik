@@ -1,4 +1,5 @@
 import { BASE_URL } from "../services/api";
+import { colors, fonts } from "../theme";
 
 const CrownIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: "4px", display: "inline-block", verticalAlign: "middle" }}>
@@ -21,8 +22,8 @@ export default function CardBatik({ batik, onClick }) {
       }
       .batik-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 15px 40px rgba(200, 255, 1, 0.25) !important;
-        border-color: #C8FF01 !important;
+        box-shadow: 0 18px 40px rgba(3, 62, 238, 0.18) !important;
+        border-color: rgba(3, 62, 238, 0.4) !important;
       }
       @media (max-width: 768px) {
         .batik-card-header {
@@ -80,7 +81,7 @@ export default function CardBatik({ batik, onClick }) {
         {/* E-Commerce Shop Links */}
         {(batik.shopee_link || batik.tokopedia_link) && (
           <div style={styles.shopSection}>
-            <span style={{ fontSize: '0.8rem', color: '#C8FF01', fontWeight: 'bold' }}>Beli di Toko Mitra:</span>
+            <span style={{ fontSize: '0.8rem', color: colors.blue, fontWeight: 'bold' }}>Beli di Toko Mitra:</span>
             <div style={styles.shopBtns}>
               {batik.shopee_link && (
                 <a
@@ -115,11 +116,11 @@ export default function CardBatik({ batik, onClick }) {
 
 const styles = {
   card: {
-    background: "linear-gradient(135deg, #0122B4 0%, #022692 100%)",
+    background: colors.surface,
     borderRadius: "16px",
     overflow: "hidden",
-    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.35)",
-    border: "1px solid rgba(200, 255, 1, 0.15)",
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`,
     transition: "transform 0.3s ease, boxShadow 0.3s ease",
     cursor: "pointer",
   },
@@ -140,18 +141,18 @@ const styles = {
   title: {
     fontSize: "1.25rem",
     fontWeight: "700",
-    color: "#fff",
+    color: colors.textHead,
     margin: 0,
-    fontFamily: "'Playfair Display', serif",
+    fontFamily: fonts.heading,
   },
   badge: {
     fontSize: "0.75rem",
     fontWeight: "700",
-    color: "#C8FF01",
-    background: "rgba(200, 255, 1, 0.08)",
+    color: colors.blue,
+    background: colors.blueSoft,
     padding: "4px 12px",
     borderRadius: "20px",
-    border: "1px solid rgba(200, 255, 1, 0.25)",
+    border: `1px solid ${colors.blueBorder}`,
     letterSpacing: "0.5px",
     alignSelf: "flex-start",
     marginRight: "8px",
@@ -159,8 +160,8 @@ const styles = {
   eventBadge: {
     fontSize: "0.7rem",
     fontWeight: "600",
-    color: "#fff",
-    background: "rgba(0,0,0,0.5)",
+    color: colors.onBlue,
+    background: colors.navy,
     padding: "3px 10px",
     borderRadius: "16px",
   },
@@ -170,9 +171,9 @@ const styles = {
     marginTop: "8px",
     fontSize: "0.7rem",
     fontWeight: "bold",
-    color: "#C8FF01",
-    background: "rgba(200, 255, 1, 0.08)",
-    border: "1px solid rgba(200, 255, 1, 0.35)",
+    color: colors.blue,
+    background: colors.blueSoft,
+    border: `1px solid ${colors.blueBorder}`,
     padding: "2px 8px",
     borderRadius: "12px",
     textTransform: "uppercase",
@@ -180,15 +181,15 @@ const styles = {
   uploaderBadge: {
     marginTop: "6px",
     fontSize: "0.75rem",
-    color: "#fff",
-    background: "rgba(0,0,0,0.3)",
+    color: colors.textMuted,
+    background: colors.surfaceAlt,
     padding: "4px 8px",
     borderRadius: "8px",
     display: "inline-block",
   },
   text: {
     fontSize: "0.9rem",
-    color: "#E0E0E0",
+    color: colors.textBody,
     lineHeight: "1.6",
     margin: "6px 0",
     display: "-webkit-box",
@@ -199,7 +200,7 @@ const styles = {
   shopSection: {
     marginTop: "15px",
     paddingTop: "15px",
-    borderTop: "1px solid rgba(200, 255, 1, 0.1)",
+    borderTop: `1px solid ${colors.border}`,
     display: "flex",
     flexDirection: "column",
     gap: "8px",

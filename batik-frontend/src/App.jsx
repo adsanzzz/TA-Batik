@@ -43,7 +43,7 @@ function PageTransition({ children }) {
         <div style={{
           position: "fixed",
           top: 0, left: 0, right: 0, bottom: 0,
-          background: "rgba(0, 17, 125, 0.3)",
+          background: "rgba(253, 250, 244, 0.75)",
           backdropFilter: "blur(4px)",
           display: "flex",
           alignItems: "center",

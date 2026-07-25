@@ -1,13 +1,18 @@
 import heroImage from '../assets/depan.png';
 import Footer from '../components/Footer';
+import { colors, fonts } from '../theme';
 
 export default function Home() {
   return (
     <section style={styles.hero}>
+      {/* Decorative script watermark ala ASKARA */}
+      <span style={styles.scriptWatermark} className="home-script">Nusantara</span>
       {/* Background Pattern */}
       <style>{`
         /* RESPONSIVE DESIGN FOR HOME */
+        .home-script { user-select: none; }
         @media (max-width: 1024px) {
+          .home-script { top: 3% !important; }
           .home-content { padding: 40px 5% !important; flex-direction: column !important; justify-content: center !important; gap: 40px !important; text-align: center !important; }
           .home-left { flex: none !important; width: 100% !important; display: flex !important; flex-direction: column !important; align-items: center !important; }
           .home-right { flex: none !important; width: 100% !important; max-width: 600px !important; margin: 0 auto !important; }
@@ -112,7 +117,32 @@ const styles = {
     minHeight: '100vh',
     position: 'relative',
     overflow: 'hidden',
-    fontFamily: 'Poppins, sans-serif',
+    fontFamily: fonts.body,
+  },
+
+  scriptWatermark: {
+    position: 'absolute',
+    top: '9%',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    fontFamily: "'Dancing Script', cursive",
+    fontSize: 'clamp(2rem, 10vw, 6rem)',
+    lineHeight: 1.3,
+    maxWidth: '100vw',
+    fontWeight: 700,
+    // Efek shine: streak putih bergerak melintasi teks
+    backgroundImage:
+      'linear-gradient(100deg, #CBD4F2 0%, #CBD4F2 38%, #FFFFFF 50%, #CBD4F2 62%, #CBD4F2 100%)',
+    backgroundSize: '200% 100%',
+    WebkitBackgroundClip: 'text',
+    backgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    color: 'transparent',
+    animation: 'shineText 5s linear infinite',
+    opacity: 0.7,
+    whiteSpace: 'nowrap',
+    pointerEvents: 'none',
+    zIndex: 0,
   },
 
   pattern: {
@@ -121,7 +151,7 @@ const styles = {
     opacity: 0.18,
     backgroundImage: `
       radial-gradient(circle at center,
-      #C8FF01 2.5px,
+      rgba(3, 62, 238, 0.08) 2.5px,
       transparent 2.5px)
     `,
     backgroundSize: '40px 40px',
@@ -141,44 +171,42 @@ const styles = {
 
   left: {
     flex: 1,
-    color: 'white',
+    color: colors.textBody,
+    animation: 'fadeUp 0.8s ease-out both',
   },
 
   badge: {
     display: 'inline-block',
     padding: '10px 18px',
-    border: '1px solid rgba(200, 255, 1, 0.3)',
+    border: `1px solid ${colors.blueBorder}`,
     borderRadius: '999px',
-    color: '#C8FF01',
-    background: 'rgba(200, 255, 1, 0.08)',
+    color: colors.blue,
+    background: colors.blueSoft,
     marginBottom: '30px',
-    backdropFilter: 'blur(10px)',
+    fontWeight: 500,
   },
 
   title: {
-    fontFamily: 'Playfair Display, serif',
-    fontSize: '4.5rem',
-    lineHeight: '1.3',
-    marginBottom: '25px',
+    fontFamily: fonts.heading,
+    fontSize: '3.2rem',
+    lineHeight: '1.25',
+    marginBottom: '22px',
     fontWeight: 700,
-    background: 'linear-gradient(to bottom, #FFFFFF, #D0DBFF)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    paddingTop: '10px',
-    paddingBottom: '10px',
+    color: colors.textHead,
+    paddingTop: '6px',
+    paddingBottom: '6px',
   },
 
   gold: {
-    color: '#C8FF01',
-    WebkitTextFillColor: '#C8FF01',
+    color: colors.blue,
   },
 
   subtitle: {
-    maxWidth: '650px',
-    color: '#D0DBFF',
-    fontSize: '1.1rem',
-    lineHeight: 1.8,
-    marginBottom: '40px',
+    maxWidth: '620px',
+    color: colors.textBody,
+    fontSize: '1rem',
+    lineHeight: 1.75,
+    marginBottom: '36px',
   },
 
   buttons: {
@@ -189,29 +217,29 @@ const styles = {
 
   primaryBtn: {
     textDecoration: 'none',
-    background: '#C8FF01',
-    color: '#00117D',
+    background: colors.blueGradient,
+    color: colors.onBlue,
     padding: '16px 34px',
     borderRadius: '50px',
     fontWeight: '700',
-    boxShadow: '0 10px 30px rgba(200, 255, 1, 0.25)',
+    boxShadow: '0 12px 30px rgba(3, 62, 238, 0.28)',
     transition: '0.3s',
   },
 
   secondaryBtn: {
     textDecoration: 'none',
-    border: '1px solid rgba(255,255,255,0.2)',
-    color: '#fff',
+    border: `1px solid ${colors.blueBorder}`,
+    color: colors.navy,
     padding: '16px 34px',
     borderRadius: '50px',
-    backdropFilter: 'blur(10px)',
-    background: 'rgba(255,255,255,0.05)',
+    background: colors.surface,
+    fontWeight: 600,
   },
 
   stats: {
     display: 'flex',
     gap: '60px',
-    color: 'white',
+    color: colors.textBody,
   },
 
   right: {
@@ -222,13 +250,14 @@ const styles = {
 
   imageContainer: {
     position: 'relative',
-    width: '550px',
+    width: '480px',
+    animation: 'floatY 6s ease-in-out infinite',
   },
 
   goldBorder: {
     position: 'absolute',
     inset: '-15px',
-    border: '2px solid rgba(200, 255, 1, 0.5)',
+    border: `2px solid ${colors.blueBorder}`,
     borderRadius: '30px',
   },
 
@@ -236,7 +265,7 @@ const styles = {
     width: '100%',
     borderRadius: '25px',
     display: 'block',
-    boxShadow: '0 30px 80px rgba(0,0,0,0.4)',
+    boxShadow: '0 30px 80px rgba(10, 25, 80, 0.18)',
     position: 'relative',
     zIndex: 2,
   },
@@ -245,9 +274,9 @@ const styles = {
     position: 'absolute',
     width: '300px',
     height: '300px',
-    background: '#C8FF01',
+    background: colors.blue,
     filter: 'blur(120px)',
-    opacity: 0.25,
+    opacity: 0.15,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',

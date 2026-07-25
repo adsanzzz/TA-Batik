@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import VtonModal from "../components/VtonModal";
 import Footer from "../components/Footer";
 import LoadingLogo from "../components/LoadingLogo";
+import { colors, fonts } from "../theme";
 
 // --- CUSTOM SVG ICONS FOR PROFESSIONAL UI ---
 const SparklesIcon = ({ size = 20, color = "currentColor" }) => (
@@ -282,7 +283,7 @@ export default function AIGenerative() {
       <header style={styles.header}>
         <img src="/logo.png" alt="Logo SV UNS" style={styles.logoImage} />
         <h1 style={styles.title} className="aigen-title">
-          <SparklesIcon size={28} color="#C8FF01" /> AI Batik <span style={styles.gold}>Generative</span>
+          <SparklesIcon size={28} color={colors.blue} /> AI Batik <span style={styles.gold}>Generative</span>
         </h1>
         <p style={styles.subtitle} className="aigen-subtitle">
           Padukan karakteristik estetika dari dua motif batik berbeda untuk menciptakan pola batik baru yang unik.
@@ -339,7 +340,7 @@ export default function AIGenerative() {
                     style={styles.seedInput}
                   />
                   <button onClick={handleRandomSeedA} style={styles.iconBtn} title="Acak Seed">
-                    <DiceIcon size={16} color="#C8FF01" />
+                    <DiceIcon size={16} color={colors.blue} />
                   </button>
                 </div>
               </div>
@@ -370,7 +371,7 @@ export default function AIGenerative() {
                     style={styles.seedInput}
                   />
                   <button onClick={handleRandomSeedB} style={styles.iconBtn} title="Acak Seed">
-                    <DiceIcon size={16} color="#C8FF01" />
+                    <DiceIcon size={16} color={colors.blue} />
                   </button>
                 </div>
               </div>
@@ -407,7 +408,7 @@ export default function AIGenerative() {
                   <img src={contentPreview} alt="Content" style={styles.previewImage} />
                 ) : (
                   <div style={styles.uploadPlaceholder}>
-                    <UploadIcon size={24} color="#C8FF01" />
+                    <UploadIcon size={24} color={colors.blue} />
                     <span style={styles.placeholderText} style={{ marginTop: "8px" }}>
                       Upload Batik Pola Dasar
                     </span>
@@ -445,7 +446,7 @@ export default function AIGenerative() {
                   <img src={stylePreview} alt="Style" style={styles.previewImage} />
                 ) : (
                   <div style={styles.uploadPlaceholder}>
-                    <UploadIcon size={24} color="#C8FF01" />
+                    <UploadIcon size={24} color={colors.blue} />
                     <span style={styles.placeholderText} style={{ marginTop: "8px" }}>
                       Upload Batik Warna/Tekstur
                     </span>
@@ -504,7 +505,7 @@ export default function AIGenerative() {
                     cursor: (!imageA || !imageB) ? "not-allowed" : "pointer"
                   }}
                 >
-                  <WandIcon size={16} color="#161311" /> {loadingMixed ? "Sedang Memadukan..." : "Padukan Kedua Motif"}
+                  <WandIcon size={16} color={colors.onBlue} /> {loadingMixed ? "Sedang Memadukan..." : "Padukan Kedua Motif"}
                 </button>
                 
                 {!imageA || !imageB ? (
@@ -541,11 +542,11 @@ export default function AIGenerative() {
                     style={{
                       width: "18px",
                       height: "18px",
-                      accentColor: "#C8FF01",
+                      accentColor: colors.blue,
                       cursor: "pointer"
                     }}
                   />
-                  <label htmlFor="preserve-color-check" style={{ color: "#E0E0E0", fontSize: "0.95rem", cursor: "pointer", userSelect: "none" }}>
+                  <label htmlFor="preserve-color-check" style={{ color: colors.textBody, fontSize: "0.95rem", cursor: "pointer", userSelect: "none" }}>
                     Pertahankan Skema Warna Asli Pola Dasar
                   </label>
                 </div>
@@ -559,7 +560,7 @@ export default function AIGenerative() {
                     cursor: (!contentFile || !styleFile) ? "not-allowed" : "pointer"
                   }}
                 >
-                  <WandIcon size={16} color="#161311" /> {loadingMixed ? "Sedang Mentransfer Gaya..." : "Padukan Gaya Gambar"}
+                  <WandIcon size={16} color={colors.onBlue} /> {loadingMixed ? "Sedang Mentransfer Gaya..." : "Padukan Gaya Gambar"}
                 </button>
                 
                 {!contentFile || !styleFile ? (
@@ -590,7 +591,7 @@ export default function AIGenerative() {
                   {localStorage.getItem("token") && (localStorage.getItem("role") === "admin" || localStorage.getItem("role") === "mitra") ? (
                     <form onSubmit={handleSaveToCatalog} style={styles.saveForm}>
                       <h3 style={styles.formTitle}>
-                        <SaveIcon size={18} color="#C8FF01" /> Simpan Motif Baru
+                        <SaveIcon size={18} color={colors.blue} /> Simpan Motif Baru
                       </h3>
                       
                       <div style={styles.fieldGroup}>
@@ -635,7 +636,7 @@ export default function AIGenerative() {
 
                       <div style={styles.actionButtons}>
                         <button type="submit" disabled={saveLoading || isSaved} style={styles.btnSave}>
-                          <SaveIcon size={14} color="#161311" /> {saveLoading ? "Menyimpan..." : isSaved ? "Tersimpan di Katalog ✓" : "Simpan ke Katalog"}
+                          <SaveIcon size={14} color={colors.onBlue} /> {saveLoading ? "Menyimpan..." : isSaved ? "Tersimpan di Katalog ✓" : "Simpan ke Katalog"}
                         </button>
                         
                         <button
@@ -643,7 +644,7 @@ export default function AIGenerative() {
                           onClick={() => setShowVton(true)}
                           style={styles.btnTryOn}
                         >
-                          <ShirtIcon size={14} color="#C8FF01" /> Virtual Try-On
+                          <ShirtIcon size={14} color={colors.blue} /> Virtual Try-On
                         </button>
                       </div>
                     </form>
@@ -654,7 +655,7 @@ export default function AIGenerative() {
                         onClick={() => setShowVton(true)}
                         style={styles.btnSave}
                       >
-                        <ShirtIcon size={16} color="#00117D" /> Mulai Virtual Try-On
+                        <ShirtIcon size={16} color={colors.onBlue} /> Mulai Virtual Try-On
                       </button>
                     </div>
                   )}
@@ -684,8 +685,9 @@ const styles = {
   container: {
     minHeight: "calc(100vh - 70px)",
     padding: "60px 40px",
-    color: "#F8F4EE",
-    fontFamily: "'Poppins', sans-serif",
+    background: "transparent",
+    color: colors.textBody,
+    fontFamily: fonts.body,
     position: "relative",
     overflow: "hidden"
   },
@@ -695,7 +697,7 @@ const styles = {
     opacity: 0.18,
     backgroundImage: `
       radial-gradient(circle at center,
-      #C8FF01 2.5px,
+      ${colors.blueSoft} 2.5px,
       transparent 2.5px)
     `,
     backgroundSize: "40px 40px",
@@ -715,14 +717,12 @@ const styles = {
     height: "55px",
     width: "auto",
     marginBottom: "15px",
-    filter: "drop-shadow(0px 4px 10px rgba(0,0,0,0.25))"
+    filter: "drop-shadow(0px 4px 10px rgba(10,25,80,0.12))"
   },
   title: {
     fontSize: "2.8rem",
-    fontFamily: "'Playfair Display', serif",
-    background: "linear-gradient(to bottom, #FFFFFF, #D0DBFF)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
+    fontFamily: fonts.heading,
+    color: colors.textHead,
     marginBottom: "8px",
     fontWeight: "700",
     paddingTop: "10px",
@@ -730,12 +730,11 @@ const styles = {
     lineHeight: "1.3",
   },
   gold: {
-    color: "#C8FF01",
-    WebkitTextFillColor: "#C8FF01",
+    color: colors.blue,
   },
   subtitle: {
     fontSize: "0.95rem",
-    color: "#D0E0FF",
+    color: colors.textBody,
     maxWidth: "650px",
     margin: "0 auto",
     lineHeight: "1.5"
@@ -747,9 +746,9 @@ const styles = {
     marginBottom: "35px"
   },
   tabBtn: {
-    background: "rgba(255, 255, 255, 0.03)",
-    border: "1px solid rgba(200, 255, 1, 0.2)",
-    color: "#D0E0FF",
+    background: colors.surface,
+    border: `1px solid ${colors.border}`,
+    color: colors.textBody,
     padding: "10px 24px",
     borderRadius: "30px",
     fontSize: "0.9rem",
@@ -758,10 +757,10 @@ const styles = {
     transition: "all 0.3s"
   },
   activeTabBtn: {
-    background: "#C8FF01",
-    color: "#00117D",
-    border: "1px solid #C8FF01",
-    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.25)"
+    background: colors.blueGradient,
+    color: colors.onBlue,
+    border: `1px solid ${colors.blue}`,
+    boxShadow: colors.shadowSm
   },
   layoutContainer: {
     display: "flex",
@@ -787,23 +786,22 @@ const styles = {
   },
   sectionTitle: {
     fontSize: "1.2rem",
-    color: "#C8FF01",
-    fontFamily: "'Playfair Display', serif",
-    borderBottom: "1px solid rgba(200, 255, 1, 0.2)",
+    color: colors.textHead,
+    fontFamily: fonts.heading,
+    borderBottom: `1px solid ${colors.border}`,
     paddingBottom: "8px",
     marginBottom: "5px",
     fontWeight: "600"
   },
   patternCard: {
-    background: "rgba(255, 255, 255, 0.05)",
-    backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255, 255, 255, 0.12)",
+    background: colors.surface,
+    border: `1px solid ${colors.border}`,
     borderRadius: "14px",
     padding: "16px",
     display: "flex",
     flexDirection: "column",
     gap: "12px",
-    boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+    boxShadow: colors.shadow,
     position: "relative"
   },
   cardHeader: {
@@ -812,9 +810,9 @@ const styles = {
     alignItems: "center"
   },
   badge: {
-    background: "rgba(200, 255, 1, 0.08)",
-    border: "1px solid rgba(200, 255, 1, 0.3)",
-    color: "#C8FF01",
+    background: colors.blueSoft,
+    border: `1px solid ${colors.blueBorder}`,
+    color: colors.blue,
     padding: "3px 10px",
     borderRadius: "12px",
     fontSize: "0.8rem",
@@ -827,20 +825,20 @@ const styles = {
   },
   seedLabel: {
     fontSize: "0.8rem",
-    color: "#aaa"
+    color: colors.textMuted
   },
   seedInput: {
     width: "75px",
-    background: "rgba(0,0,0,0.5)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    color: "#fff",
+    background: colors.surface,
+    border: `1px solid ${colors.border}`,
+    color: colors.textHead,
     padding: "3px 6px",
     borderRadius: "6px",
     textAlign: "center",
     fontSize: "0.85rem"
   },
   iconBtn: {
-    background: "rgba(255,255,255,0.06)",
+    background: colors.blueSoft,
     border: "none",
     borderRadius: "6px",
     cursor: "pointer",
@@ -852,9 +850,9 @@ const styles = {
   },
   previewBox: {
     height: "240px",
-    background: "rgba(0, 0, 0, 0.4)",
+    background: colors.surfaceAlt,
     borderRadius: "10px",
-    border: "1px dashed rgba(255, 255, 255, 0.2)",
+    border: `1px dashed ${colors.blueBorder}`,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -867,27 +865,27 @@ const styles = {
     objectFit: "cover"
   },
   placeholderText: {
-    color: "#666",
+    color: colors.textMuted,
     fontSize: "0.85rem",
     textAlign: "center",
     padding: "0 10px"
   },
   spinner: {
-    color: "#C8FF01",
+    color: colors.blue,
     fontSize: "0.85rem",
     fontWeight: "500"
   },
   btnAction: {
-    background: "rgba(200, 255, 1, 0.1)",
-    border: "1px solid #C8FF01",
-    color: "#C8FF01",
+    background: colors.blueSoft,
+    border: `1px solid ${colors.blueBorder}`,
+    color: colors.blue,
     padding: "10px",
     borderRadius: "8px",
     fontWeight: "600",
     fontSize: "0.9rem",
     cursor: "pointer",
     transition: "all 0.25s",
-    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.15)"
+    boxShadow: colors.shadowSm
   },
   uploadPlaceholder: {
     display: "flex",
@@ -906,15 +904,15 @@ const styles = {
     cursor: "pointer"
   },
   mixControlCard: {
-    background: "rgba(255, 255, 255, 0.05)",
-    backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255, 255, 255, 0.12)",
+    background: colors.surface,
+    border: `1px solid ${colors.border}`,
     borderRadius: "14px",
     padding: "20px",
     display: "flex",
     flexDirection: "column",
     gap: "16px",
-    alignItems: "center"
+    alignItems: "center",
+    boxShadow: colors.shadow
   },
   sliderGroup: {
     width: "100%",
@@ -926,21 +924,21 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     fontSize: "0.8rem",
-    color: "#aaa",
+    color: colors.textMuted,
     fontWeight: "500"
   },
   mixPercentage: {
-    color: "#C8FF01",
+    color: colors.blue,
     fontWeight: "600"
   },
   rangeSlider: {
     width: "100%",
-    accentColor: "#C8FF01",
+    accentColor: colors.blue,
     cursor: "pointer"
   },
   btnMix: {
-    background: "linear-gradient(90deg, #C8FF01 0%, #AEE600 100%)",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     border: "none",
     padding: "12px 28px",
     borderRadius: "20px",
@@ -951,12 +949,12 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     gap: "8px",
-    boxShadow: "0 4px 15px rgba(200, 255, 1, 0.2)",
+    boxShadow: colors.shadowSm,
     transition: "transform 0.2s"
   },
   hintText: {
     fontSize: "0.85rem",
-    color: "#C8FF01",
+    color: colors.blue,
     fontStyle: "italic",
     lineHeight: "1.4",
     margin: 0,
@@ -964,12 +962,11 @@ const styles = {
     textAlign: "center",
   },
   resultCard: {
-    background: "rgba(255, 255, 255, 0.05)",
-    backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255, 255, 255, 0.12)",
+    background: colors.surface,
+    border: `1px solid ${colors.border}`,
     borderRadius: "16px",
     padding: "20px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.3)"
+    boxShadow: colors.shadow
   },
   resultWrapper: {
     display: "flex",
@@ -979,9 +976,9 @@ const styles = {
   bigPreviewBox: {
     height: "440px",
     width: "100%",
-    background: "#000",
+    background: colors.surfaceAlt,
     borderRadius: "12px",
-    border: "1px solid rgba(255, 255, 255, 0.12)",
+    border: `1px solid ${colors.border}`,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -993,10 +990,10 @@ const styles = {
     objectFit: "cover"
   },
   metaPanel: {
-    background: "rgba(0,0,0,0.2)",
+    background: colors.surfaceAlt,
     padding: "16px",
     borderRadius: "12px",
-    border: "1px solid rgba(255,255,255,0.04)"
+    border: `1px solid ${colors.border}`
   },
   saveForm: {
     display: "flex",
@@ -1005,7 +1002,7 @@ const styles = {
   },
   formTitle: {
     fontSize: "1.05rem",
-    color: "#fff",
+    color: colors.textHead,
     margin: "0 0 5px 0",
     fontWeight: "600",
     display: "flex",
@@ -1019,12 +1016,12 @@ const styles = {
   },
   fieldLabel: {
     fontSize: "0.8rem",
-    color: "#999"
+    color: colors.textMuted
   },
   textInput: {
-    background: "rgba(0,0,0,0.4)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    color: "#fff",
+    background: colors.surface,
+    border: `1px solid ${colors.border}`,
+    color: colors.textHead,
     padding: "8px 12px",
     borderRadius: "8px",
     fontSize: "0.85rem"
@@ -1034,9 +1031,9 @@ const styles = {
     gap: "15px"
   },
   selectInput: {
-    background: "rgba(0,0,0,0.4)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    color: "#fff",
+    background: colors.surface,
+    border: `1px solid ${colors.border}`,
+    color: colors.textHead,
     padding: "8px 10px",
     borderRadius: "8px",
     fontSize: "0.85rem",
@@ -1050,8 +1047,8 @@ const styles = {
   },
   btnSave: {
     flex: 1,
-    background: "#C8FF01",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     border: "none",
     padding: "10px",
     borderRadius: "20px",
@@ -1067,8 +1064,8 @@ const styles = {
   btnTryOn: {
     flex: 1,
     background: "transparent",
-    border: "1.5px solid #C8FF01",
-    color: "#C8FF01",
+    border: `1.5px solid ${colors.blue}`,
+    color: colors.blue,
     padding: "9px",
     borderRadius: "20px",
     fontSize: "0.85rem",
@@ -1087,7 +1084,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    borderTop: "1px solid rgba(255, 255, 255, 0.15)",
+    borderTop: `1px solid ${colors.border}`,
     paddingTop: "30px"
   },
   footerImage: {
@@ -1095,7 +1092,7 @@ const styles = {
     maxWidth: "850px",
     height: "auto",
     borderRadius: "16px",
-    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.35)",
-    border: "1px solid rgba(255, 255, 255, 0.1)"
+    boxShadow: colors.shadow,
+    border: `1px solid ${colors.border}`
   }
 };

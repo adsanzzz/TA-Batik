@@ -1,23 +1,25 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
+  /* === TRISARA light theme (cream + blue accent) === */
+  --text: #54617A;
+  --text-h: #0C1B4D;
+  --bg: #FDFAF4;
+  --border: #E1E7F5;
+  --code-bg: #EEF3FF;
+  --accent: #033EEE;
+  --accent-strong: #00117D;
+  --accent-bg: rgba(3, 62, 238, 0.07);
+  --accent-border: rgba(3, 62, 238, 0.22);
+  --social-bg: rgba(3, 62, 238, 0.05);
   --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+    rgba(10, 25, 80, 0.1) 0 10px 15px -3px, rgba(10, 25, 80, 0.05) 0 4px 6px -2px;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --sans: 'Poppins', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: 'Playfair Display', Georgia, serif;
   --mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
-  color-scheme: light dark;
+  color-scheme: light;
   color: var(--text);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -29,30 +31,34 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
 body {
   margin: 0;
-  background: linear-gradient(135deg, #033EEE 6%, #0122B4 23%, #022692 70%, #00117D 100%);
+  color: var(--text);
+  background: linear-gradient(165deg, #FDFAF4 0%, #EAF0FF 55%, #CFDDFF 100%);
   background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* ===== Animasi global (simpel) ===== */
+@keyframes shineText {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+  }
 }
 
 #root {
@@ -71,8 +77,8 @@ body {
   content: "";
   position: fixed;
   inset: 0;
-  opacity: 0.15;
-  background-image: radial-gradient(circle at center, #C8FF01 2px, transparent 2px);
+  opacity: 0.5;
+  background-image: radial-gradient(circle at center, rgba(3, 62, 238, 0.06) 2px, transparent 2px);
   background-size: 40px 40px;
   pointer-events: none;
   z-index: -1;
@@ -81,7 +87,7 @@ body {
 h1,
 h2 {
   font-family: var(--heading);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-h);
 }
 
@@ -133,12 +139,12 @@ code {
   bottom: 0;
   width: 0%;
   height: 2px;
-  background-color: #C8FF01;
+  background-color: #033EEE;
   transition: width 0.3s ease;
 }
 
 .nav-link:hover {
-  color: #C8FF01;
+  color: #033EEE;
 }
 
 .nav-link:hover::after {
@@ -146,15 +152,15 @@ code {
 }
 
 .nav-btn-primary:hover {
-  background: #E0FF66 !important;
+  background: #0A46D6 !important;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(200, 255, 1, 0.4);
+  box-shadow: 0 6px 18px rgba(3, 62, 238, 0.35);
 }
 
 .nav-btn-outline:hover {
-  background: rgba(200, 255, 1, 0.1) !important;
+  background: rgba(3, 62, 238, 0.08) !important;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(200, 255, 1, 0.2);
+  box-shadow: 0 6px 18px rgba(3, 62, 238, 0.15);
 }
 
 /* Button hover */
@@ -167,11 +173,11 @@ a:hover {
 }
 
 .search-input-focus:focus {
-  border-color: #C8FF01 !important;
-  box-shadow: 0 4px 20px rgba(200, 255, 1, 0.3) !important;
+  border-color: #033EEE !important;
+  box-shadow: 0 4px 20px rgba(3, 62, 238, 0.18) !important;
 }
 
 .search-input-focus::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: #9AA2B4;
   font-weight: 300;
 }

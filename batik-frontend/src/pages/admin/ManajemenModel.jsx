@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getModels, uploadModel, activateModel, deactivateAllModels, deleteModel } from "../../services/api";
 import { getToken } from "../../services/auth";
 import { useNavigate } from "react-router-dom";
+import { colors, fonts } from "../../theme";
 
 export default function ManajemenModel() {
   const [modelsList, setModelsList] = useState([]);
@@ -207,7 +208,7 @@ export default function ManajemenModel() {
                   </tr>
                 </thead>
                 <tbody>                  {/* Default / Baseline model */}
-                  <tr style={{...styles.tableRow, backgroundColor: !isAnyCustomModelActive ? "rgba(200, 255, 1, 0.05)" : "transparent"}}>
+                  <tr style={{...styles.tableRow, backgroundColor: !isAnyCustomModelActive ? colors.blueSoft : "transparent"}}>
                     <td style={styles.td}>
                       <strong>Model Bawaan (Baseline)</strong>
                       <div style={styles.subText}>Default MobileNetV3</div>
@@ -222,7 +223,7 @@ export default function ManajemenModel() {
                       )}
                     </td>
                     <td style={styles.td}>
-                      <span style={{color: "#8395a7", fontSize: "0.85rem", fontStyle: "italic"}}>Sistem Utama</span>
+                      <span style={{color: colors.textMuted, fontSize: "0.85rem", fontStyle: "italic"}}>Sistem Utama</span>
                     </td>
                   </tr>
 
@@ -231,8 +232,8 @@ export default function ManajemenModel() {
                     <tr 
                       key={m.id} 
                       style={{
-                        ...styles.tableRow, 
-                        backgroundColor: m.is_active ? "rgba(200, 255, 1, 0.05)" : "transparent"
+                        ...styles.tableRow,
+                        backgroundColor: m.is_active ? colors.blueSoft : "transparent"
                       }}
                     >
                       <td style={styles.td}>
@@ -279,7 +280,7 @@ export default function ManajemenModel() {
                             </button>
                           )}
                           {m.is_active && (
-                            <span style={{color: "#C8FF01", fontSize: "0.85rem", fontWeight: "600"}}>Aktif Digunakan</span>
+                            <span style={{color: colors.blue, fontSize: "0.85rem", fontWeight: "600"}}>Aktif Digunakan</span>
                           )}
                         </div>
                       </td>
@@ -299,15 +300,13 @@ export default function ManajemenModel() {
 const styles = {
   pageWrapper: {
     minHeight: "calc(100vh - 70px)",
-    background: "radial-gradient(circle at 10% 20%, #00117D 0%, #000B4D 90%)",
-    backgroundImage: "radial-gradient(circle at 10% 20%, #00117D 0%, #000B4D 90%), radial-gradient(rgba(200, 255, 1, 0.15) 1px, transparent 0)",
-    backgroundSize: "100% 100%, 24px 24px",
+    background: "transparent",
     padding: "40px 20px",
   },
   container: {
     maxWidth: "1000px",
     margin: "0 auto",
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: fonts.body,
   },
   header: {
     marginBottom: "30px",
@@ -315,7 +314,7 @@ const styles = {
   backBtn: {
     background: "transparent",
     border: "none",
-    color: "#C8FF01",
+    color: colors.blue,
     fontWeight: "700",
     cursor: "pointer",
     fontSize: "1rem",
@@ -325,12 +324,12 @@ const styles = {
   title: {
     fontSize: "2.8rem",
     fontWeight: "800",
-    color: "#ffffff",
-    fontFamily: "'Outfit', sans-serif",
+    color: colors.textHead,
+    fontFamily: fonts.heading,
     margin: "10px 0",
   },
   subtitle: {
-    color: "#C8FF01",
+    color: colors.textBody,
     fontSize: "1.05rem",
   },
   error: {
@@ -342,28 +341,27 @@ const styles = {
     marginBottom: "20px",
   },
   success: {
-    background: "rgba(200, 255, 1, 0.1)",
-    color: "#C8FF01",
+    background: "rgba(18, 161, 80, 0.12)",
+    color: colors.success,
     padding: "12px 16px",
     borderRadius: "10px",
-    border: "1px solid rgba(200, 255, 1, 0.3)",
+    border: `1px solid ${colors.success}`,
     marginBottom: "20px",
   },
   card: {
-    background: "rgba(255, 255, 255, 0.03)",
-    backdropFilter: "blur(20px)",
-    WebkitBackdropFilter: "blur(20px)",
+    background: colors.surface,
     borderRadius: "24px",
     padding: "30px",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
+    border: `1px solid ${colors.border}`,
+    boxShadow: colors.shadow,
     marginBottom: "35px",
   },
   cardTitle: {
     fontSize: "1.5rem",
     fontWeight: "700",
-    color: "#ffffff",
+    color: colors.textHead,
     margin: 0,
-    fontFamily: "'Outfit', sans-serif",
+    fontFamily: fonts.heading,
     marginBottom: "20px",
   },
   form: {
@@ -379,37 +377,36 @@ const styles = {
   label: {
     fontSize: "0.85rem",
     fontWeight: "700",
-    color: "#C8FF01",
+    color: colors.textHead,
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
   input: {
     padding: "14px 15px",
     borderRadius: "12px",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
+    border: `1px solid ${colors.border}`,
     outline: "none",
     fontSize: "0.95rem",
-    background: "rgba(255, 255, 255, 0.05)",
-    color: "#ffffff",
+    background: "#FFFFFF",
+    color: colors.textHead,
   },
   fileInput: {
     padding: "10px",
     borderRadius: "12px",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    background: "rgba(255, 255, 255, 0.05)",
-    color: "#ffffff",
+    border: `1px solid ${colors.border}`,
+    background: "#FFFFFF",
+    color: colors.textHead,
     cursor: "pointer",
   },
   helperText: {
     fontSize: "0.8rem",
-    color: "#ffffff",
-    opacity: 0.7,
+    color: colors.textMuted,
     marginTop: "2px",
   },
   uploadBtn: {
     alignSelf: "flex-start",
-    background: "#C8FF01",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     border: "none",
     padding: "16px 28px",
     borderRadius: "12px",
@@ -429,8 +426,8 @@ const styles = {
   },
   resetBtn: {
     background: "transparent",
-    border: "1px solid #C8FF01",
-    color: "#C8FF01",
+    border: `1px solid ${colors.blueBorder}`,
+    color: colors.blue,
     padding: "8px 16px",
     borderRadius: "8px",
     cursor: "pointer",
@@ -441,15 +438,14 @@ const styles = {
     textAlign: "center",
     padding: "40px",
     fontSize: "1rem",
-    color: "#C8FF01",
+    color: colors.textBody,
   },
   tableContainer: {
-    background: "rgba(255, 255, 255, 0.03)",
-    backdropFilter: "blur(20px)",
-    WebkitBackdropFilter: "blur(20px)",
+    background: colors.surface,
     borderRadius: "24px",
     overflow: "hidden",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
+    border: `1px solid ${colors.border}`,
+    boxShadow: colors.shadow,
   },
   table: {
     width: "100%",
@@ -457,35 +453,35 @@ const styles = {
     textAlign: "left",
   },
   tableHeaderRow: {
-    borderBottom: "2px solid rgba(255, 255, 255, 0.08)",
+    background: colors.surfaceAlt,
+    borderBottom: `2px solid ${colors.border}`,
   },
   th: {
     padding: "16px 20px",
     fontWeight: "700",
-    color: "#C8FF01",
+    color: colors.textHead,
     fontSize: "0.85rem",
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
   tableRow: {
-    borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+    borderBottom: `1px solid ${colors.border}`,
   },
   td: {
     padding: "18px 20px",
     fontSize: "0.95rem",
-    color: "#ffffff",
+    color: colors.textBody,
     verticalAlign: "middle",
   },
   subText: {
     fontSize: "0.8rem",
-    color: "#ffffff",
-    opacity: 0.6,
+    color: colors.textMuted,
     marginTop: "2px",
     fontWeight: "normal",
   },
   activeBadge: {
-    background: "rgba(200, 255, 1, 0.15)",
-    color: "#C8FF01",
+    background: colors.blueSoft2,
+    color: colors.blue,
     padding: "4px 10px",
     borderRadius: "12px",
     fontSize: "0.8rem",
@@ -493,9 +489,8 @@ const styles = {
     display: "inline-block",
   },
   inactiveBadge: {
-    background: "rgba(255, 255, 255, 0.1)",
-    color: "#ffffff",
-    opacity: 0.8,
+    background: colors.surfaceAlt,
+    color: colors.textMuted,
     padding: "4px 10px",
     borderRadius: "12px",
     fontSize: "0.8rem",
@@ -508,8 +503,8 @@ const styles = {
     alignItems: "center",
   },
   activateBtn: {
-    background: "#C8FF01",
-    color: "#00117D",
+    background: colors.blueGradient,
+    color: colors.onBlue,
     border: "none",
     padding: "8px 16px",
     borderRadius: "8px",
