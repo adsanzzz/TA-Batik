@@ -11,6 +11,10 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
+# Install PyTorch CPU-only version & TensorFlow CPU first to cache heavy ML dependencies
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir tensorflow-cpu
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir --default-timeout=1000 -r requirements.txt && \
     pip install --no-cache-dir --no-deps tensorflow-hub
