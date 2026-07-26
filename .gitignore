@@ -64,6 +64,10 @@ batik-frontend/build/
 *.pkl
 batik-backend/models/
 
+# RAG runtime data (Qdrant file fallback & HuggingFace embedding cache)
+batik-backend/local_qdrant_storage/
+batik-backend/hf_cache/
+
 # ========================================
 # DATASET & FILE BESAR
 # ========================================
@@ -125,3 +129,8 @@ trisara-batik-ai/
 # LOCAL ENV BACKEND (Credentials database lokal)
 # ========================================
 batik-backend/.env
+
+# ========================================
+# VECTOR DATABASE
+# ========================================
+batik-backend/local_qdrant_storage/

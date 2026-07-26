@@ -24,7 +24,14 @@ def get_qdrant_client() -> QdrantClient:
     global _qdrant_client
     if _qdrant_client is None:
         print(f"[RAG] Connecting to Qdrant at {QDRANT_HOST}:{QDRANT_PORT}...")
-        _qdrant_client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
+        try:
+            client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT, timeout=3.0)
+            client.get_collections() # test connection
+            _qdrant_client = client
+        except Exception as e:
+            print(f"[RAG] Failed to connect to Qdrant server: {e}")
+            print("[RAG] Falling back to local file-based Qdrant...")
+            _qdrant_client = QdrantClient(path="local_qdrant_storage")
     return _qdrant_client
 
 def get_embed_model():

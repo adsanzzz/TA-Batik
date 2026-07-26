@@ -210,7 +210,7 @@ export default function Home() {
           {result && (
             <div style={styles.ragResultCard}>
               <div style={styles.ragResultHeader}>
-                <span style={styles.ragResultBadge}>✨ Rekomendasi AI</span>
+                <span style={styles.ragResultBadge}>Rekomendasi AI</span>
               </div>
               <div style={styles.ragResultBody}>
                 {result.recommendation.split('\n').map((line, i) => (

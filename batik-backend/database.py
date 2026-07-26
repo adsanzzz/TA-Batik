@@ -13,7 +13,10 @@ DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME", "batik")
 
 engine = create_engine(
-    f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}",
+    pool_pre_ping=True,      # cek koneksi masih hidup sebelum dipakai -> fix "server closed the connection unexpectedly"
+    pool_recycle=280,        # daur ulang koneksi tiap ~4.5 menit -> hindari koneksi basi ke DB remote
+    connect_args={"connect_timeout": 10},
 )
 
 SessionLocal = sessionmaker(
