@@ -6,8 +6,11 @@ __pycache__
 venv
 env
 
-# Local data that must NOT bloat the image (uploads live in a Docker volume)
-uploads
+# Block user-uploaded files from bloating the image (they live in a Docker volume)
+# But ALLOW template files that must be baked into the image!
+uploads/*
+!uploads/shirt_template.png
+!uploads/blouse_template.png
 
 # Secrets & local config
 .env
