@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 import models
 from database import SessionLocal
 
-# Qdrant client & SentenceTransformers
+# Qdrant client (vector DB) & FastEmbed (ONNX embedding - ringan, tanpa torch)
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qmodels
 
@@ -38,9 +38,14 @@ def get_qdrant_client() -> QdrantClient:
 def get_embed_model():
     global _embed_model
     if _embed_model is None:
-        print("[RAG] Loading SentenceTransformer nomic-embed-text-v1.5...")
-        from sentence_transformers import SentenceTransformer
-        _embed_model = SentenceTransformer("nomic-ai/nomic-embed-text-v1.5", trust_remote_code=True)
+        print("[RAG] Loading FastEmbed nomic-embed-text-v1.5 (ONNX - ringan, tanpa torch)...")
+        from fastembed import TextEmbedding
+        # FastEmbed (buatan tim Qdrant) pakai ONNX runtime -> jauh lebih ringan drpd torch.
+        # Model & dimensi (768) sama seperti sebelumnya. Cache di HF_HOME (volume).
+        _embed_model = TextEmbedding(
+            model_name="nomic-ai/nomic-embed-text-v1.5",
+            cache_dir=os.getenv("HF_HOME") or None,
+        )
     return _embed_model
 
 def get_text_embedding(text: str, is_query: bool = False) -> List[float]:
@@ -48,11 +53,12 @@ def get_text_embedding(text: str, is_query: bool = False) -> List[float]:
     Sesuai dokumentasi Nomic Embed:
     - Dokument/Teks Database harus diawali prefix: 'search_document: '
     - Pertanyaan/Query User harus diawali prefix: 'search_query: '
+    Menghasilkan vektor 768 dimensi (sama seperti sebelumnya).
     """
     prefix = "search_query: " if is_query else "search_document: "
     full_text = f"{prefix}{text.strip()}"
     model = get_embed_model()
-    embedding = model.encode(full_text)
+    embedding = next(iter(model.embed([full_text])))  # numpy array 768-dim
     return embedding.tolist()
 
 def init_qdrant_collection():
