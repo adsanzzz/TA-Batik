@@ -76,7 +76,9 @@ train.zip
 *.tar.gz
 *.tar
 train/dataset/
-batik-backend/uploads/
+batik-backend/uploads/*
+!batik-backend/uploads/shirt_template.png
+!batik-backend/uploads/blouse_template.png
 
 # ========================================
 # LOG & LAPORAN SEMENTARA
