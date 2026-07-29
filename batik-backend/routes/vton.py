@@ -6,13 +6,15 @@ import time
 
 router = APIRouter(prefix="/vton", tags=["Virtual Try On"])
 
+# Template disimpan di 'assets/' (BUKAN 'uploads/') supaya tidak tertutup Docker volume.
+# uploads/ di-mount volume -> isinya bisa ketutup; assets/ selalu ikut image.
 SHIRT_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
-    "..", "uploads", "shirt_template.png"
+    "..", "assets", "shirt_template.png"
 )
 BLOUSE_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
-    "..", "uploads", "blouse_template.png"
+    "..", "assets", "blouse_template.png"
 )
 
 @router.post("/try-on")
