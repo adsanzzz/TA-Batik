@@ -14,6 +14,5 @@ tensorflow_hub
 numpy<2.0.0
 gradio_client
 qdrant-client
-sentence-transformers
+fastembed
 huggingface_hub
-einops
