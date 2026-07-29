@@ -4,14 +4,22 @@ services:
     build:
       context: ./batik-backend
       dockerfile: Dockerfile
-    image: trisara-batik-backend:latest
-    env_file:
-      - ./batik-backend/.env
+    image: luthfan/trisara-backend:latest
     environment:
-      # Semua DB & token (DB_*, HF_TOKEN, REPLICATE, dll) diambil dari env_file di atas
-      # (./batik-backend/.env) -> jadi backend pakai DB REMOTE 'pkm' (203.145.34.144:59486).
-      # Hanya override yang WAJIB beda di dalam Docker:
+      # Nilai diisi dari:
+      #  - LOKAL   : root .env (folder yang sama dgn docker-compose.yml)
+      #  - DOKPLOY : menu Environment di Dokploy
+      # Tidak pakai env_file supaya deploy TIDAK gagal di server yang tak punya file .env.
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - HF_TOKEN=${HF_TOKEN}
+      - HF_MODEL_ID=${HF_MODEL_ID:-Qwen/Qwen2.5-7B-Instruct}
+      - REPLICATE_API_TOKEN=${REPLICATE_API_TOKEN}
       - QDRANT_HOST=qdrant
+      - QDRANT_PORT=${QDRANT_PORT:-6333}
       - HF_HOME=/app/hf_cache
     volumes:
       # CATATAN: JANGAN bind-mount ./batik-backend:/app di produksi.
@@ -35,7 +43,7 @@ services:
     build:
       context: ./batik-frontend
       dockerfile: Dockerfile
-    image: trisara-batik-frontend:latest
+    image: luthfan/trisara-frontend:latest
     ports:
       - "80:80"
     depends_on:
