@@ -4,7 +4,7 @@ services:
     build:
       context: ./batik-backend
       dockerfile: Dockerfile
-    image: trisara-batik-backend:latest
+    image: luthfan/trisara-backend:latest
     environment:
       # Nilai diisi dari:
       #  - LOKAL   : root .env (folder yang sama dgn docker-compose.yml)
@@ -43,7 +43,7 @@ services:
     build:
       context: ./batik-frontend
       dockerfile: Dockerfile
-    image: trisara-batik-frontend:latest
+    image: luthfan/trisara-frontend:latest
     ports:
       - "80:80"
     depends_on:
