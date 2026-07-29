@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # BACKEND SERVICE (FastAPI)
   backend:
@@ -8,18 +6,33 @@ services:
       dockerfile: Dockerfile
     image: trisara-batik-backend:latest
     environment:
+      # Nilai diisi dari:
+      #  - LOKAL   : root .env (folder yang sama dgn docker-compose.yml)
+      #  - DOKPLOY : menu Environment di Dokploy
+      # Tidak pakai env_file supaya deploy TIDAK gagal di server yang tak punya file .env.
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - HF_TOKEN=${HF_TOKEN}
+      - HF_MODEL_ID=${HF_MODEL_ID:-Qwen/Qwen2.5-7B-Instruct}
       - REPLICATE_API_TOKEN=${REPLICATE_API_TOKEN}
-      - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-lutfan99}
-      - DB_HOST=${DB_HOST:-db}
-      - DB_PORT=${DB_PORT:-5432}
-      - DB_NAME=${DB_NAME:-batik}
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=${QDRANT_PORT:-6333}
+      - HF_HOME=/app/hf_cache
     volumes:
+      # CATATAN: JANGAN bind-mount ./batik-backend:/app di produksi.
+      # Itu menimpa /app/models (yang di-download saat build) dengan folder host yang kosong.
+      # Untuk dev lokal, boleh tambahkan sendiri: - ./batik-backend:/app
       - batik_uploads:/app/uploads
+      - hf_cache:/app/hf_cache
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      # DB remote (pkm) dipakai lewat env_file, jadi container db lokal TIDAK diperlukan.
+      qdrant:
+        condition: service_started
     deploy:
       replicas: 1
       restart_policy:
@@ -49,8 +62,21 @@ services:
       - POSTGRES_DB=${DB_NAME:-batik}
     volumes:
       - pgdata:/var/lib/postgresql/data
+    # Tidak perlu ekspos port ke host (backend konek internal via "db:5432").
+    # Kalau mau colok dari host (pgAdmin), tambahkan lagi: ports: ["5433:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-batik}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+  # VECTOR DATABASE SERVICE (Qdrant for RAG)
+  qdrant:
+    image: qdrant/qdrant:latest
     ports:
-      - "5432:5432"
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
     deploy:
       restart_policy:
         condition: on-failure
@@ -58,3 +84,5 @@ services:
 volumes:
   pgdata:
   batik_uploads:
+  qdrant_data:
+  hf_cache:

@@ -16,6 +16,10 @@ uploads
 # Models are downloaded during build via wget; don't copy local copies in
 models
 
+# RAG runtime data (Qdrant file fallback & HF model cache) — live in volumes
+local_qdrant_storage
+hf_cache
+
 # Dev tooling
 .git
 .gitignore

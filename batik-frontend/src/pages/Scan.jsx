@@ -133,6 +133,8 @@ export default function Scan() {
           .scan-modal-flex { flex-direction: column !important; }
           .scan-modal-img-wrapper { max-height: 35vh !important; min-width: 100% !important; flex: none !important; }
           .scan-modal-body { padding: 20px !important; min-width: 100% !important; }
+          .scan-ai-body { padding: 20px 18px !important; }
+          .scan-ai-highlight { padding: 16px !important; margin-bottom: 16px !important; }
         }
       `}</style>      {/* HEADER */}
       <div style={styles.header}>
@@ -285,8 +287,8 @@ export default function Scan() {
               <button onClick={closeResultModal} style={styles.closeBtnAI}>&times;</button>
             </div>
 
-            <div style={styles.modalBodyAI}>
-              <div style={styles.predictionHighlight}>
+            <div style={styles.modalBodyAI} className="scan-ai-body">
+              <div style={styles.predictionHighlight} className="scan-ai-highlight">
                 <p style={styles.highlightText}>
                   Batik yang Anda scan teridentifikasi sebagai:
                 </p>
@@ -655,6 +657,9 @@ const styles = {
     borderRadius: "24px",
     maxWidth: "650px",
     width: "90%",
+    maxHeight: "90vh",
+    display: "flex",
+    flexDirection: "column",
     overflow: "hidden",
     boxShadow: colors.shadow,
     animation: "modalSlideUp 0.3s ease",
@@ -667,6 +672,7 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    flexShrink: 0,
   },
   modalTitleAI: {
     margin: 0,
@@ -685,6 +691,9 @@ const styles = {
   modalBodyAI: {
     padding: "30px",
     textAlign: "center",
+    overflowY: "auto",
+    flex: 1,
+    minHeight: 0,
   },
   predictionHighlight: {
     marginBottom: "25px",

@@ -36,25 +36,25 @@ try:
     from database import engine
     import models
     models.Base.metadata.create_all(bind=engine)
-    print("✅ Database connected and tables created.")
+    print("[OK] Database connected and tables created.")
 except Exception as e:
-    print(f"❌ Database setup failed: {e}")
+    print(f"[ERROR] Database setup failed: {e}")
 
 # ROUTES - each wrapped individually so one failure doesn't kill all
 try:
     from routes import batik, auth
     app.include_router(auth.router, tags=["Authentication"])
     app.include_router(batik.router, tags=["Batik Management"])
-    print("✅ Auth & Batik routes loaded.")
+    print("[OK] Auth & Batik routes loaded.")
 except Exception as e:
-    print(f"❌ Auth/Batik routes failed: {e}")
+    print(f"[ERROR] Auth/Batik routes failed: {e}")
 
 try:
     from routes import predict
     app.include_router(predict.router, tags=["AI Prediction"])
-    print("✅ Predict route loaded.")
+    print("[OK] Predict route loaded.")
 except Exception as e:
-    print(f"❌ Predict route failed: {e}")
+    print(f"[ERROR] Predict route failed: {e}")
 
 try:
     from routes import frame, batik_ai, admin_mitra, model_control
@@ -62,30 +62,37 @@ try:
     app.include_router(batik_ai.router, tags=["AI Info Management"])
     app.include_router(admin_mitra.router, tags=["Admin Mitra Management"])
     app.include_router(model_control.router, tags=["AI Model Management"])
-    print("✅ Frame/BatikAI/Admin routes loaded.")
+    print("[OK] Frame/BatikAI/Admin routes loaded.")
 except Exception as e:
-    print(f"❌ Frame/BatikAI/Admin routes failed: {e}")
+    print(f"[ERROR] Frame/BatikAI/Admin routes failed: {e}")
 
 try:
     from routes import garment_generator
     app.include_router(garment_generator.router)
-    print("✅ Garment Generator route loaded.")
+    print("[OK] Garment Generator route loaded.")
 except Exception as e:
-    print(f"❌ Garment Generator route failed: {e}")
+    print(f"[ERROR] Garment Generator route failed: {e}")
 
 try:
     from routes import vton
     app.include_router(vton.router)
-    print("✅ VTON route loaded.")
+    print("[OK] VTON route loaded.")
 except Exception as e:
-    print(f"❌ VTON route failed: {e}")
+    print(f"[ERROR] VTON route failed: {e}")
 
 try:
     from routes import stylegan_router
     app.include_router(stylegan_router.router)
-    print("✅ StyleGAN route loaded.")
+    print("[OK] StyleGAN route loaded.")
 except Exception as e:
-    print(f"❌ StyleGAN route failed: {e}")
+    print(f"[ERROR] StyleGAN route failed: {e}")
+
+try:
+    from routes import rag_router
+    app.include_router(rag_router.router)
+    print("[OK] RAG Batik Recommendation route loaded.")
+except Exception as e:
+    print(f"[ERROR] RAG route failed: {e}")
 
 print("=== STARTUP COMPLETE - App is running ===")
 
