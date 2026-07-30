@@ -143,6 +143,9 @@ async def execute_vton(
         }
 
     except Exception as e:
+        import traceback
+        print(f"[VTON FAILED ERROR] Exception details: {str(e)}", flush=True)
+        traceback.print_exc()
         try:
             if temp_human_path and os.path.exists(temp_human_path):
                 os.remove(temp_human_path)
