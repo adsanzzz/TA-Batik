@@ -30,6 +30,15 @@ RUN apt-get update && apt-get install -y wget tar && \
 
 COPY . .
 
+# Pastikan folder uploads dan assets ada
+RUN mkdir -p /app/uploads /app/assets
+
+# Salin template ke assets/ (tidak tertimpa volume mount)
+RUN cp /app/uploads/shirt_template.png /app/assets/shirt_template.png 2>/dev/null || true && \
+    cp /app/uploads/blouse_template.png /app/assets/blouse_template.png 2>/dev/null || true
+
 EXPOSE 8000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# entrypoint.sh: salin template ke uploads/ lalu jalankan uvicorn
+RUN chmod +x /app/entrypoint.sh
+CMD ["/app/entrypoint.sh"]

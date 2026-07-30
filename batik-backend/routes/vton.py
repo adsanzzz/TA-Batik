@@ -6,15 +6,14 @@ import time
 
 router = APIRouter(prefix="/vton", tags=["Virtual Try On"])
 
-# Template disimpan di 'assets/' (BUKAN 'uploads/') supaya tidak tertutup Docker volume.
-# uploads/ di-mount volume -> isinya bisa ketutup; assets/ selalu ikut image.
+# Template disimpan di uploads/ - dizinkan masuk ke Docker image via .dockerignore
 SHIRT_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
-    "..", "assets", "shirt_template.png"
+    "..", "uploads", "shirt_template.png"
 )
 BLOUSE_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
-    "..", "assets", "blouse_template.png"
+    "..", "uploads", "blouse_template.png"
 )
 
 @router.post("/try-on")
@@ -49,7 +48,7 @@ async def execute_vton(
     if not os.path.exists(template_path):
         raise HTTPException(
             status_code=500,
-            detail=f"Template {template_name} tidak ditemukan. Pastikan file ada di folder uploads."
+            detail=f"Template {template_name} tidak ditemukan. Pastikan file ada di folder assets."
         )
 
     temp_human_path = None
