@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { colors, fonts } from "../theme";
 import CardBatik from "../components/CardBatik";
@@ -24,6 +25,7 @@ const SparklesIcon = ({ size = 20, color = "currentColor" }) => (
 );
 
 export default function Scan() {
+  const navigate = useNavigate();
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [result, setResult] = useState(null);
@@ -325,7 +327,10 @@ export default function Scan() {
           >
             Coba Virtual Try-On
           </button>
-          <button onClick={closeResultModal} style={{...styles.okButton, background: colors.surface, color: colors.blue, border: `1px solid ${colors.blueBorder}`}}>
+          <button
+            onClick={() => { closeResultModal(); navigate("/katalog"); }}
+            style={{...styles.okButton, background: colors.surface, color: colors.blue, border: `1px solid ${colors.blueBorder}`}}
+          >
             Lihat Katalog Lengkap
           </button>
         </div>

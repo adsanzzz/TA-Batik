@@ -263,6 +263,23 @@ export const generateGarment = async (formData) => {
   return res.json();
 };
 
+export const generateGarmentByUrl = async (payload) => {
+  const res = await fetch(`${BASE_URL}/vton/generate-garment-url`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `HTTP Error ${res.status}`);
+  }
+
+  return res.json();
+};
+
 export const executeVton = async (formData) => {
   const res = await fetch(`${BASE_URL}/vton/try-on`, {
     method: "POST",

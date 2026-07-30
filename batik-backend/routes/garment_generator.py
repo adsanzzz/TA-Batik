@@ -1,8 +1,8 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Request
+from pydantic import BaseModel
 import httpx
 import os
-
-import tempfile
+import time
 import replicate
 
 router = APIRouter(prefix="/vton", tags=["Virtual Try On"])
@@ -25,18 +25,12 @@ async def generate_garment(
         raise HTTPException(status_code=500, detail="REPLICATE_API_TOKEN is not configured in .env")
 
     try:
-        # Kita BYPASS proses Replicate di sini.
-        # Karena model text-to-image/img2img standar tidak mampu mempertahankan motif rumit,
-        # kita akan langsung menggunakan foto kain flat ini untuk dimasukkan ke IDM-VTON.
-        # IDM-VTON cukup pintar untuk membedah flat texture menjadi baju.
-        
         # 1. Pastikan folder uploads ada
         upload_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "uploads")
         if not os.path.exists(upload_dir):
             os.makedirs(upload_dir)
             
         # 2. Buat nama file unik
-        import time
         filename = f"fabric_{int(time.time())}.png"
         filepath = os.path.join(upload_dir, filename)
         
@@ -44,7 +38,7 @@ async def generate_garment(
         with open(filepath, "wb") as f:
             f.write(await batik_image.read())
             
-        # 4. Buat URL yang bisa diakses publik (menggunakan base URL dari request)
+        # 4. Buat URL yang bisa diakses publik
         base_url = str(request.base_url).rstrip("/")
         garment_url = f"{base_url}/uploads/{filename}"
         
@@ -54,3 +48,49 @@ async def generate_garment(
             
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Garment generation failed: {str(e)}")
+
+
+class GarmentByUrlRequest(BaseModel):
+    batik_image_url: str
+    template_type: str = "male_shirt"
+
+@router.post("/generate-garment-url")
+async def generate_garment_by_url(
+    request: Request,
+    payload: GarmentByUrlRequest
+):
+    """
+    Alternatif endpoint: menerima URL gambar batik (bukan file upload).
+    Backend akan download gambarnya sendiri.
+    Berguna ketika gambar tidak bisa diakses dari browser tapi bisa diakses dari server.
+    """
+    if payload.template_type not in ["male_shirt", "female_blouse"]:
+        raise HTTPException(status_code=400, detail="Invalid template type")
+
+    try:
+        # Download gambar batik dari URL
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.get(payload.batik_image_url)
+            if resp.status_code != 200:
+                raise HTTPException(status_code=400, detail=f"Gagal download gambar dari URL: {payload.batik_image_url}")
+            image_bytes = resp.content
+
+        # Simpan ke uploads/
+        upload_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "uploads")
+        os.makedirs(upload_dir, exist_ok=True)
+        filename = f"fabric_{int(time.time())}.png"
+        filepath = os.path.join(upload_dir, filename)
+
+        with open(filepath, "wb") as f:
+            f.write(image_bytes)
+
+        base_url = str(request.base_url).rstrip("/")
+        garment_url = f"{base_url}/uploads/{filename}"
+        print(f"[generate-garment-url] Saved fabric from URL: {garment_url}")
+
+        return {"status": "success", "garment_image_url": garment_url}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Garment URL generation failed: {str(e)}")

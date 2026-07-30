@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import os
+import shutil
 from dotenv import load_dotenv
 
 # Load environment variables FIRST
@@ -12,6 +13,7 @@ print(f"Python starting up...")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
+ASSETS_DIR = os.path.join(BASE_DIR, "assets")
 
 app = FastAPI()
 
@@ -27,6 +29,19 @@ app.add_middleware(
 # SERVE IMAGE (Create folder if not exists)
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
+
+# Seed template pakaian dari assets/ ke uploads/ (jika belum ada)
+# Ini diperlukan karena Docker volume menutupi /app/uploads saat runtime
+for template_name in ["shirt_template.png", "blouse_template.png"]:
+    src = os.path.join(ASSETS_DIR, template_name)
+    dst = os.path.join(UPLOAD_DIR, template_name)
+    if os.path.exists(src) and not os.path.exists(dst):
+        shutil.copy2(src, dst)
+        print(f"[OK] Template '{template_name}' disalin ke uploads/.")
+    elif os.path.exists(dst):
+        print(f"[OK] Template '{template_name}' sudah ada di uploads/.")
+    else:
+        print(f"[WARN] Template '{template_name}' tidak ditemukan di assets/.")
 
 from fastapi.staticfiles import StaticFiles
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")

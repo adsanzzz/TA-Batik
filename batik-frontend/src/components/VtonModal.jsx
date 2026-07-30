@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { generateGarment, executeVton, BASE_URL } from "../services/api";
+import { generateGarment, generateGarmentByUrl, executeVton, BASE_URL } from "../services/api";
 import { colors, fonts } from "../theme";
 
 const MaleShirtIcon = ({ active }) => (
@@ -205,15 +205,37 @@ export default function VtonModal({ batik, onClose }) {
       setLoading(true);
       setError(null);
 
-      // Create FormData
+      // Create FormData - kirim URL gambar batik, biarkan backend yang download
       const formData = new FormData();
       formData.append("template_type", templateType);
       
-      // Because we only have the URL of the batik image in the frontend, 
-      // we need to fetch it and convert it to a File blob to send via multipart/form-data.
       const imageUrl = getBatikImageUrl(batik.gambar);
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
+      
+      // Coba fetch gambar dulu dari browser
+      let blob;
+      try {
+        const response = await fetch(imageUrl);
+        if (!response.ok) throw new Error(`Image not found: ${response.status}`);
+        blob = await response.blob();
+      } catch (fetchErr) {
+        // Jika gambar tidak bisa diakses dari browser (404 di VPS),
+        // kirim URL-nya saja ke backend agar backend yang download
+        console.warn("[VTON] Browser tidak bisa fetch gambar batik, kirim URL ke backend:", imageUrl);
+        // Kirim sebagai JSON object (BUKAN FormData!)
+        const result = await generateGarmentByUrl({
+          batik_image_url: imageUrl,
+          template_type: templateType
+        });
+        if (result.status === "success" && result.garment_image_url) {
+          setGeneratedGarment(result.garment_image_url);
+          setStep(2);
+        } else {
+          throw new Error("Gagal mendapatkan gambar baju dari server.");
+        }
+        return;
+      }
+
+
       const file = new File([blob], "batik.jpg", { type: blob.type });
       formData.append("batik_image", file);
 
@@ -233,6 +255,7 @@ export default function VtonModal({ batik, onClose }) {
       setLoading(false);
     }
   };
+
 
   const handleHumanImageChange = (e) => {
     const file = e.target.files[0];
