@@ -221,8 +221,11 @@ export default function VtonModal({ batik, onClose }) {
         // Jika gambar tidak bisa diakses dari browser (404 di VPS),
         // kirim URL-nya saja ke backend agar backend yang download
         console.warn("[VTON] Browser tidak bisa fetch gambar batik, kirim URL ke backend:", imageUrl);
-        formData.append("batik_image_url", imageUrl);
-        const result = await generateGarmentByUrl(formData);
+        // Kirim sebagai JSON object (BUKAN FormData!)
+        const result = await generateGarmentByUrl({
+          batik_image_url: imageUrl,
+          template_type: templateType
+        });
         if (result.status === "success" && result.garment_image_url) {
           setGeneratedGarment(result.garment_image_url);
           setStep(2);
@@ -231,6 +234,7 @@ export default function VtonModal({ batik, onClose }) {
         }
         return;
       }
+
 
       const file = new File([blob], "batik.jpg", { type: blob.type });
       formData.append("batik_image", file);
