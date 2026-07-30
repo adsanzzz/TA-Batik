@@ -58,11 +58,23 @@ async def execute_vton(
     try:
         # === TAHAP 1: Buat gambar kemeja/blus batik dari template + kain batik ===
         # Dapatkan path kain batik
-        filename = garment_image_url.split("/")[-1]
-        fabric_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "..", "uploads", filename
-        )
+        filename = garment_image_url.split("?")[0].split("/")[-1]
+        upload_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "uploads")
+        fabric_path = os.path.join(upload_dir, filename)
+
+        if not os.path.exists(fabric_path):
+            try:
+                import httpx
+                print(f"[VTON] File fabric {filename} tidak ada di disk, mendownload dari {garment_image_url}...")
+                async with httpx.AsyncClient(timeout=30.0) as client:
+                    resp = await client.get(garment_image_url)
+                    if resp.status_code == 200:
+                        os.makedirs(upload_dir, exist_ok=True)
+                        with open(fabric_path, "wb") as f:
+                            f.write(resp.content)
+            except Exception as dl_err:
+                print(f"[VTON] Gagal download fabric dari URL: {dl_err}")
+
         if not os.path.exists(fabric_path):
             raise HTTPException(status_code=404, detail=f"File kain batik tidak ditemukan: {filename}")
 
@@ -121,16 +133,8 @@ async def execute_vton(
                 }
             )
 
-        if temp_human_path:
+        if temp_human_path and os.path.exists(temp_human_path):
             os.remove(temp_human_path)
-
-        # Hapus file fabric sementara setelah VTON selesai (hemat disk VPS)
-        try:
-            if fabric_path and os.path.exists(fabric_path) and "fabric_" in os.path.basename(fabric_path):
-                os.remove(fabric_path)
-                print(f"[CLEANUP] Fabric temp file dihapus: {fabric_path}")
-        except Exception:
-            pass
 
         result_url = str(output) if not isinstance(output, list) else str(output[0])
 
@@ -149,11 +153,6 @@ async def execute_vton(
         try:
             if temp_human_path and os.path.exists(temp_human_path):
                 os.remove(temp_human_path)
-        except:
-            pass
-        try:
-            if fabric_path and os.path.exists(fabric_path) and "fabric_" in os.path.basename(fabric_path):
-                os.remove(fabric_path)
         except:
             pass
         raise HTTPException(status_code=500, detail=f"VTON process failed: {str(e)}")
