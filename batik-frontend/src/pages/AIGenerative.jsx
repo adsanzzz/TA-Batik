@@ -638,27 +638,9 @@ export default function AIGenerative() {
                         <button type="submit" disabled={saveLoading || isSaved} style={styles.btnSave}>
                           <SaveIcon size={14} color={colors.onBlue} /> {saveLoading ? "Menyimpan..." : isSaved ? "Tersimpan di Katalog" : "Simpan ke Katalog"}
                         </button>
-                        
-                        <button
-                          type="button"
-                          onClick={() => setShowVton(true)}
-                          style={styles.btnTryOn}
-                        >
-                          <ShirtIcon size={14} color={colors.blue} /> Virtual Try-On
-                        </button>
                       </div>
                     </form>
-                  ) : (
-                    <div style={{ width: "100%", padding: "10px 0" }}>
-                      <button
-                        type="button"
-                        onClick={() => setShowVton(true)}
-                        style={styles.btnSave}
-                      >
-                        <ShirtIcon size={16} color={colors.onBlue} /> Mulai Virtual Try-On
-                      </button>
-                    </div>
-                  )}
+                  ) : null}
                 </div>
               )}
             </div>
@@ -666,15 +648,7 @@ export default function AIGenerative() {
         </div>
       </div>
 
-      {showVton && (
-        <VtonModal
-          batik={{
-            nama: saveForm.nama || `Batik Hibrida AI`,
-            gambar: imageMixed.replace(`${BASE_URL}/`, "")
-          }}
-          onClose={() => setShowVton(false)}
-        />
-      )}
+
     </div>
     <Footer />
     </>
