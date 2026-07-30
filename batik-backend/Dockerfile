@@ -26,7 +26,8 @@ RUN apt-get update && apt-get install -y wget tar && \
     wget -O models/magenta.tar.gz "https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2?tf-hub-format=compressed" && \
     mkdir -p models/magenta_nst && \
     tar -xzf models/magenta.tar.gz -C models/magenta_nst && \
-    rm models/magenta.tar.gz
+    rm models/magenta.tar.gz && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY . .
 
