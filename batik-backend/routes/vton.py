@@ -6,15 +6,15 @@ import time
 
 router = APIRouter(prefix="/vton", tags=["Virtual Try On"])
 
-# Template disimpan di uploads/ - dizinkan masuk ke Docker image via .dockerignore
-SHIRT_TEMPLATE_PATH = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "..", "uploads", "shirt_template.png"
-)
-BLOUSE_TEMPLATE_PATH = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "..", "uploads", "blouse_template.png"
-)
+def get_template_path(filename: str) -> str:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    assets_path = os.path.join(base_dir, "..", "assets", filename)
+    if os.path.exists(assets_path):
+        return assets_path
+    return os.path.join(base_dir, "..", "uploads", filename)
+
+SHIRT_TEMPLATE_PATH = get_template_path("shirt_template.png")
+BLOUSE_TEMPLATE_PATH = get_template_path("blouse_template.png")
 
 @router.post("/try-on")
 async def execute_vton(
@@ -35,13 +35,13 @@ async def execute_vton(
 
     # Pilih template pakaian berdasarkan jenis
     if template_type == "female_blouse":
-        template_path = BLOUSE_TEMPLATE_PATH
         template_name = "blouse_template.png"
+        template_path = get_template_path(template_name)
         prompt_garment = "A photorealistic short-sleeve female batik blouse. The batik fabric pattern completely covers every inch of the blouse. Fully patterned, no plain areas. Studio photography."
         description_garment = "A short-sleeve female batik blouse with colorful pattern"
     else:
-        template_path = SHIRT_TEMPLATE_PATH
         template_name = "shirt_template.png"
+        template_path = get_template_path(template_name)
         prompt_garment = "A photorealistic collared batik shirt. The batik fabric pattern completely covers every inch of the shirt including collar, sleeves, pocket and body. Fully patterned, no plain areas. Studio photography."
         description_garment = "A short-sleeve collared button-up batik shirt with colorful pattern"
 
