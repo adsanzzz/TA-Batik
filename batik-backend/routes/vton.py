@@ -53,6 +53,7 @@ async def execute_vton(
 
     temp_human_path = None
     batik_shirt_path = None
+    fabric_path = None  # Track untuk cleanup
 
     try:
         # === TAHAP 1: Buat gambar kemeja/blus batik dari template + kain batik ===
@@ -123,6 +124,14 @@ async def execute_vton(
         if temp_human_path:
             os.remove(temp_human_path)
 
+        # Hapus file fabric sementara setelah VTON selesai (hemat disk VPS)
+        try:
+            if fabric_path and os.path.exists(fabric_path) and "fabric_" in os.path.basename(fabric_path):
+                os.remove(fabric_path)
+                print(f"[CLEANUP] Fabric temp file dihapus: {fabric_path}")
+        except Exception:
+            pass
+
         result_url = str(output) if not isinstance(output, list) else str(output[0])
 
         print(f"TAHAP 2 selesai! URL hasil VTON: {result_url}")
@@ -137,6 +146,11 @@ async def execute_vton(
         try:
             if temp_human_path and os.path.exists(temp_human_path):
                 os.remove(temp_human_path)
+        except:
+            pass
+        try:
+            if fabric_path and os.path.exists(fabric_path) and "fabric_" in os.path.basename(fabric_path):
+                os.remove(fabric_path)
         except:
             pass
         raise HTTPException(status_code=500, detail=f"VTON process failed: {str(e)}")
