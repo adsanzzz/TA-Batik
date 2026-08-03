@@ -4,6 +4,13 @@ import Footer from '../components/Footer';
 import { colors, fonts } from '../theme';
 import { BASE_URL } from '../services/api';
 
+// Render **bold** markdown dari jawaban LLM jadi teks tebal (tanpa library).
+function renderMarkdownLine(line) {
+  return line.split(/\*\*(.+?)\*\*/g).map((part, i) =>
+    i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+  );
+}
+
 export default function Home() {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -213,9 +220,11 @@ export default function Home() {
                 <span style={styles.ragResultBadge}>Rekomendasi AI</span>
               </div>
               <div style={styles.ragResultBody}>
-                {result.recommendation.split('\n').map((line, i) => (
-                  <p key={i} style={{ marginBottom: '8px' }}>{line}</p>
-                ))}
+                {result.recommendation.split('\n').map((line, i) =>
+                  line.trim() === '' ? null : (
+                    <p key={i} style={{ marginBottom: '8px' }}>{renderMarkdownLine(line)}</p>
+                  )
+                )}
               </div>
               {result.retrieved_context && result.retrieved_context.length > 0 && (
                 <div style={styles.ragResultContexts}>
