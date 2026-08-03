@@ -136,3 +136,4 @@ batik-backend/.env
 # VECTOR DATABASE
 # ========================================
 batik-backend/local_qdrant_storage/
+batik-backend/qdrant_storage/
