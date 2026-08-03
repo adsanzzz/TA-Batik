@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import heroImage from '../assets/depan.png';
 import Footer from '../components/Footer';
 import { colors, fonts } from '../theme';
@@ -145,13 +146,13 @@ export default function Home() {
           </p>
 
           <div style={styles.buttons} className="home-buttons">
-            <a href="/scan" style={styles.primaryBtn} className="home-primary-btn">
+            <Link to="/scan" style={styles.primaryBtn} className="home-primary-btn">
               Mulai Identifikasi
-            </a>
+            </Link>
 
-            <a href="/katalog" style={styles.secondaryBtn} className="home-secondary-btn">
+            <Link to="/katalog" style={styles.secondaryBtn} className="home-secondary-btn">
               Jelajahi Katalog
-            </a>
+            </Link>
           </div>
         </div>
 
