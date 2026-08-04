@@ -73,12 +73,13 @@ except Exception as e:
     print(f"[ERROR] Predict route failed: {e}")
 
 try:
-    from routes import frame, batik_ai, admin_mitra, model_control
+    from routes import frame, batik_ai, admin_mitra, model_control, review
     app.include_router(frame.router, tags=["Frame Management"])
     app.include_router(batik_ai.router, tags=["AI Info Management"])
     app.include_router(admin_mitra.router, tags=["Admin Mitra Management"])
     app.include_router(model_control.router, tags=["AI Model Management"])
-    print("[OK] Frame/BatikAI/Admin routes loaded.")
+    app.include_router(review.router, tags=["Review / Feedback"])
+    print("[OK] Frame/BatikAI/Admin/Review routes loaded.")
 except Exception as e:
     print(f"[ERROR] Frame/BatikAI/Admin routes failed: {e}")
 

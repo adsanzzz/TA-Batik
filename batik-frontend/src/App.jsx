@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoadingLogo from "./components/LoadingLogo";
+import FloatingReview from "./components/FloatingReview";
 import ornamentImage from "./assets/ornament.png";
 
 // Halaman di-lazy-load (code-splitting): tiap halaman jadi file JS terpisah,
@@ -17,6 +18,7 @@ const ManajemenBatik = lazy(() => import("./pages/admin/ManajemenBatik"));
 const ManajemenFrame = lazy(() => import("./pages/admin/ManajemenFrame"));
 const ManajemenInfoBatik = lazy(() => import("./pages/admin/ManajemenInfoBatik"));
 const ManajemenModel = lazy(() => import("./pages/admin/ManajemenModel"));
+const ManajemenReview = lazy(() => import("./pages/admin/ManajemenReview"));
 const Photobox = lazy(() => import("./pages/Photobox"));
 const AIGenerative = lazy(() => import("./pages/AIGenerative"));
 const VirtualTryOn = lazy(() => import("./pages/VirtualTryOn"));
@@ -133,13 +135,21 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            <Route 
-              path="/admin/manajemen-model" 
+            <Route
+              path="/admin/manajemen-model"
               element={
                 <ProtectedRoute>
                   <ManajemenModel />
                 </ProtectedRoute>
-              } 
+              }
+            />
+            <Route
+              path="/admin/reviews"
+              element={
+                <ProtectedRoute>
+                  <ManajemenReview />
+                </ProtectedRoute>
+              }
             />
             <Route 
               path="/admin/verifikasi-mitra" 
@@ -178,6 +188,7 @@ function App() {
           </Routes>
           </Suspense>
         </div>
+        <FloatingReview />
       </PageTransition>
     </BrowserRouter>
   );

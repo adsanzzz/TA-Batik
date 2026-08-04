@@ -200,6 +200,16 @@ export default function AIGenerative() {
   const handleRandomSeedA = () => setSeedA(Math.floor(Math.random() * 100000));
   const handleRandomSeedB = () => setSeedB(Math.floor(Math.random() * 100000));
 
+  const handleDownloadMotif = () => {
+    if (!imageMixed) return;
+    const a = document.createElement("a");
+    a.href = imageMixed; // data:image/png;base64,...
+    a.download = `motif-batik-ai-${Date.now()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   const handleSaveToCatalog = async (e) => {
     e.preventDefault();
     if (!imageMixed) return;
@@ -587,6 +597,15 @@ export default function AIGenerative() {
               </div>
 
               {imageMixed && !loadingMixed && (
+                <>
+                <button type="button" onClick={handleDownloadMotif} style={styles.btnDownload}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 8 }}>
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  Unduh Motif
+                </button>
                 <div style={styles.metaPanel}>
                   {localStorage.getItem("token") && (localStorage.getItem("role") === "admin" || localStorage.getItem("role") === "mitra") ? (
                     <form onSubmit={handleSaveToCatalog} style={styles.saveForm}>
@@ -642,6 +661,7 @@ export default function AIGenerative() {
                     </form>
                   ) : null}
                 </div>
+                </>
               )}
             </div>
           </div>
@@ -1034,6 +1054,23 @@ const styles = {
     justifyContent: "center",
     gap: "6px",
     transition: "background 0.2s"
+  },
+  btnDownload: {
+    width: "100%",
+    boxSizing: "border-box",
+    background: colors.navy,
+    color: colors.onBlue,
+    border: "none",
+    padding: "12px",
+    borderRadius: "12px",
+    fontSize: "0.95rem",
+    fontWeight: 700,
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: "14px",
+    boxShadow: "0 6px 16px rgba(0, 17, 125, 0.22)",
   },
   btnTryOn: {
     flex: 1,
