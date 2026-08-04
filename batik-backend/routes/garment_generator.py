@@ -68,16 +68,38 @@ async def generate_garment_by_url(
         raise HTTPException(status_code=400, detail="Invalid template type")
 
     try:
-        # Download gambar batik dari URL
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            resp = await client.get(payload.batik_image_url)
-            if resp.status_code != 200:
-                raise HTTPException(status_code=400, detail=f"Gagal download gambar dari URL: {payload.batik_image_url}")
-            image_bytes = resp.content
-
-        # Simpan ke uploads/
         upload_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "uploads")
         os.makedirs(upload_dir, exist_ok=True)
+
+        url = (payload.batik_image_url or "").strip()
+
+        # Kalau menunjuk ke file lokal /uploads/... -> baca LANGSUNG dari disk.
+        # Lebih robust: nggak perlu HTTP round-trip (yang gampang gagal / kena masalah protokol/relatif).
+        if "/uploads/" in url or url.startswith("uploads/"):
+            fname = url.split("/uploads/")[-1] if "/uploads/" in url else url.split("uploads/", 1)[-1]
+            fname = fname.split("?")[0].split("#")[0].lstrip("/")
+            local_path = os.path.join(upload_dir, fname)
+            if not os.path.exists(local_path):
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Gambar batik '{fname}' tidak ditemukan di server. Coba upload ulang gambar batiknya lewat admin."
+                )
+            with open(local_path, "rb") as f:
+                image_bytes = f.read()
+        else:
+            # URL eksternal -> wajib ada skema http/https
+            if not url.startswith(("http://", "https://")):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"URL gambar batik tidak valid (harus diawali http:// atau https://): {url}"
+                )
+            async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+                resp = await client.get(url)
+                if resp.status_code != 200:
+                    raise HTTPException(status_code=400, detail=f"Gagal download gambar dari URL: {url}")
+                image_bytes = resp.content
+
+        # Simpan ke uploads/
         filename = f"fabric_{int(time.time())}.png"
         filepath = os.path.join(upload_dir, filename)
 
