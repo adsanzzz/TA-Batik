@@ -57,4 +57,14 @@ class AIModel(Base):
     filename = Column(String, nullable=False)
     filepath = Column(String, nullable=False)
     is_active = Column(Boolean, default=False)
-    uploaded_at = Column(DateTime, default=datetime.utcnow)
+    uploaded_at = Column(DateTime, default=datetime.utcnow)
+
+
+class Review(Base):
+    __tablename__ = "reviews"
+
+    id = Column(Integer, primary_key=True, index=True)
+    fitur = Column(String, index=True)          # scan | vton | generative | photobox | rag
+    rating = Column(Integer)                    # 1-5 bintang
+    komentar = Column(Text, nullable=True)      # opsional
+    created_at = Column(DateTime, default=datetime.utcnow)

@@ -232,6 +232,30 @@ export default function AdminDashboard() {
               Kelola Model
             </Link>
           </div>
+
+          {/* Card 7: Rekap Ulasan */}
+          <div
+            style={{...styles.card, ...(hoverCard === 7 ? styles.cardHover : {})}}
+            onMouseEnter={() => setHoverCard(7)}
+            onMouseLeave={() => setHoverCard(null)}
+            className="admin-dash-card"
+          >
+            <div style={styles.iconWrapper}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#033EEE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </div>
+            <h3 style={styles.cardTitle}>Rekap Ulasan</h3>
+            <p style={styles.cardDesc}>Lihat rating & masukan pengguna dari tiap fitur (Scan, VTON, AI Generative, Photobox, Rekomendasi AI).</p>
+            <Link
+              to="/admin/reviews"
+              style={{...styles.actionButton, ...(hoverButton === 7 ? styles.actionButtonHover : {})}}
+              onMouseEnter={() => setHoverButton(7)}
+              onMouseLeave={() => setHoverButton(null)}
+            >
+              Lihat Ulasan
+            </Link>
+          </div>
         </div>
       </div>
     </div>
