@@ -26,15 +26,6 @@ export default function CardBatik({ batik, onClick }) {
         border-color: rgba(3, 62, 238, 0.4) !important;
       }
       @media (max-width: 768px) {
-        .batik-card-header {
-          flex-direction: column !important;
-          align-items: flex-start !important;
-          gap: 10px !important;
-        }
-        .batik-card-badges {
-          align-self: flex-start !important;
-          margin-top: 5px !important;
-        }
         .batik-card-content {
           padding: 16px !important;
         }
@@ -54,25 +45,24 @@ export default function CardBatik({ batik, onClick }) {
       />
 
       <div style={styles.content} className="batik-card-content">
-        <div style={styles.header} className="batik-card-header">
-          <div>
-            <h3 style={styles.title} className="batik-card-title">{batik.nama}</h3>
-            {batik.jenis_acara === "Batik Keraton" && (
-              <div style={styles.keratonBadge}>
-                <CrownIcon /> Batik Keraton
-              </div>
-            )}
-            {/* Uploader badge */}
-            {batik.mitra_id ? (
-              <div style={styles.uploaderBadge}>Store: {batik.nama_toko}</div>
-            ) : (
-              <div style={styles.uploaderBadge}>Admin</div>
-            )}
-          </div>
-          <div className="batik-card-badges">
-            <span style={styles.badge}>{batik.jenis_batik}</span>
-            <span style={styles.eventBadge}>{batik.jenis_acara}</span>
-          </div>
+        <h3 style={styles.title} className="batik-card-title">{batik.nama}</h3>
+
+        {/* Semua label dijadikan satu baris agar rapi & tidak patah di tengah kata */}
+        <div style={styles.badgeRow}>
+          {batik.jenis_acara === "Batik Keraton" && (
+            <span style={{ ...styles.badgeBase, ...styles.keratonBadge }}>
+              <CrownIcon /> Batik Keraton
+            </span>
+          )}
+          {batik.jenis_batik && (
+            <span style={{ ...styles.badgeBase, ...styles.badge }}>{batik.jenis_batik}</span>
+          )}
+          {batik.jenis_acara && batik.jenis_acara !== "Batik Keraton" && (
+            <span style={{ ...styles.badgeBase, ...styles.eventBadge }}>{batik.jenis_acara}</span>
+          )}
+          <span style={{ ...styles.badgeBase, ...styles.uploaderBadge }}>
+            {batik.mitra_id ? `Store: ${batik.nama_toko}` : "Admin"}
+          </span>
         </div>
         <p style={styles.text} className="batik-card-text"><strong>Motif Utama:</strong> {batik.motif_utama}</p>
         <p style={styles.text} className="batik-card-text"><strong>Jenis Acara:</strong> {batik.jenis_acara}</p>
@@ -132,60 +122,59 @@ const styles = {
   content: {
     padding: "24px",
   },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "15px",
-  },
   title: {
     fontSize: "1.25rem",
     fontWeight: "700",
     color: colors.textHead,
     margin: 0,
     fontFamily: fonts.heading,
+    lineHeight: "1.35",
   },
-  badge: {
-    fontSize: "0.75rem",
-    fontWeight: "700",
-    color: colors.blue,
-    background: colors.blueSoft,
-    padding: "4px 12px",
-    borderRadius: "20px",
-    border: `1px solid ${colors.blueBorder}`,
-    letterSpacing: "0.5px",
-    alignSelf: "flex-start",
-    marginRight: "8px",
+  badgeRow: {
+    display: "flex",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: "6px",
+    margin: "10px 0 14px",
   },
-  eventBadge: {
-    fontSize: "0.7rem",
-    fontWeight: "600",
-    color: colors.onBlue,
-    background: colors.navy,
-    padding: "3px 10px",
-    borderRadius: "16px",
-  },
-  keratonBadge: {
+  // Dasar semua badge: tinggi & radius seragam, teks tidak patah di tengah
+  badgeBase: {
     display: "inline-flex",
     alignItems: "center",
-    marginTop: "8px",
-    fontSize: "0.7rem",
-    fontWeight: "bold",
+    maxWidth: "100%",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    fontSize: "0.72rem",
+    fontWeight: "700",
+    lineHeight: 1.5,
+    padding: "4px 10px",
+    borderRadius: "999px",
+    border: "1px solid transparent",
+  },
+  badge: {
     color: colors.blue,
     background: colors.blueSoft,
-    border: `1px solid ${colors.blueBorder}`,
-    padding: "2px 8px",
-    borderRadius: "12px",
+    borderColor: colors.blueBorder,
+    letterSpacing: "0.3px",
+  },
+  eventBadge: {
+    color: colors.onBlue,
+    background: colors.navy,
+    fontWeight: "600",
+  },
+  keratonBadge: {
+    color: colors.blue,
+    background: colors.blueSoft,
+    borderColor: colors.blueBorder,
     textTransform: "uppercase",
+    letterSpacing: "0.3px",
   },
   uploaderBadge: {
-    marginTop: "6px",
-    fontSize: "0.75rem",
     color: colors.textMuted,
     background: colors.surfaceAlt,
-    padding: "4px 8px",
-    borderRadius: "8px",
-    display: "inline-block",
+    borderColor: colors.border,
+    fontWeight: "600",
   },
   text: {
     fontSize: "0.9rem",
