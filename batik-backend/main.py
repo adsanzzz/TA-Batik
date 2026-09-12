@@ -84,6 +84,13 @@ except Exception as e:
     print(f"[ERROR] Frame/BatikAI/Admin routes failed: {e}")
 
 try:
+    from routes import photobox as photobox_router
+    app.include_router(photobox_router.router, tags=["Photobox"])
+    print("[OK] Photobox temp upload route loaded.")
+except Exception as e:
+    print(f"[ERROR] Photobox route failed: {e}")
+
+try:
     from routes import garment_generator
     app.include_router(garment_generator.router)
     print("[OK] Garment Generator route loaded.")
@@ -118,4 +125,6 @@ def health_check():
     return {"status": "ok"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    # 0.0.0.0 supaya bisa diakses perangkat lain di jaringan yang sama
+    # (dibutuhkan agar QR code photobox bisa di-scan dari HP)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
