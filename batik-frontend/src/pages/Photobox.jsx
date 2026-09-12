@@ -49,6 +49,13 @@ const SparklesIcon = ({ size = 20, color = "currentColor" }) => (
   </svg>
 );
 
+const IconLink = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15 }}>
+    <path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+    <path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+  </svg>
+);
+
 const IconCheck = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
     <polyline points="20 6 9 17 4 12" />
@@ -194,6 +201,7 @@ export default function Photobox() {
   const [qrUrl, setQrUrl] = useState(null);
   const [uploadingQr, setUploadingQr] = useState(false);
   const [qrError, setQrError] = useState(null);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -1066,6 +1074,30 @@ export default function Photobox() {
 
 
 
+  /* ── Copy link hasil foto ── */
+  const copyQrLink = async () => {
+    if (!qrUrl) return;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(qrUrl);
+      } else {
+        // fallback: clipboard API hanya tersedia di secure context (https/localhost)
+        const ta = document.createElement("textarea");
+        ta.value = qrUrl;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      window.prompt("Salin link ini:", qrUrl);
+    }
+  };
+
   /* ── Download ── */
   const downloadPNG = () => {
     if (!finalCollage) return;
@@ -1146,6 +1178,7 @@ export default function Photobox() {
     setNewspaperQuote("");
     setQrUrl(null);
     setQrError(null);
+    setLinkCopied(false);
   };
 
   /* ─── Render ─────────────────────────────────────────── */
@@ -1184,6 +1217,7 @@ export default function Photobox() {
         .btn-secondary:hover { background: #EEF3FF !important; }
         .btn-dark:hover { background: #000B4D !important; transform: translateY(-1px); }
         .btn-newspaper:hover { background: #111 !important; transform: translateY(-1px); }
+        .btn-copy:hover { background: #EEF3FF !important; transform: translateY(-1px); }
         .capture-btn:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 8px 30px rgba(3,62,238,0.35) !important; }
         .capture-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .qr-box { animation: qr-pulse 2.5s infinite; }
@@ -1586,7 +1620,7 @@ export default function Photobox() {
                     <span style={{ marginLeft: 8, fontWeight: 700, fontSize: "0.95rem" }}>Scan & Download</span>
                   </div>
                   <p style={S.qrDesc}>
-                    Scan QR code dengan HP untuk mengunduh soft file foto kamu langsung ke galeri!
+                    Scan QR dengan HP untuk membuka halaman foto kamu, lalu tekan unduh di sana.
                   </p>
 
                   {uploadingQr && (
@@ -1615,17 +1649,26 @@ export default function Photobox() {
 
                   {qrUrl && (
                     <div style={S.qrMeta}>
-                      <span style={{ fontSize: "0.72rem", color: colors.textMuted }}>
-                        🔗 Link berlaku <strong>24 jam</strong>
-                      </span>
+                      <button
+                        type="button"
+                        className="btn-copy"
+                        style={{
+                          ...S.btnCopy,
+                          ...(linkCopied ? S.btnCopyDone : {}),
+                        }}
+                        onClick={copyQrLink}
+                      >
+                        {linkCopied ? <><IconCheck /> &nbsp;Link Tersalin</> : <><IconLink /> &nbsp;Copy Link</>}
+                      </button>
                       <a
                         href={qrUrl}
                         target="_blank"
                         rel="noreferrer"
-                        style={{ fontSize: "0.72rem", color: colors.blue, marginTop: 4, display: "block" }}
+                        style={S.qrOpenLink}
                       >
-                        Buka Link Download →
+                        Buka halaman foto →
                       </a>
+                      <span style={S.qrExpiry}>Link berlaku <strong>24 jam</strong></span>
                     </div>
                   )}
                 </div>
@@ -2150,6 +2193,41 @@ const S = {
     borderTop: `3px solid ${colors.blue}`,
     borderRadius: "50%",
     animation: "spin 0.8s linear infinite",
+  },
+  btnCopy: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    padding: "10px 12px",
+    borderRadius: 12,
+    border: `1.5px solid ${colors.blue}`,
+    background: "#fff",
+    color: colors.blue,
+    fontSize: "0.8rem",
+    fontWeight: 700,
+    fontFamily: "inherit",
+    cursor: "pointer",
+    transition: "all 0.18s",
+  },
+  btnCopyDone: {
+    background: colors.blue,
+    borderColor: colors.blue,
+    color: "#fff",
+  },
+  qrOpenLink: {
+    display: "block",
+    marginTop: 10,
+    fontSize: "0.74rem",
+    fontWeight: 600,
+    color: colors.blue,
+    textDecoration: "none",
+  },
+  qrExpiry: {
+    display: "block",
+    marginTop: 8,
+    fontSize: "0.7rem",
+    color: colors.textMuted,
   },
   qrError: {
     background: "#fff0f0",

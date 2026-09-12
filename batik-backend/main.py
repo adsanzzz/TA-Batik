@@ -86,6 +86,9 @@ except Exception as e:
 try:
     from routes import photobox as photobox_router
     app.include_router(photobox_router.router, tags=["Photobox"])
+    # Penyapu file photobox kadaluarsa, jalan berkala selama app hidup
+    app.router.on_startup.append(photobox_router.start_cleanup_task)
+    app.router.on_shutdown.append(photobox_router.stop_cleanup_task)
     print("[OK] Photobox temp upload route loaded.")
 except Exception as e:
     print(f"[ERROR] Photobox route failed: {e}")
