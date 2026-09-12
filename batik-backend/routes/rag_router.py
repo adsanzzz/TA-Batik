@@ -60,18 +60,21 @@ async def get_batik_recommendation(req: RecommendationRequest):
 
         # 3. Susun Prompt RAG untuk Qwen
         system_prompt = (
-            "Anda adalah Pakar Batik & Asisten Budaya Indonesia yang ramah, sopan, dan sangat berpengetahuan.\n"
-            "Tugas Anda adalah memberikan rekomendasi batik yang sangat sesuai berdasarkan pertanyaan pengguna "
-            "dan data referensi resmi yang diberikan berikut ini.\n\n"
-            "--- DATA REFERENSI BATIK RESMI ---\n"
+            "Kamu asisten batik yang santai, ramah, dan langsung ke intinya. "
+            "Pakai Bahasa Indonesia sehari-hari yang gampang dipahami. "
+            "JANGAN formal/kaku seperti surat resmi, JANGAN pakai sapaan berlebihan "
+            "seperti 'Terhormat', 'Salam hormat', atau 'sekali hormat saya'.\n\n"
+            "--- DATA BATIK (satu-satunya sumbermu) ---\n"
             f"{context_str}\n"
-            "-----------------------------------\n\n"
-            "Petunjuk Jawaban:\n"
-            "1. Jawablah langsung dalam Bahasa Indonesia yang santun, jelas, dan menarik.\n"
-            "2. Gunakan informasi dari Data Referensi di atas untuk menjelaskan nama batik, motif, filosofi, dan kesesuaian acara.\n"
-            "3. Jika ada detail tambahan yang berguna, sampaikan dengan gaya konsultan budaya.\n\n"
-            f"Pertanyaan Pengguna: {req.query}\n\n"
-            "Jawaban Rekomendasi Anda:"
+            "------------------------------------------\n\n"
+            "Aturan menjawab:\n"
+            "1. HANYA gunakan batik dari DATA di atas. DILARANG mengarang nama atau filosofi batik yang tidak ada di data.\n"
+            "2. Kalau data kosong atau tidak ada yang cocok, bilang jujur: 'Maaf, belum ada batik yang pas di database untuk itu.'\n"
+            "3. Langsung ke inti: sebutkan 1-3 batik yang paling cocok. Tiap batik cukup 1-2 kalimat "
+            "(nama batik + kenapa cocok + makna singkatnya). Boleh pakai poin bernomor.\n"
+            "4. Singkat, hangat, mudah dipahami. Nggak usah basa-basi panjang atau pembukaan/penutup bertele-tele.\n\n"
+            f"Pertanyaan: {req.query}\n\n"
+            "Jawabanmu:"
         )
 
         # 4. Panggil LLM Qwen di Hugging Face (dengan fallback cerdas jika token HF belum diizinkan)

@@ -73,14 +73,25 @@ except Exception as e:
     print(f"[ERROR] Predict route failed: {e}")
 
 try:
-    from routes import frame, batik_ai, admin_mitra, model_control
+    from routes import frame, batik_ai, admin_mitra, model_control, review
     app.include_router(frame.router, tags=["Frame Management"])
     app.include_router(batik_ai.router, tags=["AI Info Management"])
     app.include_router(admin_mitra.router, tags=["Admin Mitra Management"])
     app.include_router(model_control.router, tags=["AI Model Management"])
-    print("[OK] Frame/BatikAI/Admin routes loaded.")
+    app.include_router(review.router, tags=["Review / Feedback"])
+    print("[OK] Frame/BatikAI/Admin/Review routes loaded.")
 except Exception as e:
     print(f"[ERROR] Frame/BatikAI/Admin routes failed: {e}")
+
+try:
+    from routes import photobox as photobox_router
+    app.include_router(photobox_router.router, tags=["Photobox"])
+    # Penyapu file photobox kadaluarsa, jalan berkala selama app hidup
+    app.router.on_startup.append(photobox_router.start_cleanup_task)
+    app.router.on_shutdown.append(photobox_router.stop_cleanup_task)
+    print("[OK] Photobox temp upload route loaded.")
+except Exception as e:
+    print(f"[ERROR] Photobox route failed: {e}")
 
 try:
     from routes import garment_generator
@@ -117,4 +128,6 @@ def health_check():
     return {"status": "ok"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    # 0.0.0.0 supaya bisa diakses perangkat lain di jaringan yang sama
+    # (dibutuhkan agar QR code photobox bisa di-scan dari HP)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

@@ -20,14 +20,19 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HF_SPACE_URL = os.getenv("HF_SPACE_URL", "Umanzz/trisara-batik-ai")
 hf_client = None
 
-def get_hf_client():
+def get_hf_client(retries: int = 2):
     global hf_client
     if hf_client is None:
-        print(f"Connecting to HuggingFace Space: {HF_SPACE_URL}")
-        try:
-            hf_client = Client(HF_SPACE_URL)
-        except Exception as e:
-            print(f"Failed to connect to HF Space: {e}")
+        # HF Space (free) "tidur" saat idle -> koneksi pertama sering timeout saat bangun.
+        # Coba beberapa kali biar Space keburu bangun.
+        for attempt in range(1, retries + 1):
+            print(f"Connecting to HuggingFace Space: {HF_SPACE_URL} (attempt {attempt}/{retries})")
+            try:
+                hf_client = Client(HF_SPACE_URL)
+                break
+            except Exception as e:
+                print(f"Failed to connect to HF Space (attempt {attempt}): {e}")
+                hf_client = None
     return hf_client
 
 nst_model = None
@@ -119,9 +124,15 @@ async def generate_from_seed(seed: int = Query(..., description="Random seed (an
     """
     Generate gambar batik baru menggunakan single seed via Hugging Face API.
     """
+    client = get_hf_client()
+    if client is None:
+        raise HTTPException(
+            status_code=503,
+            detail="AI Space sedang bangun dari mode tidur (cold start). Tunggu ~30 detik lalu coba lagi."
+        )
     try:
         # Panggil Hugging Face API (Gradio)
-        result_filepath = get_hf_client().predict(
+        result_filepath = client.predict(
             float(seed),
             api_name="/generate"
         )

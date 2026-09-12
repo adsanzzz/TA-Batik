@@ -9,8 +9,15 @@ from database import SessionLocal
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qmodels
 
-QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
+QDRANT_HOST = os.getenv("QDRANT_HOST", "").strip()
 QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333"))
+# Qdrant embedded (file-based) -> jalan DI DALAM backend, persisten lewat volume.
+# Dipakai kalau QDRANT_HOST tidak di-set (atau 'localhost').
+# Default relatif ke folder backend -> di Docker jadi /app/qdrant_storage, di lokal jadi batik-backend/qdrant_storage.
+QDRANT_PATH = os.getenv(
+    "QDRANT_PATH",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "qdrant_storage"),
+)
 HF_TOKEN = os.getenv("HF_TOKEN", "")
 HF_MODEL_ID = os.getenv("HF_MODEL_ID", "Qwen/Qwen2.5-7B-Instruct")
 
@@ -23,16 +30,22 @@ _embed_model = None
 def get_qdrant_client() -> QdrantClient:
     global _qdrant_client
     if _qdrant_client is None:
-        print(f"[RAG] Connecting to Qdrant at {QDRANT_HOST}:{QDRANT_PORT}...")
-        try:
-            client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT, timeout=5.0)
-            client.get_collections()  # test connection
-            _qdrant_client = client
-            print("[RAG] Connected to Qdrant server successfully.")
-        except Exception as e:
-            print(f"[RAG] Failed to connect to Qdrant server: {e}")
-            print("[RAG] Falling back to in-memory Qdrant (data tidak persisten, hanya untuk dev)...")
-            _qdrant_client = QdrantClient(":memory:")
+        # Mode 1: Qdrant server terpisah (hanya kalau QDRANT_HOST di-set ke host valid).
+        if QDRANT_HOST and QDRANT_HOST != "localhost":
+            print(f"[RAG] Connecting to Qdrant server {QDRANT_HOST}:{QDRANT_PORT}...")
+            try:
+                client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT, timeout=5.0)
+                client.get_collections()  # test connection
+                _qdrant_client = client
+                print("[RAG] Connected to Qdrant server successfully.")
+                return _qdrant_client
+            except Exception as e:
+                print(f"[RAG] Qdrant server gagal ({e}) -> pakai embedded file-based.")
+
+        # Mode 2: Qdrant EMBEDDED (file-based) di dalam backend.
+        # Persisten selama {QDRANT_PATH} di-mount ke volume Docker.
+        print(f"[RAG] Using embedded Qdrant (file-based, persisten) at: {QDRANT_PATH}")
+        _qdrant_client = QdrantClient(path=QDRANT_PATH)
     return _qdrant_client
 
 def get_embed_model():

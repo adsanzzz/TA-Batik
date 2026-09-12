@@ -19,6 +19,9 @@ services:
       - HF_MODEL_ID=${HF_MODEL_ID:-Qwen/Qwen2.5-7B-Instruct}
       - REPLICATE_API_TOKEN=${REPLICATE_API_TOKEN}
       - QDRANT_HOST=qdrant
+      # URL publik backend, dipakai untuk isi QR code photobox.
+      # Wajib diisi di produksi (mis. https://api.trisarabatik.my.id).
+      - PUBLIC_BASE_URL=${PUBLIC_BASE_URL}
       - QDRANT_PORT=${QDRANT_PORT:-6333}
       - HF_HOME=/app/hf_cache
     volumes:

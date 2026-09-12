@@ -294,3 +294,52 @@ export const executeVton = async (formData) => {
   return res.json();
 };
 
+// ===== REVIEW / FEEDBACK =====
+export const submitReview = async ({ fitur, rating, komentar }) => {
+  const res = await fetch(`${BASE_URL}/reviews`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fitur, rating, komentar }),
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `HTTP Error ${res.status}`);
+  }
+  return res.json();
+};
+
+export const getReviews = async (token, fitur) => {
+  const url = fitur ? `${BASE_URL}/reviews?fitur=${fitur}` : `${BASE_URL}/reviews`;
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+  return res.json();
+};
+
+export const getReviewSummary = async (token) => {
+  const res = await fetch(`${BASE_URL}/reviews/summary`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+  return res.json();
+};
+
+// ===== PHOTOBOX TEMP UPLOAD =====
+export const uploadPhotoboxTemp = async (pngDataUrl) => {
+  // Convert base64 data URL ke Blob
+  const res = await fetch(pngDataUrl);
+  const blob = await res.blob();
+
+  const formData = new FormData();
+  formData.append("file", blob, "photobox.png");
+
+  const uploadRes = await fetch(`${BASE_URL}/photobox/upload-temp`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!uploadRes.ok) {
+    const err = await uploadRes.json().catch(() => ({}));
+    throw new Error(err?.detail || `Upload error ${uploadRes.status}`);
+  }
+  return uploadRes.json(); // { success, uuid, download_url, expires_in }
+};

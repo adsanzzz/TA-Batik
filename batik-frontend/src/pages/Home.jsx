@@ -1,8 +1,16 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import heroImage from '../assets/depan.png';
 import Footer from '../components/Footer';
 import { colors, fonts } from '../theme';
 import { BASE_URL } from '../services/api';
+
+// Render **bold** markdown dari jawaban LLM jadi teks tebal (tanpa library).
+function renderMarkdownLine(line) {
+  return line.split(/\*\*(.+?)\*\*/g).map((part, i) =>
+    i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+  );
+}
 
 export default function Home() {
   const [query, setQuery] = useState('');
@@ -138,13 +146,13 @@ export default function Home() {
           </p>
 
           <div style={styles.buttons} className="home-buttons">
-            <a href="/scan" style={styles.primaryBtn} className="home-primary-btn">
+            <Link to="/scan" style={styles.primaryBtn} className="home-primary-btn">
               Mulai Identifikasi
-            </a>
+            </Link>
 
-            <a href="/katalog" style={styles.secondaryBtn} className="home-secondary-btn">
+            <Link to="/katalog" style={styles.secondaryBtn} className="home-secondary-btn">
               Jelajahi Katalog
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -213,9 +221,11 @@ export default function Home() {
                 <span style={styles.ragResultBadge}>Rekomendasi AI</span>
               </div>
               <div style={styles.ragResultBody}>
-                {result.recommendation.split('\n').map((line, i) => (
-                  <p key={i} style={{ marginBottom: '8px' }}>{line}</p>
-                ))}
+                {result.recommendation.split('\n').map((line, i) =>
+                  line.trim() === '' ? null : (
+                    <p key={i} style={{ marginBottom: '8px' }}>{renderMarkdownLine(line)}</p>
+                  )
+                )}
               </div>
               {result.retrieved_context && result.retrieved_context.length > 0 && (
                 <div style={styles.ragResultContexts}>
