@@ -323,3 +323,23 @@ export const getReviewSummary = async (token) => {
   return res.json();
 };
 
+// ===== PHOTOBOX TEMP UPLOAD =====
+export const uploadPhotoboxTemp = async (pngDataUrl) => {
+  // Convert base64 data URL ke Blob
+  const res = await fetch(pngDataUrl);
+  const blob = await res.blob();
+
+  const formData = new FormData();
+  formData.append("file", blob, "photobox.png");
+
+  const uploadRes = await fetch(`${BASE_URL}/photobox/upload-temp`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!uploadRes.ok) {
+    const err = await uploadRes.json().catch(() => ({}));
+    throw new Error(err?.detail || `Upload error ${uploadRes.status}`);
+  }
+  return uploadRes.json(); // { success, uuid, download_url, expires_in }
+};
