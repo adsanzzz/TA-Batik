@@ -205,7 +205,6 @@ export default function Photobox() {
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const printCanvasRef = useRef(null);
   const streamRef = useRef(null);
   const countdownRef = useRef(null);
   const layoutRef = useRef(null);
@@ -1114,49 +1113,75 @@ export default function Photobox() {
     pdf.save("Trisara_Photobox.pdf");
   };
 
-  /* ── Print (thermal) ── */
+  /* ── Print (thermal 58mm) ── */
   const handlePrint = () => {
     if (!finalCollage) return;
-    const printWindow = window.open("", "_blank");
-    printWindow.document.write(`
+
+    // Pakai iframe tersembunyi, bukan window.open:
+    //  - tidak kena popup blocker
+    //  - tidak ada jendela berkedip di depan pengunjung booth
+    const frame = document.createElement("iframe");
+    frame.setAttribute("aria-hidden", "true");
+    frame.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;";
+    document.body.appendChild(frame);
+
+    // Kertas 58mm, tapi area cetak efektif printer thermal 58mm umumnya
+    // 384 dot @203dpi = 48mm. Kalau gambar dipaksa selebar 58mm, sisi kiri-kanan
+    // kepotong. Naikkan angka ini kalau hasil tes printer-mu ternyata lebih lebar.
+    const PRINT_WIDTH_MM = 48;
+
+    const doc = frame.contentWindow.document;
+    doc.open();
+    doc.write(`
       <!DOCTYPE html>
       <html>
       <head>
+        <meta charset="utf-8">
         <title>Trisara Photobox Print</title>
         <style>
-          @page {
-            size: 58mm auto;
-            margin: 0;
-          }
+          @page { size: 58mm auto; margin: 0; }
           * { margin: 0; padding: 0; box-sizing: border-box; }
+          html, body { width: 58mm; background: #fff; }
           body {
-            width: 58mm;
-            background: white;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
           }
           img {
-            width: 58mm;
+            width: ${PRINT_WIDTH_MM}mm;
             height: auto;
             display: block;
-            filter: grayscale(100%) contrast(1.1);
-          }
-          @media print {
-            body { width: 58mm; }
+            margin: 0 auto;   /* ketengahkan di kertas 58mm */
+            /* printer thermal hanya hitam-putih; kontras dinaikkan agar tidak pudar */
+            filter: grayscale(100%) contrast(1.15);
           }
         </style>
       </head>
-      <body>
-        <img src="${finalCollage}" />
-        <script>
-          window.onload = function() {
-            setTimeout(function() { window.print(); window.close(); }, 400);
-          };
-        </script>
-      </body>
+      <body><img src="${finalCollage}" alt=""></body>
       </html>
     `);
-    printWindow.document.close();
+    doc.close();
+
+    const cleanup = () => setTimeout(() => frame.remove(), 1500);
+
+    const fire = () => {
+      try {
+        frame.contentWindow.focus();
+        frame.contentWindow.print();
+      } catch (err) {
+        console.error("[Photobox] Gagal memanggil dialog cetak:", err);
+      }
+      cleanup();
+    };
+
+    // Tunggu gambar benar-benar ter-render; menebak dengan setTimeout
+    // bisa mencetak halaman kosong saat kolase besar.
+    const img = doc.querySelector("img");
+    if (!img) { cleanup(); return; }
+    if (img.complete) fire();
+    else {
+      img.onload = fire;
+      img.onerror = fire;
+    }
   };
 
   /* ── Restart ── */
@@ -1680,7 +1705,6 @@ export default function Photobox() {
 
       {/* Hidden canvas */}
       <canvas ref={canvasRef} style={{ display: "none" }} />
-      <canvas ref={printCanvasRef} style={{ display: "none" }} />
     </div>
     <Footer />
     </>
