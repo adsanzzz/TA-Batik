@@ -132,14 +132,6 @@ const SURAKARTA_ARTICLES = [
 /* ─── Palet tunggal template cetak: putih klasik (optimal printer thermal) ─── */
 const PAPER = { bg: "#ffffff", text: "#000000", accent: "#000000", divider: "#000000" };
 
-/* ─── Rincian "item" struk — Surakarta Edition ─── */
-const RECEIPT_ITEMS = [
-  { name: "Batik Sogan Keraton",    qty: "x1",  price: "WARISAN" },
-  { name: "Gamelan & Wayang Kulit", qty: "x1",  price: "ADILUHUNG" },
-  { name: "Nasi Liwet & Serabi",    qty: "x1",  price: "NGANGENI" },
-  { name: "Sugeng Rawuh ing Solo",  qty: "x99", price: "TAK TERNILAI" },
-];
-
 /* ─── roundRect polyfill (Safari < 15.4 / older browsers) ── */
 if (typeof CanvasRenderingContext2D !== "undefined" && !CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
@@ -181,10 +173,16 @@ function drawGreyscale(ctx, img, sx, sy, sw, sh, dx, dy, dw, dh) {
 // digambar langsung dalam satuan titik ini, jadi ukuran huruf = ukuran di kertas.
 const THERMAL_DOTS = 384;
 
-// Terang-gelap hasil cetak:
-//  gamma: < 1 lebih terang, > 1 lebih gelap
-//  white: turunkan (mis. 215) kalau latar foto masih berbintik
-const THERMAL_TONE = { gamma: 0.75, white: 230 };
+// Tampilan FOTO saat dicetak (teks & garis tidak terpengaruh):
+//  gamma : < 1 lebih terang, > 1 lebih gelap
+//  shadow: 0–255. Bagian tergelap foto diangkat ke nilai ini, jadi rambut/baju/area
+//          yang kurang cahaya tidak jadi hitam pekat → hasil lebih "soft".
+//          Masih gelap → naikkan (mis. 90). Terlalu pucat → turunkan (mis. 40).
+const THERMAL_PHOTO = { gamma: 0.7, shadow: 70 };
+
+// white: abu-abu terang di atas nilai ini dicetak putih bersih.
+// Turunkan (mis. 215) kalau latar foto masih berbintik.
+const THERMAL_TONE = { white: 230 };
 
 // Panas kepala printer (density), dikirim lewat perintah ESC 7.
 // null = pakai bawaan printer. Contoh: { dots: 7, time: 60, interval: 2 }
@@ -201,10 +199,11 @@ const RAWBT_MODE = "escpos";
 // Printer thermal cuma bisa titik hitam atau putih. Kalau gambar abu-abu dikirim
 // mentah, driver yang menentukan hitam/putihnya → foto jadi gelap pekat dan
 // tepi huruf blobor. Di sini kita yang mengatur:
-//  - gamma < 1 mencerahkan nada tengah (hasil thermal cenderung lebih gelap)
 //  - white: abu-abu terang di atas nilai ini dianggap putih → latar bersih, tidak berbintik
-//  - dithering Atkinson: foto tetap bergradasi, huruf tetap tajam
-function toThermalBitmap(img, width, { gamma = 0.8, white = 230, threshold = 128 } = {}) {
+//  - dithering Floyd–Steinberg: gradasi gelap tetap bergradasi (Atkinson yang dulu
+//    dipakai membuang sebagian nada gelap, jadi wajah kurang cahaya jadi hitam pekat).
+//    Teks tetap tajam karena hitam/putih murni tidak menghasilkan error.
+function toThermalBitmap(img, width, { gamma = 1, white = 230, threshold = 128 } = {}) {
   const W = width;
   const H = Math.round((img.height * W) / img.width);
   const c = document.createElement("canvas");
@@ -225,21 +224,22 @@ function toThermalBitmap(img, width, { gamma = 0.8, white = 230, threshold = 128
     gray[i] = Math.min(255, (255 * Math.pow(lum, gamma) * 255) / white);
   }
 
-  // Atkinson: sebar 6/8 error ke tetangga → kontras terjaga, area terang tetap bersih
+  // Floyd–Steinberg serpentine (arah baris bolak-balik) → tidak muncul pola garis miring
   const spread = (x, y, err) => {
     if (x >= 0 && x < W && y < H) gray[y * W + x] += err;
   };
   for (let y = 0; y < H; y++) {
-    for (let x = 0; x < W; x++) {
+    const ltr = y % 2 === 0;
+    const dir = ltr ? 1 : -1;
+    for (let k = 0; k < W; k++) {
+      const x = ltr ? k : W - 1 - k;
       const i = y * W + x;
       const value = gray[i] < threshold ? 0 : 255;
-      const err = (gray[i] - value) / 8;
-      spread(x + 1, y, err);
-      spread(x + 2, y, err);
-      spread(x - 1, y + 1, err);
-      spread(x, y + 1, err);
-      spread(x + 1, y + 1, err);
-      spread(x, y + 2, err);
+      const err = gray[i] - value;
+      spread(x + dir, y, (err * 7) / 16);
+      spread(x - dir, y + 1, (err * 3) / 16);
+      spread(x, y + 1, (err * 5) / 16);
+      spread(x + dir, y + 1, err / 16);
 
       const p = i * 4;
       px[p] = px[p + 1] = px[p + 2] = value;
@@ -261,10 +261,13 @@ function loadImages(urls) {
 }
 
 /* ─── Helper: gambar foto memenuhi kotak (crop tengah) ── */
-// enhance: khusus cetak thermal. Foto webcam di ruangan biasanya gelap dan
-// kontrasnya sempit; setelah jadi titik-titik, wajah jadi hitam. Rentang terang
-// fotonya diregangkan dulu (1% tergelap → hitam, 1% terterang → putih).
-function drawPhotoCover(ctx, img, x, y, w, h, { greyscale = false, enhance = false } = {}) {
+// enhance: khusus cetak thermal ({ gamma, shadow }, lihat THERMAL_PHOTO).
+// Foto webcam di ruangan biasanya gelap dan kontrasnya sempit; di kertas thermal
+// titik tinta juga melebar, jadi area gelap makin pekat. Maka:
+//  1. rentang terang foto diregangkan (1% tergelap → hitam, 1% terterang → putih)
+//  2. nada tengah dicerahkan (gamma)
+//  3. bagian tergelap diangkat ke abu-abu (shadow) supaya tidak jadi hitam pekat
+function drawPhotoCover(ctx, img, x, y, w, h, { greyscale = false, enhance = null } = {}) {
   const ar = img.width / img.height;
   const ar2 = w / h;
   let sx, sy, sw, sh;
@@ -301,8 +304,10 @@ function drawPhotoCover(ctx, img, x, y, w, h, { greyscale = false, enhance = fal
   acc = 0;
   for (let v = 255; v >= 0; v--) { acc += hist[v]; if (acc >= cut) { hi = v; break; } }
   const range = Math.max(1, hi - lo);
+  const { gamma = 1, shadow = 0 } = enhance;
   for (let i = 0, p = 0; i < n; i++, p += 4) {
-    px[p] = px[p + 1] = px[p + 2] = ((lum[i] - lo) * 255) / range;
+    const norm = Math.min(1, Math.max(0, (lum[i] - lo) / range));
+    px[p] = px[p + 1] = px[p + 2] = shadow + (255 - shadow) * Math.pow(norm, gamma);
   }
   tc.putImageData(data, 0, 0);
   ctx.drawImage(t, x, y, w, h);
@@ -806,40 +811,25 @@ export default function Photobox() {
       return { size: minSize, lines: [text] };
     };
 
-    /* helper: paragraf rata kanan-kiri (justify) ala koran */
-    const drawJustified = (text, x, top, colW, lineH) => {
+    /* helper: paragraf rata kiri, otomatis wrap
+       (bukan justify: di lebar 384 titik jarak antar kata jadi bolong-bolong tidak rata) */
+    const drawParagraph = (text, x, top, colW, lineH) => {
       ctx.textAlign = "left";
       const words = text.split(/\s+/).filter(Boolean);
-      const lines = [];
-      let cur = [];
+      let line = "";
+      let cy = top;
       for (const w of words) {
-        const test = cur.concat(w).join(" ");
-        if (ctx.measureText(test).width > colW && cur.length) {
-          lines.push(cur);
-          cur = [w];
+        const test = line ? `${line} ${w}` : w;
+        if (ctx.measureText(test).width > colW && line) {
+          ctx.fillText(line, x, cy);
+          cy += lineH;
+          line = w;
         } else {
-          cur.push(w);
+          line = test;
         }
       }
-      if (cur.length) lines.push(cur);
-
-      const normalSpace = ctx.measureText(" ").width;
-      let cy = top;
-      for (let i = 0; i < lines.length; i++) {
-        const parts = lines[i];
-        const isLast = i === lines.length - 1;
-        const textW = parts.reduce((a, w) => a + ctx.measureText(w).width, 0);
-        const space = parts.length > 1 ? (colW - textW) / (parts.length - 1) : 0;
-        // jarak antar kata terlalu lebar → baris dibiarkan rata kiri daripada bolong-bolong
-        if (isLast || parts.length === 1 || space > normalSpace * 2.5) {
-          ctx.fillText(parts.join(" "), x, cy);
-        } else {
-          let wx = x;
-          for (const w of parts) {
-            ctx.fillText(w, wx, cy);
-            wx += ctx.measureText(w).width + space;
-          }
-        }
+      if (line) {
+        ctx.fillText(line, x, cy);
         cy += lineH;
       }
       return cy;
@@ -908,7 +898,7 @@ export default function Photobox() {
     for (let i = 0; i < loadedImgs.length; i++) {
       drawPhotoCover(ctx, loadedImgs[i], PAD, y, photoSlotW, photoSlotH, {
         greyscale: newspaperGreyscale,
-        enhance: forPrint,
+        enhance: forPrint ? THERMAL_PHOTO : null,
       });
       ctx.strokeStyle = NC.divider;
       ctx.lineWidth = 2;
@@ -935,18 +925,13 @@ export default function Photobox() {
     y += 12;
     rule(3, 4);
 
-    /* ── ARTIKEL: 1 kolom, 2 paragraf ──
-       Lebar 384 titik dengan huruf yang terbaca cuma muat ±18 huruf per kolom
-       kalau dibagi dua, jadi dibuat satu kolom. */
+    /* ── ARTIKEL: 1 paragraf, rata kiri ──
+       Cukup satu paragraf supaya kertas tidak boros. */
     const articleSet = isSurakarta ? SURAKARTA_ARTICLES : BATIK_ARTICLES;
     const bodyLineH = 24;
     ctx.fillStyle = NC.text;
     ctx.font = `bold 18px ${SERIF}`;
-    let baseline = y + 20;
-    for (const para of articleSet.slice(0, 2)) {
-      baseline = drawJustified(para, PAD, baseline, innerW, bodyLineH) + 8;
-    }
-    y = baseline - bodyLineH;
+    y = drawParagraph(articleSet[0], PAD, y + 20, innerW, bodyLineH) - bodyLineH + 8;
 
     /* ── FOOTER MASTHEAD ── */
     doubleRule(20);
@@ -1106,7 +1091,7 @@ export default function Photobox() {
     for (let i = 0; i < loadedImgs.length; i++) {
       drawPhotoCover(ctx, loadedImgs[i], PAD, y, photoSlotW, photoSlotH, {
         greyscale: newspaperGreyscale,
-        enhance: forPrint,
+        enhance: forPrint ? THERMAL_PHOTO : null,
       });
       ctx.strokeStyle = P.divider;
       ctx.lineWidth = 2;
@@ -1121,40 +1106,25 @@ export default function Photobox() {
       ctx.fillText(newspaperGreyscale ? "MODE B/W" : "MODE WARNA", W - PAD, y);
       y += 18;
     }
-    dashed(28);
 
-    /* ── RINCIAN "TRANSAKSI" ─────────────────────────────── */
-    // Nama item di baris sendiri, qty & harga di baris bawahnya: struk 58mm
-    // cuma muat ±33 huruf, tidak cukup untuk nama + qty + harga sebaris.
-    row("ITEM", "HARGA", { gap: 12 });
-    dashed(28);
-    const items = [{ name: "Kenangan Kota Solo", qty: `x${loadedImgs.length}`, price: "GRATIS" }, ...RECEIPT_ITEMS];
-    items.forEach((it, i) => {
-      row(it.name, "", { gap: 24 });
-      row(`  ${it.qty}`, it.price, { gap: i === items.length - 1 ? 14 : 30 });
-    });
-    dashed(28);
-    row("SUBTOTAL", "Rp 0");
-    row("DISKON KEBAHAGIAAN", "100%");
-    row("PPN KENANGAN", "Rp 0", { gap: 16 });
-    double(38);
-    row("TOTAL", "TAK TERHINGGA", { size: 24, gap: 14 });
+    /* ── TOTAL ───────────────────────────────────────────── */
+    // Bagian bawah foto sengaja ringkas supaya kertas tidak boros
+    // (rincian item, subtotal, tunai/kembali dihapus).
+    y += 8;
     double(36);
-    row("TUNAI", "SENYUM & TAWA");
-    row("KEMBALI", "KENANGAN ABADI", { gap: 16 });
-    dashed(30);
+    row("TOTAL", "TAK TERHINGGA", { size: 24, gap: 14 });
+    double(34);
 
     /* ── KUTIPAN ─────────────────────────────────────────── */
     const quote = newspaperQuote
       ? `"${newspaperQuote}"`
       : `"Surakarta, kota seribu warisan budaya yang tak lekang oleh waktu."`;
     center(quote, { size: 18, italic: true, gap: 24 });
-    y -= 6;
-    dashed(24);
+    y -= 4;
 
     /* ── BARCODE DEKORATIF + FOOTER ──────────────────────── */
     // batang minimal 2 titik: batang 1 titik tidak kelihatan jelas saat dicetak
-    const bcH = 50;
+    const bcH = 36;
     const bcW = Math.round(innerW * 0.86);
     const bcX = Math.round((W - bcW) / 2);
     let bx = bcX;
@@ -1168,14 +1138,11 @@ export default function Photobox() {
       ctx.fillRect(bx, y, barW, bcH);
       bx += barW + gapW;
     }
-    y += bcH + 22;
-    center(noStruk, { size: 18, gap: 36 });
+    y += bcH + 20;
+    center(noStruk, { size: 18, gap: 32 });
 
-    center("MATUR NUWUN SAMPUN RAWUH", { size: 22, gap: 26 });
-    center("Terima kasih sudah berkunjung", { size: 18, gap: 23 });
-    center("Solo, The Spirit of Java", { size: 18, gap: 14 });
-    dashed(28);
-    center("BUKTI KENANGAN, BUKAN BUKTI BAYAR", { size: 18, gap: 6 });
+    center("MATUR NUWUN SAMPUN RAWUH", { size: 22, gap: 24 });
+    center("Solo, The Spirit of Java", { size: 18, gap: 6 });
 
     /* ── Potong tepat setinggi isi ───────────────────────── */
     const outH = Math.min(Math.round(y + PAD), H);
