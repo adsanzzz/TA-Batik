@@ -324,13 +324,18 @@ export const getReviewSummary = async (token) => {
 };
 
 // ===== PHOTOBOX TEMP UPLOAD =====
-export const uploadPhotoboxTemp = async (pngDataUrl) => {
+// frameDataUrls: foto-foto mentah (≥ 2) untuk dijadikan GIF animasi oleh backend
+export const uploadPhotoboxTemp = async (pngDataUrl, frameDataUrls = []) => {
   // Convert base64 data URL ke Blob
   const res = await fetch(pngDataUrl);
   const blob = await res.blob();
 
   const formData = new FormData();
   formData.append("file", blob, "photobox.png");
+  for (const [i, frameUrl] of frameDataUrls.entries()) {
+    const frameBlob = await (await fetch(frameUrl)).blob();
+    formData.append("frames", frameBlob, `frame-${i + 1}.jpg`);
+  }
 
   const uploadRes = await fetch(`${BASE_URL}/photobox/upload-temp`, {
     method: "POST",

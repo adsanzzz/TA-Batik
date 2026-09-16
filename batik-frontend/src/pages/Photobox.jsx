@@ -1,63 +1,137 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { BASE_URL, uploadPhotoboxTemp } from "../services/api";
-import { QRCodeSVG } from "qrcode.react";
-import jsPDF from "jspdf";
-import Footer from "../components/Footer";
-import { colors, fonts } from "../theme";
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { BASE_URL, uploadPhotoboxTemp } from '../services/api';
+import { QRCodeSVG } from 'qrcode.react';
+import jsPDF from 'jspdf';
+import Footer from '../components/Footer';
+import { colors, fonts } from '../theme';
 
 /* ─── Icons ─────────────────────────────────────────────── */
 const IconCamera = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ width: 22, height: 22 }}
+  >
     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
     <circle cx="12" cy="13" r="4" />
   </svg>
 );
 const IconDownload = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 20, height: 20 }}>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ width: 20, height: 20 }}
+  >
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
     <polyline points="7 10 12 15 17 10" />
     <line x1="12" y1="15" x2="12" y2="3" />
   </svg>
 );
 const IconRetake = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 20, height: 20 }}>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ width: 20, height: 20 }}
+  >
     <polyline points="1 4 1 10 7 10" />
     <path d="M3.51 15a9 9 0 1 0 .49-3" />
   </svg>
 );
 const IconPrint = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 20, height: 20 }}>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ width: 20, height: 20 }}
+  >
     <polyline points="6 9 6 2 18 2 18 9" />
     <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
     <rect x="6" y="14" width="12" height="8" />
   </svg>
 );
 const IconQR = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 20, height: 20 }}>
-    <rect x="3" y="3" width="5" height="5" /><rect x="16" y="3" width="5" height="5" />
-    <rect x="3" y="16" width="5" height="5" /><line x1="21" y1="21" x2="16" y2="21" />
-    <line x1="21" y1="16" x2="21" y2="18" /><line x1="16" y1="16" x2="18" y2="16" />
-    <line x1="9" y1="3" x2="9" y2="9" /><line x1="3" y1="9" x2="9" y2="9" />
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ width: 20, height: 20 }}
+  >
+    <rect x="3" y="3" width="5" height="5" />
+    <rect x="16" y="3" width="5" height="5" />
+    <rect x="3" y="16" width="5" height="5" />
+    <line x1="21" y1="21" x2="16" y2="21" />
+    <line x1="21" y1="16" x2="21" y2="18" />
+    <line x1="16" y1="16" x2="18" y2="16" />
+    <line x1="9" y1="3" x2="9" y2="9" />
+    <line x1="3" y1="9" x2="9" y2="9" />
   </svg>
 );
 
-const SparklesIcon = ({ size = 20, color = "currentColor" }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: "8px" }}>
-    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-    <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5 5 3Z" opacity="0.6"/>
-    <path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1 1-2.5Z" opacity="0.6"/>
+const SparklesIcon = ({ size = 20, color = 'currentColor' }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ verticalAlign: 'middle', marginRight: '8px' }}
+  >
+    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+    <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5 5 3Z" opacity="0.6" />
+    <path
+      d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1 1-2.5Z"
+      opacity="0.6"
+    />
   </svg>
 );
 
 const IconLink = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15 }}>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ width: 15, height: 15 }}
+  >
     <path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
     <path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
   </svg>
 );
 
 const IconCheck = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ width: 18, height: 18 }}
+  >
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );
@@ -65,68 +139,218 @@ const IconCheck = () => (
 /* ─── Layout previews ────────────────────────────────────── */
 const LAYOUTS = [
   {
-    count: 1, label: "1 Foto", desc: "Single",
+    count: 1,
+    label: '1 Foto',
+    desc: 'Single',
     preview: () => (
       <svg viewBox="0 0 60 80" style={{ width: 60, height: 80 }}>
-        <rect x="4" y="4" width="52" height="72" rx="3" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
+        <rect
+          x="4"
+          y="4"
+          width="52"
+          height="72"
+          rx="3"
+          fill="rgba(3, 62, 238, 0.07)"
+          stroke="#033EEE"
+          strokeWidth="2"
+        />
       </svg>
-    )
+    ),
   },
   {
-    count: 2, label: "2 Foto", desc: "Duo",
+    count: 2,
+    label: '2 Foto',
+    desc: 'Duo',
     preview: () => (
       <svg viewBox="0 0 60 80" style={{ width: 60, height: 80 }}>
-        <rect x="4" y="4" width="52" height="34" rx="3" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
-        <rect x="4" y="42" width="52" height="34" rx="3" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
+        <rect
+          x="4"
+          y="4"
+          width="52"
+          height="34"
+          rx="3"
+          fill="rgba(3, 62, 238, 0.07)"
+          stroke="#033EEE"
+          strokeWidth="2"
+        />
+        <rect
+          x="4"
+          y="42"
+          width="52"
+          height="34"
+          rx="3"
+          fill="rgba(3, 62, 238, 0.07)"
+          stroke="#033EEE"
+          strokeWidth="2"
+        />
       </svg>
-    )
+    ),
   },
   {
-    count: 3, label: "3 Foto", desc: "Strip",
+    count: 3,
+    label: '3 Foto',
+    desc: 'Strip',
     preview: () => (
       <svg viewBox="0 0 60 80" style={{ width: 60, height: 80 }}>
-        <rect x="4" y="4" width="52" height="22" rx="3" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
-        <rect x="4" y="30" width="52" height="22" rx="3" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
-        <rect x="4" y="56" width="52" height="22" rx="3" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
+        <rect
+          x="4"
+          y="4"
+          width="52"
+          height="22"
+          rx="3"
+          fill="rgba(3, 62, 238, 0.07)"
+          stroke="#033EEE"
+          strokeWidth="2"
+        />
+        <rect
+          x="4"
+          y="30"
+          width="52"
+          height="22"
+          rx="3"
+          fill="rgba(3, 62, 238, 0.07)"
+          stroke="#033EEE"
+          strokeWidth="2"
+        />
+        <rect
+          x="4"
+          y="56"
+          width="52"
+          height="22"
+          rx="3"
+          fill="rgba(3, 62, 238, 0.07)"
+          stroke="#033EEE"
+          strokeWidth="2"
+        />
       </svg>
-    )
+    ),
   },
   {
-    count: 4, label: "4 Foto", desc: "Grid",
+    count: 4,
+    label: '4 Foto',
+    desc: 'Grid',
     preview: () => (
       <svg viewBox="0 0 60 80" style={{ width: 60, height: 80 }}>
-        <rect x="4" y="4" width="24" height="34" rx="2" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
-        <rect x="32" y="4" width="24" height="34" rx="2" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
-        <rect x="4" y="42" width="24" height="34" rx="2" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
-        <rect x="32" y="42" width="24" height="34" rx="2" fill="rgba(3, 62, 238, 0.07)" stroke="#033EEE" strokeWidth="2" />
+        <rect
+          x="4"
+          y="4"
+          width="24"
+          height="34"
+          rx="2"
+          fill="rgba(3, 62, 238, 0.07)"
+          stroke="#033EEE"
+          strokeWidth="2"
+        />
+        <rect
+          x="32"
+          y="4"
+          width="24"
+          height="34"
+          rx="2"
+          fill="rgba(3, 62, 238, 0.07)"
+          stroke="#033EEE"
+          strokeWidth="2"
+        />
+        <rect
+          x="4"
+          y="42"
+          width="24"
+          height="34"
+          rx="2"
+          fill="rgba(3, 62, 238, 0.07)"
+          stroke="#033EEE"
+          strokeWidth="2"
+        />
+        <rect
+          x="32"
+          y="42"
+          width="24"
+          height="34"
+          rx="2"
+          fill="rgba(3, 62, 238, 0.07)"
+          stroke="#033EEE"
+          strokeWidth="2"
+        />
       </svg>
-    )
+    ),
   },
 ];
 
 const FRAME_COLORS = [
-  { id: "none", label: "Tanpa Frame", color: null, textColor: "#6b7280" },
-  { id: "white", label: "Putih Bersih", color: "#ffffff", border: "#e5e7eb", textColor: "#1f2937" },
-  { id: "cream", label: "Krem Nusantara", color: "#EADBC8", border: "#D2B48C", textColor: "#5a3e28" },
-  { id: "dark", label: "Biru Kegelapan", color: "#00117D", border: "#0122B4", textColor: "#C8FF01" },
-  { id: "gold", label: "Lime UNS", color: "#C8FF01", border: "#AEE600", textColor: "#00117D" },
-  { id: "batik", label: "Batik Merah", color: "#8B1A1A", border: "#5a0f0f", textColor: "#FDF6EC" },
-  { id: "sage", label: "Hijau Sage", color: "#4a7c59", border: "#2d5a3d", textColor: "#f0faf4" },
-  { id: "indigo", label: "Biru Nusantara", color: "#2d3a6b", border: "#1a2350", textColor: "#e8ecff" },
+  { id: 'none', label: 'Tanpa Frame', color: null, textColor: '#6b7280' },
+  {
+    id: 'white',
+    label: 'Putih Bersih',
+    color: '#ffffff',
+    border: '#e5e7eb',
+    textColor: '#1f2937',
+  },
+  {
+    id: 'cream',
+    label: 'Krem Nusantara',
+    color: '#EADBC8',
+    border: '#D2B48C',
+    textColor: '#5a3e28',
+  },
+  {
+    id: 'dark',
+    label: 'Biru Kegelapan',
+    color: '#00117D',
+    border: '#0122B4',
+    textColor: '#C8FF01',
+  },
+  {
+    id: 'gold',
+    label: 'Lime UNS',
+    color: '#C8FF01',
+    border: '#AEE600',
+    textColor: '#00117D',
+  },
+  {
+    id: 'batik',
+    label: 'Batik Merah',
+    color: '#8B1A1A',
+    border: '#5a0f0f',
+    textColor: '#FDF6EC',
+  },
+  {
+    id: 'sage',
+    label: 'Hijau Sage',
+    color: '#4a7c59',
+    border: '#2d5a3d',
+    textColor: '#f0faf4',
+  },
+  {
+    id: 'indigo',
+    label: 'Biru Nusantara',
+    color: '#2d3a6b',
+    border: '#1a2350',
+    textColor: '#e8ecff',
+  },
 ];
 
 /* ─── Teks singkat di bawah kutipan koran ─── */
 const NEWSPAPER_BLURB = {
-  general: "Batik adalah warisan budaya Indonesia yang diakui UNESCO sejak 2 Oktober 2009.",
-  surakarta: "Surakarta, kota budaya Jawa yang berdiri sejak 1745 di bawah Keraton Kasunanan.",
+  general:
+    'Batik adalah warisan budaya Indonesia yang diakui UNESCO sejak 2 Oktober 2009.',
+  surakarta:
+    'Surakarta, kota budaya Jawa yang berdiri sejak 1745 di bawah Keraton Kasunanan.',
 };
 
 /* ─── Palet tunggal template cetak: putih klasik (optimal printer thermal) ─── */
-const PAPER = { bg: "#ffffff", text: "#000000", accent: "#000000", divider: "#000000" };
+const PAPER = {
+  bg: '#ffffff',
+  text: '#000000',
+  accent: '#000000',
+  divider: '#000000',
+};
 
 /* ─── roundRect polyfill (Safari < 15.4 / older browsers) ── */
-if (typeof CanvasRenderingContext2D !== "undefined" && !CanvasRenderingContext2D.prototype.roundRect) {
-  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+if (
+  typeof CanvasRenderingContext2D !== 'undefined' &&
+  !CanvasRenderingContext2D.prototype.roundRect
+) {
+  CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
     const radius = Math.min(r, w / 2, h / 2);
     this.beginPath();
     this.moveTo(x + radius, y);
@@ -145,10 +369,10 @@ if (typeof CanvasRenderingContext2D !== "undefined" && !CanvasRenderingContext2D
 /* ─── Helper: draw image greyscale to canvas ctx ── */
 function drawGreyscale(ctx, img, sx, sy, sw, sh, dx, dy, dw, dh) {
   // Draw offscreen, apply greyscale filter, draw to main canvas
-  const offscreen = document.createElement("canvas");
+  const offscreen = document.createElement('canvas');
   offscreen.width = dw;
   offscreen.height = dh;
-  const offCtx = offscreen.getContext("2d");
+  const offCtx = offscreen.getContext('2d');
   offCtx.drawImage(img, sx, sy, sw, sh, 0, 0, dw, dh);
   const imageData = offCtx.getImageData(0, 0, dw, dh);
   const d = imageData.data;
@@ -170,7 +394,7 @@ const THERMAL_DOTS = 384;
 //  shadow: 0–255. Bagian tergelap foto diangkat ke nilai ini, jadi rambut/baju/area
 //          yang kurang cahaya tidak jadi hitam pekat → hasil lebih "soft".
 //          Masih gelap → naikkan (mis. 90). Terlalu pucat → turunkan (mis. 40).
-const THERMAL_PHOTO = { gamma: 0.7, shadow: 70 };
+const THERMAL_PHOTO = { gamma: 0.85, shadow: 50 };
 
 // white: abu-abu terang di atas nilai ini dicetak putih bersih.
 // Turunkan (mis. 215) kalau latar foto masih berbintik.
@@ -185,7 +409,7 @@ const THERMAL_HEAT = null;
 // Cara kirim ke RawBT (Android):
 //  "escpos": perintah printer mentah, RawBT tidak mengubah gambar (disarankan)
 //  "image" : kirim PNG, RawBT yang mengatur ukuran & memproses gambar
-const RAWBT_MODE = "escpos";
+const RAWBT_MODE = 'escpos';
 
 /* ─── Helper: ubah gambar jadi bitmap hitam-putih siap printer thermal ── */
 // Printer thermal cuma bisa titik hitam atau putih. Kalau gambar abu-abu dikirim
@@ -195,17 +419,21 @@ const RAWBT_MODE = "escpos";
 //  - dithering Floyd–Steinberg: gradasi gelap tetap bergradasi (Atkinson yang dulu
 //    dipakai membuang sebagian nada gelap, jadi wajah kurang cahaya jadi hitam pekat).
 //    Teks tetap tajam karena hitam/putih murni tidak menghasilkan error.
-function toThermalBitmap(img, width, { gamma = 1, white = 230, threshold = 128 } = {}) {
+function toThermalBitmap(
+  img,
+  width,
+  { gamma = 1, white = 230, threshold = 128 } = {}
+) {
   const W = width;
   const H = Math.round((img.height * W) / img.width);
-  const c = document.createElement("canvas");
+  const c = document.createElement('canvas');
   c.width = W;
   c.height = H;
-  const cx = c.getContext("2d");
-  cx.fillStyle = "#fff";
+  const cx = c.getContext('2d');
+  cx.fillStyle = '#fff';
   cx.fillRect(0, 0, W, H);
   cx.imageSmoothingEnabled = true;
-  cx.imageSmoothingQuality = "high";
+  cx.imageSmoothingQuality = 'high';
   cx.drawImage(img, 0, 0, W, H);
 
   const imageData = cx.getImageData(0, 0, W, H);
@@ -244,12 +472,32 @@ function toThermalBitmap(img, width, { gamma = 1, white = 230, threshold = 128 }
 
 /* ─── Helper: muat semua foto ── */
 function loadImages(urls) {
-  return Promise.all(urls.map(url => new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = url;
-  })));
+  return Promise.all(
+    urls.map(
+      (url) =>
+        new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = url;
+        })
+    )
+  );
+}
+
+/* ─── Helper: perkecil foto jadi JPEG untuk bahan GIF ── */
+// Foto mentah dari kamera berupa PNG besar; GIF-nya cuma 480px, jadi cukup
+// kirim JPEG 640px supaya upload cepat.
+async function shrinkPhotos(urls, maxWidth = 640) {
+  const imgs = await loadImages(urls);
+  return imgs.map((img) => {
+    const scale = Math.min(1, maxWidth / img.width);
+    const c = document.createElement('canvas');
+    c.width = Math.round(img.width * scale);
+    c.height = Math.round(img.height * scale);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.85);
+  });
 }
 
 /* ─── Helper: gambar foto memenuhi kotak (crop tengah) ── */
@@ -259,16 +507,33 @@ function loadImages(urls) {
 //  1. rentang terang foto diregangkan (1% tergelap → hitam, 1% terterang → putih)
 //  2. nada tengah dicerahkan (gamma)
 //  3. bagian tergelap diangkat ke abu-abu (shadow) supaya tidak jadi hitam pekat
-function drawPhotoCover(ctx, img, x, y, w, h, { greyscale = false, enhance = null } = {}) {
+function drawPhotoCover(
+  ctx,
+  img,
+  x,
+  y,
+  w,
+  h,
+  { greyscale = false, enhance = null } = {}
+) {
   const ar = img.width / img.height;
   const ar2 = w / h;
   let sx, sy, sw, sh;
-  if (ar > ar2) { sh = img.height; sw = sh * ar2; sx = (img.width - sw) / 2; sy = 0; }
-  else { sw = img.width; sh = sw / ar2; sx = 0; sy = (img.height - sh) / 2; }
+  if (ar > ar2) {
+    sh = img.height;
+    sw = sh * ar2;
+    sx = (img.width - sw) / 2;
+    sy = 0;
+  } else {
+    sw = img.width;
+    sh = sw / ar2;
+    sx = 0;
+    sy = (img.height - sh) / 2;
+  }
 
   if (!enhance) {
     ctx.save();
-    if (greyscale) ctx.filter = "grayscale(100%)";
+    if (greyscale) ctx.filter = 'grayscale(100%)';
     ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
     ctx.restore();
     return;
@@ -276,10 +541,10 @@ function drawPhotoCover(ctx, img, x, y, w, h, { greyscale = false, enhance = nul
 
   const tw = Math.round(w);
   const th = Math.round(h);
-  const t = document.createElement("canvas");
+  const t = document.createElement('canvas');
   t.width = tw;
   t.height = th;
-  const tc = t.getContext("2d");
+  const tc = t.getContext('2d');
   tc.drawImage(img, sx, sy, sw, sh, 0, 0, tw, th);
   const data = tc.getImageData(0, 0, tw, th);
   const px = data.data;
@@ -291,15 +556,32 @@ function drawPhotoCover(ctx, img, x, y, w, h, { greyscale = false, enhance = nul
     hist[lum[i] | 0]++;
   }
   const cut = n * 0.01;
-  let lo = 0, hi = 255, acc = 0;
-  for (let v = 0; v < 256; v++) { acc += hist[v]; if (acc >= cut) { lo = v; break; } }
+  let lo = 0,
+    hi = 255,
+    acc = 0;
+  for (let v = 0; v < 256; v++) {
+    acc += hist[v];
+    if (acc >= cut) {
+      lo = v;
+      break;
+    }
+  }
   acc = 0;
-  for (let v = 255; v >= 0; v--) { acc += hist[v]; if (acc >= cut) { hi = v; break; } }
+  for (let v = 255; v >= 0; v--) {
+    acc += hist[v];
+    if (acc >= cut) {
+      hi = v;
+      break;
+    }
+  }
   const range = Math.max(1, hi - lo);
   const { gamma = 1, shadow = 0 } = enhance;
   for (let i = 0, p = 0; i < n; i++, p += 4) {
     const norm = Math.min(1, Math.max(0, (lum[i] - lo) / range));
-    px[p] = px[p + 1] = px[p + 2] = shadow + (255 - shadow) * Math.pow(norm, gamma);
+    px[p] =
+      px[p + 1] =
+      px[p + 2] =
+        shadow + (255 - shadow) * Math.pow(norm, gamma);
   }
   tc.putImageData(data, 0, 0);
   ctx.drawImage(t, x, y, w, h);
@@ -310,8 +592,8 @@ function paintInto(target, source, setFinalCollage) {
   if (!target || !source) return;
   target.width = source.width;
   target.height = source.height;
-  target.getContext("2d").drawImage(source, 0, 0);
-  setFinalCollage(target.toDataURL("image/png"));
+  target.getContext('2d').drawImage(source, 0, 0);
+  setFinalCollage(target.toDataURL('image/png'));
 }
 
 /* ─── Helper: bitmap hitam-putih → perintah printer ESC/POS ── */
@@ -320,7 +602,7 @@ function paintInto(target, source, setFinalCollage) {
 function bitmapToEscPos(canvas, heat) {
   const W = canvas.width;
   const H = canvas.height;
-  const px = canvas.getContext("2d").getImageData(0, 0, W, H).data;
+  const px = canvas.getContext('2d').getImageData(0, 0, W, H).data;
   const bytesPerRow = Math.ceil(W / 8);
   const out = [0x1b, 0x40]; // ESC @ : reset printer
   if (heat) out.push(0x1b, 0x37, heat.dots, heat.time, heat.interval); // ESC 7 : panas kepala printer
@@ -329,7 +611,16 @@ function bitmapToEscPos(canvas, heat) {
   const CHUNK = 100;
   for (let top = 0; top < H; top += CHUNK) {
     const rows = Math.min(CHUNK, H - top);
-    out.push(0x1d, 0x76, 0x30, 0x00, bytesPerRow & 0xff, bytesPerRow >> 8, rows & 0xff, rows >> 8);
+    out.push(
+      0x1d,
+      0x76,
+      0x30,
+      0x00,
+      bytesPerRow & 0xff,
+      bytesPerRow >> 8,
+      rows & 0xff,
+      rows >> 8
+    );
     for (let yy = top; yy < top + rows; yy++) {
       for (let bx = 0; bx < bytesPerRow; bx++) {
         let byte = 0;
@@ -346,7 +637,7 @@ function bitmapToEscPos(canvas, heat) {
 }
 
 function bytesToBase64(bytes) {
-  let bin = "";
+  let bin = '';
   for (let i = 0; i < bytes.length; i += 0x8000) {
     bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
   }
@@ -364,11 +655,13 @@ export default function Photobox() {
   const [finalCollage, setFinalCollage] = useState(null);
   const [useNewspaper, setUseNewspaper] = useState(false);
   // "general" | "surakarta"
-  const [newspaperTemplate, setNewspaperTemplate] = useState("general");
+  const [newspaperTemplate, setNewspaperTemplate] = useState('general');
   const [newspaperGreyscale, setNewspaperGreyscale] = useState(false);
-  const [newspaperTitle, setNewspaperTitle] = useState("TRISARA × SIF 2026");
-  const [newspaperSub, setNewspaperSub] = useState("Momen Indah Batik Nusantara");
-  const [newspaperQuote, setNewspaperQuote] = useState("");
+  const [newspaperTitle, setNewspaperTitle] = useState('TRISARA × SIF 2026');
+  const [newspaperSub, setNewspaperSub] = useState(
+    'Momen Indah Batik Nusantara'
+  );
+  const [newspaperQuote, setNewspaperQuote] = useState('');
 
   const [countdown, setCountdown] = useState(null);
   const [isCapturing, setIsCapturing] = useState(false);
@@ -389,8 +682,8 @@ export default function Photobox() {
   // Fetch API frames
   useEffect(() => {
     fetch(`${BASE_URL}/frames`)
-      .then(r => r.json())
-      .then(d => setApiFrames(Array.isArray(d) ? d : []))
+      .then((r) => r.json())
+      .then((d) => setApiFrames(Array.isArray(d) ? d : []))
       .catch(() => {});
     return () => stopCamera();
   }, []);
@@ -404,16 +697,20 @@ export default function Photobox() {
   /* ── Camera ── */
   const startCamera = async () => {
     try {
-      const s = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720, facingMode: "user" } });
+      const s = await navigator.mediaDevices.getUserMedia({
+        video: { width: 1280, height: 720, facingMode: 'user' },
+      });
       streamRef.current = s;
       if (videoRef.current) videoRef.current.srcObject = s;
     } catch {
-      alert("Tidak dapat mengakses kamera. Pastikan Anda telah memberikan izin kamera.");
+      alert(
+        'Tidak dapat mengakses kamera. Pastikan Anda telah memberikan izin kamera.'
+      );
     }
   };
   const stopCamera = () => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(t => t.stop());
+      streamRef.current.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
     }
     if (countdownRef.current) clearInterval(countdownRef.current);
@@ -432,20 +729,20 @@ export default function Photobox() {
   const capturePhoto = () => {
     if (!videoRef.current) return;
     const video = videoRef.current;
-    const tmp = document.createElement("canvas");
+    const tmp = document.createElement('canvas');
     tmp.width = video.videoWidth || 1280;
     tmp.height = video.videoHeight || 720;
-    const ctx = tmp.getContext("2d");
+    const ctx = tmp.getContext('2d');
     ctx.translate(tmp.width, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(video, 0, 0, tmp.width, tmp.height);
-    const dataUrl = tmp.toDataURL("image/png");
+    const dataUrl = tmp.toDataURL('image/png');
 
     setFlash(true);
     setTimeout(() => setFlash(false), 300);
 
     const currentLayout = layoutRef.current;
-    setPhotos(prev => {
+    setPhotos((prev) => {
       const next = [...prev, dataUrl];
       if (currentLayout && next.length >= currentLayout.count) {
         stopCamera();
@@ -467,7 +764,7 @@ export default function Photobox() {
         setCountdown(n);
       } else {
         clearInterval(countdownRef.current);
-        setCountdown("SMILE!");
+        setCountdown('SMILE!');
         setTimeout(() => {
           capturePhoto();
           setCountdown(null);
@@ -479,7 +776,7 @@ export default function Photobox() {
 
   /* ── Retake last photo ── */
   const retakePhoto = () => {
-    setPhotos(prev => prev.slice(0, -1));
+    setPhotos((prev) => prev.slice(0, -1));
     if (!streamRef.current) startCamera();
   };
 
@@ -487,7 +784,7 @@ export default function Photobox() {
   const buildCollage = useCallback(async () => {
     if (photos.length === 0 || !canvasRef.current) return;
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
 
     const currentLayout = layoutRef.current;
     if (!currentLayout) return;
@@ -506,22 +803,22 @@ export default function Photobox() {
     const canvasW = padX * 2 + cols * photoW + (cols - 1) * gap;
     // skala ornamen & tipografi mengikuti lebar kanvas (grid 2x2 jauh lebih lebar dari strip)
     const k = Math.min(1.55, Math.max(1, canvasW / 704));
-    const mount = Math.round(8 * k);        // tepi "kertas foto" putih
-    const padTop = Math.round(104 * k);     // area kop
-    const padBottom = Math.round(152 * k);  // area brand
+    const mount = Math.round(8 * k); // tepi "kertas foto" putih
+    const padTop = Math.round(104 * k); // area kop
+    const padBottom = Math.round(152 * k); // area brand
 
     const canvasH = padTop + padBottom + rows * photoH + (rows - 1) * gap;
     canvas.width = canvasW;
     canvas.height = canvasH;
 
-    const plain = !selectedApiFrame && !selectedColor.color;   // opsi "Tanpa Frame"
-    const bgColor = selectedColor.color || "#ffffff";
-    const ink = selectedColor.textColor || "#1f2937";
-    const accent = selectedColor.border || "#D8DEEC";
+    const plain = !selectedApiFrame && !selectedColor.color; // opsi "Tanpa Frame"
+    const bgColor = selectedColor.color || '#ffffff';
+    const ink = selectedColor.textColor || '#1f2937';
+    const accent = selectedColor.border || '#D8DEEC';
 
     const isLightColor = (hex) => {
       if (!hex) return true;
-      const c = hex.replace("#", "");
+      const c = hex.replace('#', '');
       if (c.length < 6) return true;
       const r = parseInt(c.substring(0, 2), 16);
       const g = parseInt(c.substring(2, 4), 16);
@@ -533,14 +830,17 @@ export default function Photobox() {
     /* helper: lebar teks ber-letterspacing */
     const measureSpaced = (text, spacing) => {
       const chars = [...text];
-      return chars.reduce((a, c) => a + ctx.measureText(c).width, 0) + spacing * (chars.length - 1);
+      return (
+        chars.reduce((a, c) => a + ctx.measureText(c).width, 0) +
+        spacing * (chars.length - 1)
+      );
     };
 
     /* helper: gambar teks ber-letterspacing, rata tengah */
     const spacedText = (text, cx, baseline, spacing) => {
       const total = measureSpaced(text, spacing);
       let x = cx - total / 2;
-      ctx.textAlign = "left";
+      ctx.textAlign = 'left';
       for (const c of [...text]) {
         ctx.fillText(c, x, baseline);
         x += ctx.measureText(c).width + spacing;
@@ -557,7 +857,7 @@ export default function Photobox() {
       ctx.globalAlpha = alpha;
       ctx.strokeStyle = color;
       ctx.lineWidth = 3;
-      ctx.lineCap = "round";
+      ctx.lineCap = 'round';
       for (let i = -bh; i < bw + bh; i += Math.round(24 * k)) {
         ctx.beginPath();
         ctx.moveTo(bx + i, by + bh);
@@ -585,11 +885,14 @@ export default function Photobox() {
     /* ── LATAR BINGKAI ── */
     if (selectedApiFrame) {
       const frameImg = new Image();
-      frameImg.crossOrigin = "anonymous";
-      frameImg.src = selectedApiFrame.gambar?.startsWith("http")
+      frameImg.crossOrigin = 'anonymous';
+      frameImg.src = selectedApiFrame.gambar?.startsWith('http')
         ? selectedApiFrame.gambar
         : `${BASE_URL}/${selectedApiFrame.gambar}`;
-      await new Promise(r => { frameImg.onload = r; frameImg.onerror = r; });
+      await new Promise((r) => {
+        frameImg.onload = r;
+        frameImg.onerror = r;
+      });
       ctx.drawImage(frameImg, 0, 0, canvasW, canvasH);
     } else {
       ctx.fillStyle = bgColor;
@@ -597,16 +900,26 @@ export default function Photobox() {
 
       // gradasi halus biar warna nggak flat
       const grad = ctx.createLinearGradient(0, 0, 0, canvasH);
-      grad.addColorStop(0, light ? "rgba(255,255,255,0.50)" : "rgba(255,255,255,0.10)");
-      grad.addColorStop(0.5, "rgba(255,255,255,0)");
-      grad.addColorStop(1, light ? "rgba(0,0,0,0.045)" : "rgba(0,0,0,0.20)");
+      grad.addColorStop(
+        0,
+        light ? 'rgba(255,255,255,0.50)' : 'rgba(255,255,255,0.10)'
+      );
+      grad.addColorStop(0.5, 'rgba(255,255,255,0)');
+      grad.addColorStop(1, light ? 'rgba(0,0,0,0.045)' : 'rgba(0,0,0,0.20)');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, canvasW, canvasH);
 
       if (!plain) {
         // motif parang di area kop & kaki
         batikBand(0, 0, canvasW, padTop - 26 * k, accent, 0.16);
-        batikBand(0, canvasH - padBottom + 26 * k, canvasW, padBottom - 26 * k, accent, 0.16);
+        batikBand(
+          0,
+          canvasH - padBottom + 26 * k,
+          canvasW,
+          padBottom - 26 * k,
+          accent,
+          0.16
+        );
       }
 
       // keyline + ornamen sudut
@@ -617,26 +930,37 @@ export default function Photobox() {
       ctx.lineWidth = 2;
       ctx.strokeRect(inset, inset, canvasW - inset * 2, canvasH - inset * 2);
       ctx.restore();
-      const corners = [[inset, inset], [canvasW - inset, inset], [inset, canvasH - inset], [canvasW - inset, canvasH - inset]];
-      for (const [cx, cy] of corners) diamond(cx, cy, 7 * k, accent, plain ? 0.6 : 1);
+      const corners = [
+        [inset, inset],
+        [canvasW - inset, inset],
+        [inset, canvasH - inset],
+        [canvasW - inset, canvasH - inset],
+      ];
+      for (const [cx, cy] of corners)
+        diamond(cx, cy, 7 * k, accent, plain ? 0.6 : 1);
     }
 
     /* ── KOP: garis — nama acara — garis ── */
     if (!selectedApiFrame) {
       const headBase = Math.round(64 * k);
-      const tag = "PHOTOBOX NUSANTARA";
+      const tag = 'PHOTOBOX NUSANTARA';
       const tagSp = 6 * k;
       ctx.font = `bold ${Math.round(21 * k)}px ${SANS}`;
       const tagW = measureSpaced(tag, tagSp);
       const railGap = 26 * k;
       const railStart = 58 * k;
-      const railW = (canvasW / 2 - tagW / 2 - railGap) - railStart;
+      const railW = canvasW / 2 - tagW / 2 - railGap - railStart;
       if (railW > 24) {
         ctx.save();
         ctx.globalAlpha = 0.55;
         ctx.fillStyle = ink;
         ctx.fillRect(railStart, headBase - 8 * k, railW, 2 * k);
-        ctx.fillRect(canvasW - railStart - railW, headBase - 8 * k, railW, 2 * k);
+        ctx.fillRect(
+          canvasW - railStart - railW,
+          headBase - 8 * k,
+          railW,
+          2 * k
+        );
         ctx.restore();
       }
       ctx.fillStyle = ink;
@@ -647,7 +971,9 @@ export default function Photobox() {
     for (let i = 0; i < photos.length; i++) {
       const img = new Image();
       img.src = photos[i];
-      await new Promise(r => { img.onload = r; });
+      await new Promise((r) => {
+        img.onload = r;
+      });
 
       const col = isGrid ? i % 2 : 0;
       const row = isGrid ? Math.floor(i / 2) : i;
@@ -657,18 +983,33 @@ export default function Photobox() {
       const ar = img.width / img.height;
       const ar2 = photoW / photoH;
       let sx, sy, sw, sh;
-      if (ar > ar2) { sh = img.height; sw = sh * ar2; sx = (img.width - sw) / 2; sy = 0; }
-      else { sw = img.width; sh = sw / ar2; sx = 0; sy = (img.height - sh) / 2; }
+      if (ar > ar2) {
+        sh = img.height;
+        sw = sh * ar2;
+        sx = (img.width - sw) / 2;
+        sy = 0;
+      } else {
+        sw = img.width;
+        sh = sw / ar2;
+        sx = 0;
+        sy = (img.height - sh) / 2;
+      }
 
       // "kertas foto" putih + bayangan (dilewati saat Tanpa Frame agar tetap bersih)
       if (!plain) {
         ctx.save();
-        ctx.shadowColor = light ? "rgba(12,27,77,0.22)" : "rgba(0,0,0,0.35)";
+        ctx.shadowColor = light ? 'rgba(12,27,77,0.22)' : 'rgba(0,0,0,0.35)';
         ctx.shadowBlur = 20 * k;
         ctx.shadowOffsetY = 7 * k;
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.roundRect(x - mount, y - mount, photoW + mount * 2, photoH + mount * 2, 14);
+        ctx.roundRect(
+          x - mount,
+          y - mount,
+          photoW + mount * 2,
+          photoH + mount * 2,
+          14
+        );
         ctx.fill();
         ctx.restore();
       }
@@ -681,7 +1022,7 @@ export default function Photobox() {
       ctx.restore();
 
       // hairline tipis di tepi foto
-      ctx.strokeStyle = "rgba(12,27,77,0.16)";
+      ctx.strokeStyle = 'rgba(12,27,77,0.16)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.roundRect(x + 0.5, y + 0.5, photoW - 1, photoH - 1, 9);
@@ -691,15 +1032,21 @@ export default function Photobox() {
     /* ── KAKI: ornamen + wordmark + tanggal ── */
     const footTop = padTop + rows * photoH + (rows - 1) * gap;
     const today = new Date();
-    const dateStr = today.toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }).toUpperCase();
+    const dateStr = today
+      .toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+      })
+      .toUpperCase();
     const metaTxt = `${dateStr}   ·   ${photos.length} FOTO`;
 
     if (selectedApiFrame) {
       // bingkai custom sudah punya desain sendiri → watermark halus saja
       ctx.font = `bold ${Math.round(24 * k)}px ${DISPLAY}`;
-      ctx.fillStyle = "rgba(255,255,255,0.72)";
-      ctx.textAlign = "center";
-      ctx.fillText("Trisara", canvasW / 2, footTop + 74 * k);
+      ctx.fillStyle = 'rgba(255,255,255,0.72)';
+      ctx.textAlign = 'center';
+      ctx.fillText('Trisara', canvasW / 2, footTop + 74 * k);
     } else {
       const ornY = footTop + 34 * k;
       diamond(canvasW / 2, ornY, 6 * k, ink, 0.85);
@@ -714,8 +1061,8 @@ export default function Photobox() {
 
       ctx.fillStyle = ink;
       ctx.font = `bold ${Math.round(46 * k)}px ${DISPLAY}`;
-      ctx.textAlign = "center";
-      ctx.fillText("Trisara", canvasW / 2, footTop + 86 * k);
+      ctx.textAlign = 'center';
+      ctx.fillText('Trisara', canvasW / 2, footTop + 86 * k);
 
       ctx.save();
       ctx.globalAlpha = 0.72;
@@ -725,7 +1072,7 @@ export default function Photobox() {
       ctx.restore();
     }
 
-    setFinalCollage(canvas.toDataURL("image/png"));
+    setFinalCollage(canvas.toDataURL('image/png'));
   }, [photos, selectedColor, selectedApiFrame]);
 
   /* ── Template Koran Nusantara ──
@@ -733,411 +1080,495 @@ export default function Photobox() {
       - scale 2            → soft file/preview, tajam di layar HP
       - scale 1 + forPrint → dicetak 1 titik = 1 dot, jadi ukuran huruf di sini
                              sama dengan ukuran huruf di kertas */
-  const drawNewspaper = useCallback(async ({ scale = 1, forPrint = false } = {}) => {
-    if (photos.length === 0) return null;
+  const drawNewspaper = useCallback(
+    async ({ scale = 1, forPrint = false } = {}) => {
+      if (photos.length === 0) return null;
 
-    const W = THERMAL_DOTS;
-    const PAD = 10;
-    const innerW = W - PAD * 2;
-    const DISPLAY = "'Playfair Display', Georgia, serif";
-    const SERIF = "Georgia, 'Times New Roman', serif";
-    const NC = PAPER;
+      const W = THERMAL_DOTS;
+      const PAD = 10;
+      const innerW = W - PAD * 2;
+      const DISPLAY = "'Playfair Display', Georgia, serif";
+      const SERIF = "Georgia, 'Times New Roman', serif";
+      const NC = PAPER;
 
-    const loadedImgs = await loadImages(photos);
+      const loadedImgs = await loadImages(photos);
 
-    // Foto tunggal/ganda dibuat 4:3 (lega, seperti koran), 3+ dibuat 16:9 agar ringkas
-    const photoSlotW = innerW;
-    const photoSlotH = Math.round(photoSlotW * (loadedImgs.length <= 2 ? 3 / 4 : 9 / 16));
+      // Foto tunggal/ganda dibuat 4:3 (lega, seperti koran), 3+ dibuat 16:9 agar ringkas
+      const photoSlotW = innerW;
+      const photoSlotH = Math.round(
+        photoSlotW * (loadedImgs.length <= 2 ? 3 / 4 : 9 / 16)
+      );
 
-    // Digambar ke kanvas longgar, lalu dipotong tepat setinggi isi
-    const H = 1400 + (photoSlotH + 8) * loadedImgs.length;
-    const off = document.createElement("canvas");
-    off.width = W * scale;
-    off.height = H * scale;
-    const ctx = off.getContext("2d");
-    ctx.scale(scale, scale);
-    ctx.fillStyle = NC.bg;
-    ctx.fillRect(0, 0, W, H);
-    ctx.textBaseline = "alphabetic";
+      // Digambar ke kanvas longgar, lalu dipotong tepat setinggi isi
+      const H = 1400 + (photoSlotH + 8) * loadedImgs.length;
+      const off = document.createElement('canvas');
+      off.width = W * scale;
+      off.height = H * scale;
+      const ctx = off.getContext('2d');
+      ctx.scale(scale, scale);
+      ctx.fillStyle = NC.bg;
+      ctx.fillRect(0, 0, W, H);
+      ctx.textBaseline = 'alphabetic';
 
-    let y = PAD;
+      let y = PAD;
 
-    /* helper: garis horizontal */
-    const rule = (h, gap) => {
-      ctx.fillStyle = NC.divider;
-      ctx.fillRect(PAD, y, innerW, h);
-      y += gap;
-    };
+      /* helper: garis horizontal */
+      const rule = (h, gap) => {
+        ctx.fillStyle = NC.divider;
+        ctx.fillRect(PAD, y, innerW, h);
+        y += gap;
+      };
 
-    /* helper: garis ganda ala koran (tebal + tipis) */
-    const doubleRule = (gap = 12) => {
-      ctx.fillStyle = NC.divider;
-      ctx.fillRect(PAD, y, innerW, 3);
-      ctx.fillRect(PAD, y + 6, innerW, 2);
-      y += gap;
-    };
+      /* helper: garis ganda ala koran (tebal + tipis) */
+      const doubleRule = (gap = 12) => {
+        ctx.fillStyle = NC.divider;
+        ctx.fillRect(PAD, y, innerW, 3);
+        ctx.fillRect(PAD, y + 6, innerW, 2);
+        y += gap;
+      };
 
-    /* helper: wrap teks + auto-shrink agar pas maksimal N baris */
-    const fitLines = (text, maxW, maxLines, startSize, minSize, weight = "bold", font = DISPLAY) => {
-      for (let size = startSize; size >= minSize; size--) {
-        ctx.font = `${weight} ${size}px ${font}`;
+      /* helper: wrap teks + auto-shrink agar pas maksimal N baris */
+      const fitLines = (
+        text,
+        maxW,
+        maxLines,
+        startSize,
+        minSize,
+        weight = 'bold',
+        font = DISPLAY
+      ) => {
+        for (let size = startSize; size >= minSize; size--) {
+          ctx.font = `${weight} ${size}px ${font}`;
+          const words = text.split(/\s+/).filter(Boolean);
+          const lines = [];
+          let cur = '';
+          let overflow = false;
+          for (const w of words) {
+            const test = cur ? `${cur} ${w}` : w;
+            if (ctx.measureText(test).width > maxW) {
+              if (!cur) {
+                overflow = true;
+                break;
+              }
+              lines.push(cur);
+              cur = w;
+            } else {
+              cur = test;
+            }
+          }
+          if (overflow) continue;
+          if (cur) lines.push(cur);
+          if (lines.length <= maxLines) return { size, lines };
+        }
+        ctx.font = `${weight} ${minSize}px ${font}`;
+        return { size: minSize, lines: [text] };
+      };
+
+      /* helper: paragraf rata kiri, otomatis wrap
+       (bukan justify: di lebar 384 titik jarak antar kata jadi bolong-bolong tidak rata) */
+      const drawParagraph = (text, x, top, colW, lineH) => {
+        ctx.textAlign = 'left';
         const words = text.split(/\s+/).filter(Boolean);
-        const lines = [];
-        let cur = "";
-        let overflow = false;
+        let line = '';
+        let cy = top;
         for (const w of words) {
-          const test = cur ? `${cur} ${w}` : w;
-          if (ctx.measureText(test).width > maxW) {
-            if (!cur) { overflow = true; break; }
-            lines.push(cur);
-            cur = w;
+          const test = line ? `${line} ${w}` : w;
+          if (ctx.measureText(test).width > colW && line) {
+            ctx.fillText(line, x, cy);
+            cy += lineH;
+            line = w;
           } else {
-            cur = test;
+            line = test;
           }
         }
-        if (overflow) continue;
-        if (cur) lines.push(cur);
-        if (lines.length <= maxLines) return { size, lines };
-      }
-      ctx.font = `${weight} ${minSize}px ${font}`;
-      return { size: minSize, lines: [text] };
-    };
-
-    /* helper: paragraf rata kiri, otomatis wrap
-       (bukan justify: di lebar 384 titik jarak antar kata jadi bolong-bolong tidak rata) */
-    const drawParagraph = (text, x, top, colW, lineH) => {
-      ctx.textAlign = "left";
-      const words = text.split(/\s+/).filter(Boolean);
-      let line = "";
-      let cy = top;
-      for (const w of words) {
-        const test = line ? `${line} ${w}` : w;
-        if (ctx.measureText(test).width > colW && line) {
+        if (line) {
           ctx.fillText(line, x, cy);
           cy += lineH;
-          line = w;
-        } else {
-          line = test;
         }
+        return cy;
+      };
+
+      const isSurakarta = newspaperTemplate === 'surakarta';
+
+      /* ── MASTHEAD: SPECIAL EDITION | JUDUL | DAILY REPORT ── */
+      const sideW = 74;
+      ctx.fillStyle = NC.text;
+      ctx.font = `bold 15px ${SERIF}`;
+      ctx.textAlign = 'left';
+      ctx.fillText('SPECIAL', PAD, y + 15);
+      ctx.fillText('EDITION', PAD, y + 32);
+      ctx.textAlign = 'right';
+      ctx.fillText('DAILY', W - PAD, y + 15);
+      ctx.fillText('REPORT', W - PAD, y + 32);
+
+      const mastTxt = (newspaperTitle || 'TRISARA × SIF 2026').trim();
+      const mast = fitLines(mastTxt, innerW - sideW * 2 - 8, 1, 30, 16, 'bold');
+      ctx.font = `bold ${mast.size}px ${DISPLAY}`;
+      ctx.textAlign = 'center';
+      ctx.fillText(mast.lines[0], W / 2, y + 28);
+      y += 42;
+
+      doubleRule(12);
+
+      /* ── BARIS TAG: KATEGORI · TANGGAL, lalu SLOGAN ── */
+      const today = new Date();
+      const dateStr = today
+        .toLocaleDateString('id-ID', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        })
+        .toUpperCase();
+      ctx.fillStyle = NC.text;
+      ctx.font = `bold 16px ${SERIF}`;
+      ctx.textAlign = 'left';
+      ctx.fillText(
+        isSurakarta ? 'KOTA SURAKARTA' : 'BATIK NUSANTARA',
+        PAD,
+        y + 16
+      );
+      ctx.textAlign = 'right';
+      ctx.fillText(dateStr, W - PAD, y + 16);
+      y += 24;
+
+      const slogan = fitLines(
+        isSurakarta
+          ? 'KOTA BUDAYA JAWA TENGAH'
+          : 'WARISAN BUDAYA TAK BENDA UNESCO',
+        innerW,
+        1,
+        16,
+        14,
+        'bold',
+        SERIF
+      );
+      ctx.font = `bold ${slogan.size}px ${SERIF}`;
+      ctx.textAlign = 'center';
+      ctx.fillText(slogan.lines[0], W / 2, y + 16);
+      y += 26;
+
+      rule(3, 10);
+
+      /* ── HEADLINE BESAR ── */
+      const headline = (newspaperSub || 'MOMEN INDAH ANDA').toUpperCase();
+      const head = fitLines(headline, innerW - 4, 3, 42, 22, 'bold');
+      ctx.font = `bold ${head.size}px ${DISPLAY}`;
+      ctx.fillStyle = NC.accent;
+      ctx.textAlign = 'center';
+      const headLineH = Math.round(head.size * 1.05);
+      for (const line of head.lines) {
+        y += headLineH;
+        ctx.fillText(line, W / 2, y);
       }
-      if (line) {
-        ctx.fillText(line, x, cy);
-        cy += lineH;
+      y += 12;
+
+      rule(3, 10);
+
+      /* ── FOTO ── */
+      for (let i = 0; i < loadedImgs.length; i++) {
+        drawPhotoCover(ctx, loadedImgs[i], PAD, y, photoSlotW, photoSlotH, {
+          greyscale: newspaperGreyscale,
+          enhance: forPrint ? THERMAL_PHOTO : null,
+        });
+        ctx.strokeStyle = NC.divider;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(PAD, y, photoSlotW, photoSlotH);
+        y += photoSlotH + (i === loadedImgs.length - 1 ? 0 : 6);
       }
-      return cy;
-    };
+      y += 12;
 
-    const isSurakarta = newspaperTemplate === "surakarta";
+      /* ── KUTIPAN ── */
+      rule(2, 4);
+      const defaultQuote = isSurakarta
+        ? `"Surakarta, kota seribu warisan budaya yang tak lekang oleh waktu."`
+        : `"Mengabadikan momen indah bersama dalam kenangan yang abadi."`;
+      const quoteTxt = (
+        newspaperQuote ? `"${newspaperQuote}"` : defaultQuote
+      ).toUpperCase();
+      const q = fitLines(quoteTxt, innerW - 4, 4, 22, 18, 'bold', SERIF);
+      ctx.font = `bold ${q.size}px ${SERIF}`;
+      ctx.fillStyle = NC.accent;
+      ctx.textAlign = 'center';
+      const qLineH = Math.round(q.size * 1.3);
+      for (const line of q.lines) {
+        y += qLineH;
+        ctx.fillText(line, W / 2, y);
+      }
+      y += 12;
+      rule(3, 4);
 
-    /* ── MASTHEAD: SPECIAL EDITION | JUDUL | DAILY REPORT ── */
-    const sideW = 74;
-    ctx.fillStyle = NC.text;
-    ctx.font = `bold 15px ${SERIF}`;
-    ctx.textAlign = "left";
-    ctx.fillText("SPECIAL", PAD, y + 15);
-    ctx.fillText("EDITION", PAD, y + 32);
-    ctx.textAlign = "right";
-    ctx.fillText("DAILY", W - PAD, y + 15);
-    ctx.fillText("REPORT", W - PAD, y + 32);
+      /* ── KETERANGAN SINGKAT: 1 kalimat, huruf lebih kecil dari kutipan ── */
+      const bodyLineH = 20;
+      ctx.fillStyle = NC.text;
+      ctx.font = `bold 15px ${SERIF}`;
+      y =
+        drawParagraph(
+          NEWSPAPER_BLURB[isSurakarta ? 'surakarta' : 'general'],
+          PAD,
+          y + 18,
+          innerW,
+          bodyLineH
+        ) -
+        bodyLineH +
+        8;
 
-    const mastTxt = (newspaperTitle || "TRISARA × SIF 2026").trim();
-    const mast = fitLines(mastTxt, innerW - sideW * 2 - 8, 1, 30, 16, "bold");
-    ctx.font = `bold ${mast.size}px ${DISPLAY}`;
-    ctx.textAlign = "center";
-    ctx.fillText(mast.lines[0], W / 2, y + 28);
-    y += 42;
+      /* ── PENUTUP ── */
+      doubleRule(20);
+      ctx.fillStyle = NC.text;
+      ctx.textAlign = 'center';
+      const thanks = fitLines(
+        'TERIMA KASIH ATAS KUNJUNGAN ANDA',
+        innerW,
+        1,
+        16,
+        14,
+        'bold',
+        SERIF
+      );
+      ctx.font = `bold ${thanks.size}px ${SERIF}`;
+      ctx.fillText(thanks.lines[0], W / 2, y + 16);
+      y += 26;
+      rule(3, 0);
 
-    doubleRule(12);
-
-    /* ── BARIS TAG: KATEGORI · TANGGAL, lalu SLOGAN ── */
-    const today = new Date();
-    const dateStr = today.toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase();
-    ctx.fillStyle = NC.text;
-    ctx.font = `bold 16px ${SERIF}`;
-    ctx.textAlign = "left";
-    ctx.fillText(isSurakarta ? "KOTA SURAKARTA" : "BATIK NUSANTARA", PAD, y + 16);
-    ctx.textAlign = "right";
-    ctx.fillText(dateStr, W - PAD, y + 16);
-    y += 24;
-
-    const slogan = fitLines(
-      isSurakarta ? "KOTA BUDAYA JAWA TENGAH" : "WARISAN BUDAYA TAK BENDA UNESCO",
-      innerW, 1, 16, 14, "bold", SERIF
-    );
-    ctx.font = `bold ${slogan.size}px ${SERIF}`;
-    ctx.textAlign = "center";
-    ctx.fillText(slogan.lines[0], W / 2, y + 16);
-    y += 26;
-
-    rule(3, 10);
-
-    /* ── HEADLINE BESAR ── */
-    const headline = (newspaperSub || "MOMEN INDAH ANDA").toUpperCase();
-    const head = fitLines(headline, innerW - 4, 3, 42, 22, "bold");
-    ctx.font = `bold ${head.size}px ${DISPLAY}`;
-    ctx.fillStyle = NC.accent;
-    ctx.textAlign = "center";
-    const headLineH = Math.round(head.size * 1.05);
-    for (const line of head.lines) {
-      y += headLineH;
-      ctx.fillText(line, W / 2, y);
-    }
-    y += 12;
-
-    rule(3, 10);
-
-    /* ── FOTO ── */
-    for (let i = 0; i < loadedImgs.length; i++) {
-      drawPhotoCover(ctx, loadedImgs[i], PAD, y, photoSlotW, photoSlotH, {
-        greyscale: newspaperGreyscale,
-        enhance: forPrint ? THERMAL_PHOTO : null,
-      });
-      ctx.strokeStyle = NC.divider;
-      ctx.lineWidth = 2;
-      ctx.strokeRect(PAD, y, photoSlotW, photoSlotH);
-      y += photoSlotH + (i === loadedImgs.length - 1 ? 0 : 6);
-    }
-    y += 12;
-
-    /* ── KUTIPAN ── */
-    rule(2, 4);
-    const defaultQuote = isSurakarta
-      ? `"Surakarta, kota seribu warisan budaya yang tak lekang oleh waktu."`
-      : `"Mengabadikan momen indah bersama dalam kenangan yang abadi."`;
-    const quoteTxt = (newspaperQuote ? `"${newspaperQuote}"` : defaultQuote).toUpperCase();
-    const q = fitLines(quoteTxt, innerW - 4, 4, 22, 18, "bold", SERIF);
-    ctx.font = `bold ${q.size}px ${SERIF}`;
-    ctx.fillStyle = NC.accent;
-    ctx.textAlign = "center";
-    const qLineH = Math.round(q.size * 1.3);
-    for (const line of q.lines) {
-      y += qLineH;
-      ctx.fillText(line, W / 2, y);
-    }
-    y += 12;
-    rule(3, 4);
-
-    /* ── KETERANGAN SINGKAT: 1 kalimat, huruf lebih kecil dari kutipan ── */
-    const bodyLineH = 20;
-    ctx.fillStyle = NC.text;
-    ctx.font = `bold 15px ${SERIF}`;
-    y = drawParagraph(NEWSPAPER_BLURB[isSurakarta ? "surakarta" : "general"], PAD, y + 18, innerW, bodyLineH) - bodyLineH + 8;
-
-    /* ── PENUTUP ── */
-    doubleRule(20);
-    ctx.fillStyle = NC.text;
-    ctx.textAlign = "center";
-    const thanks = fitLines("TERIMA KASIH ATAS KUNJUNGAN ANDA", innerW, 1, 16, 14, "bold", SERIF);
-    ctx.font = `bold ${thanks.size}px ${SERIF}`;
-    ctx.fillText(thanks.lines[0], W / 2, y + 16);
-    y += 26;
-    rule(3, 0);
-
-    /* ── Potong tepat setinggi isi ── */
-    const outH = Math.min(Math.round(y + PAD), H);
-    const out = document.createElement("canvas");
-    out.width = W * scale;
-    out.height = outH * scale;
-    const oc = out.getContext("2d");
-    oc.fillStyle = NC.bg;
-    oc.fillRect(0, 0, out.width, out.height);
-    oc.drawImage(off, 0, 0);
-    return out;
-  }, [photos, newspaperTitle, newspaperSub, newspaperQuote, newspaperTemplate, newspaperGreyscale]);
+      /* ── Potong tepat setinggi isi ── */
+      const outH = Math.min(Math.round(y + PAD), H);
+      const out = document.createElement('canvas');
+      out.width = W * scale;
+      out.height = outH * scale;
+      const oc = out.getContext('2d');
+      oc.fillStyle = NC.bg;
+      oc.fillRect(0, 0, out.width, out.height);
+      oc.drawImage(off, 0, 0);
+      return out;
+    },
+    [
+      photos,
+      newspaperTitle,
+      newspaperSub,
+      newspaperQuote,
+      newspaperTemplate,
+      newspaperGreyscale,
+    ]
+  );
 
   const buildNewspaperCollage = useCallback(async () => {
-    paintInto(canvasRef.current, await drawNewspaper({ scale: 2 }), setFinalCollage);
+    paintInto(
+      canvasRef.current,
+      await drawNewspaper({ scale: 2 }),
+      setFinalCollage
+    );
   }, [drawNewspaper]);
 
   /* ── Template Struk Surakarta ──
      Sama seperti koran: satuan titik printer (lebar 384). Huruf 18–20 titik
      (±33 huruf per baris), setara struk kasir biasa. */
-  const drawReceipt = useCallback(async ({ scale = 1, forPrint = false } = {}) => {
-    if (photos.length === 0) return null;
+  const drawReceipt = useCallback(
+    async ({ scale = 1, forPrint = false } = {}) => {
+      if (photos.length === 0) return null;
 
-    const W = THERMAL_DOTS;
-    const PAD = 10;
-    const innerW = W - PAD * 2;
-    // Monospace tanpa kait (serif): kaitnya Courier New pecah jadi titik di printer thermal
-    const MONO = "Consolas, 'Roboto Mono', 'Droid Sans Mono', monospace";
-    const P = PAPER;
+      const W = THERMAL_DOTS;
+      const PAD = 10;
+      const innerW = W - PAD * 2;
+      // Monospace tanpa kait (serif): kaitnya Courier New pecah jadi titik di printer thermal
+      const MONO = "Consolas, 'Roboto Mono', 'Droid Sans Mono', monospace";
+      const P = PAPER;
 
-    const loadedImgs = await loadImages(photos);
-    const photoSlotW = innerW;
-    // 1–2 foto: 4:3. 3 foto ke atas: 16:9 supaya struk tidak kepanjangan
-    const photoSlotH = Math.round(photoSlotW * (loadedImgs.length <= 2 ? 3 / 4 : 9 / 16));
+      const loadedImgs = await loadImages(photos);
+      const photoSlotW = innerW;
+      // 1–2 foto: 4:3. 3 foto ke atas: 16:9 supaya struk tidak kepanjangan
+      const photoSlotH = Math.round(
+        photoSlotW * (loadedImgs.length <= 2 ? 3 / 4 : 9 / 16)
+      );
 
-    const H = 2200 + (photoSlotH + 44) * loadedImgs.length;
-    const off = document.createElement("canvas");
-    off.width = W * scale;
-    off.height = H * scale;
-    const ctx = off.getContext("2d");
-    ctx.scale(scale, scale);
-    ctx.fillStyle = P.bg;
-    ctx.fillRect(0, 0, W, H);
-    ctx.textBaseline = "alphabetic";
+      const H = 2200 + (photoSlotH + 44) * loadedImgs.length;
+      const off = document.createElement('canvas');
+      off.width = W * scale;
+      off.height = H * scale;
+      const ctx = off.getContext('2d');
+      ctx.scale(scale, scale);
+      ctx.fillStyle = P.bg;
+      ctx.fillRect(0, 0, W, H);
+      ctx.textBaseline = 'alphabetic';
 
-    let y = PAD;
+      let y = PAD;
 
-    /* helper: garis putus-putus ala struk */
-    const dashed = (gap = 24) => {
-      ctx.save();
-      ctx.strokeStyle = P.divider;
-      ctx.lineWidth = 2;
-      ctx.setLineDash([6, 4]);
-      ctx.beginPath();
-      ctx.moveTo(PAD, y + 1);
-      ctx.lineTo(W - PAD, y + 1);
-      ctx.stroke();
-      ctx.restore();
-      y += gap;
-    };
+      /* helper: garis putus-putus ala struk */
+      const dashed = (gap = 24) => {
+        ctx.save();
+        ctx.strokeStyle = P.divider;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.moveTo(PAD, y + 1);
+        ctx.lineTo(W - PAD, y + 1);
+        ctx.stroke();
+        ctx.restore();
+        y += gap;
+      };
 
-    /* helper: garis ganda (===) */
-    const double = (gap = 28) => {
-      ctx.fillStyle = P.divider;
-      ctx.fillRect(PAD, y, innerW, 2);
-      ctx.fillRect(PAD, y + 5, innerW, 2);
-      y += gap;
-    };
+      /* helper: garis ganda (===) */
+      const double = (gap = 28) => {
+        ctx.fillStyle = P.divider;
+        ctx.fillRect(PAD, y, innerW, 2);
+        ctx.fillRect(PAD, y + 5, innerW, 2);
+        y += gap;
+      };
 
-    /* helper: baris kiri – kanan */
-    const row = (left, right, { size = 20, gap = 26 } = {}) => {
-      ctx.font = `bold ${size}px ${MONO}`;
-      ctx.fillStyle = P.text;
-      ctx.textAlign = "left";
-      ctx.fillText(left, PAD, y);
-      ctx.textAlign = "right";
-      ctx.fillText(right, W - PAD, y);
-      y += gap;
-    };
+      /* helper: baris kiri – kanan */
+      const row = (left, right, { size = 20, gap = 26 } = {}) => {
+        ctx.font = `bold ${size}px ${MONO}`;
+        ctx.fillStyle = P.text;
+        ctx.textAlign = 'left';
+        ctx.fillText(left, PAD, y);
+        ctx.textAlign = 'right';
+        ctx.fillText(right, W - PAD, y);
+        y += gap;
+      };
 
-    /* helper: teks tengah, otomatis wrap */
-    const center = (text, { size = 20, italic = false, gap = 26 } = {}) => {
-      ctx.font = `${italic ? "italic " : ""}bold ${size}px ${MONO}`;
-      ctx.fillStyle = P.text;
-      ctx.textAlign = "center";
-      const words = String(text).split(" ");
-      let line = "";
-      for (let i = 0; i < words.length; i++) {
-        const test = line ? `${line} ${words[i]}` : words[i];
-        if (ctx.measureText(test).width > innerW && line) {
-          ctx.fillText(line, W / 2, y);
-          y += gap;
-          line = words[i];
-        } else {
-          line = test;
+      /* helper: teks tengah, otomatis wrap */
+      const center = (text, { size = 20, italic = false, gap = 26 } = {}) => {
+        ctx.font = `${italic ? 'italic ' : ''}bold ${size}px ${MONO}`;
+        ctx.fillStyle = P.text;
+        ctx.textAlign = 'center';
+        const words = String(text).split(' ');
+        let line = '';
+        for (let i = 0; i < words.length; i++) {
+          const test = line ? `${line} ${words[i]}` : words[i];
+          if (ctx.measureText(test).width > innerW && line) {
+            ctx.fillText(line, W / 2, y);
+            y += gap;
+            line = words[i];
+          } else {
+            line = test;
+          }
         }
-      }
-      ctx.fillText(line, W / 2, y);
-      y += gap;
-    };
+        ctx.fillText(line, W / 2, y);
+        y += gap;
+      };
 
-    /* ── KOP STRUK ───────────────────────────────────────── */
-    y += 18;
-    center("*** SUGENG RAWUH ING SOLO ***", { size: 18, gap: 36 });
+      /* ── KOP STRUK ───────────────────────────────────────── */
+      y += 18;
+      center('*** SUGENG RAWUH ING SOLO ***', { size: 18, gap: 36 });
 
-    // Judul besar: menyusut otomatis agar pas selebar struk
-    const titleTxt = (newspaperTitle || "KOTA SURAKARTA").toUpperCase();
-    let titleSize = 34;
-    ctx.font = `bold ${titleSize}px ${MONO}`;
-    while (ctx.measureText(titleTxt).width > innerW && titleSize > 20) {
-      titleSize -= 1;
+      // Judul besar: menyusut otomatis agar pas selebar struk
+      const titleTxt = (newspaperTitle || 'KOTA SURAKARTA').toUpperCase();
+      let titleSize = 34;
       ctx.font = `bold ${titleSize}px ${MONO}`;
-    }
-    center(titleTxt, { size: titleSize, gap: 30 });
+      while (ctx.measureText(titleTxt).width > innerW && titleSize > 20) {
+        titleSize -= 1;
+        ctx.font = `bold ${titleSize}px ${MONO}`;
+      }
+      center(titleTxt, { size: titleSize, gap: 30 });
 
-    center("Kota Budaya Jawa Tengah", { size: 18, gap: 23 });
-    center("Keraton Kasunanan", { size: 18, gap: 23 });
-    center("Pura Mangkunegaran", { size: 18, gap: 23 });
-    center("Berdiri 17 Februari 1745", { size: 18, gap: 22 });
-    dashed(30);
+      center('Kota Budaya Jawa Tengah', { size: 18, gap: 23 });
+      center('Keraton Kasunanan', { size: 18, gap: 23 });
+      center('Pura Mangkunegaran', { size: 18, gap: 23 });
+      center('Berdiri 17 Februari 1745', { size: 18, gap: 22 });
+      dashed(30);
 
-    /* ── META TRANSAKSI ──────────────────────────────────── */
-    const now = new Date();
-    const p2 = n => String(n).padStart(2, "0");
-    const noStruk = `SKA-${String(now.getFullYear()).slice(2)}${p2(now.getMonth() + 1)}${p2(now.getDate())}-${p2(now.getHours())}${p2(now.getMinutes())}${p2(now.getSeconds())}`;
-    row("No. Struk", noStruk);
-    row("Tanggal", `${p2(now.getDate())}/${p2(now.getMonth() + 1)}/${now.getFullYear()} ${p2(now.getHours())}:${p2(now.getMinutes())}`);
-    row("Lokasi", "SOLO, JAWA TENGAH");
-    row("Lembar", `${loadedImgs.length} FOTO KENANGAN`, { gap: 16 });
-    double(36);
+      /* ── META TRANSAKSI ──────────────────────────────────── */
+      const now = new Date();
+      const p2 = (n) => String(n).padStart(2, '0');
+      const noStruk = `SKA-${String(now.getFullYear()).slice(2)}${p2(
+        now.getMonth() + 1
+      )}${p2(now.getDate())}-${p2(now.getHours())}${p2(now.getMinutes())}${p2(
+        now.getSeconds()
+      )}`;
+      row('No. Struk', noStruk);
+      row(
+        'Tanggal',
+        `${p2(now.getDate())}/${p2(
+          now.getMonth() + 1
+        )}/${now.getFullYear()} ${p2(now.getHours())}:${p2(now.getMinutes())}`
+      );
+      row('Lokasi', 'SOLO, JAWA TENGAH');
+      row('Lembar', `${loadedImgs.length} FOTO KENANGAN`, { gap: 16 });
+      double(36);
 
-    /* ── BANNER ──────────────────────────────────────────── */
-    center(`** ${(newspaperSub || "Kota Budaya Jawa Tengah").toUpperCase()} **`, { size: 20, gap: 24 });
-    y -= 6;
-    double(26);
+      /* ── BANNER ──────────────────────────────────────────── */
+      center(
+        `** ${(newspaperSub || 'Kota Budaya Jawa Tengah').toUpperCase()} **`,
+        { size: 20, gap: 24 }
+      );
+      y -= 6;
+      double(26);
 
-    /* ── FOTO ────────────────────────────────────────────── */
-    for (let i = 0; i < loadedImgs.length; i++) {
-      drawPhotoCover(ctx, loadedImgs[i], PAD, y, photoSlotW, photoSlotH, {
-        greyscale: newspaperGreyscale,
-        enhance: forPrint ? THERMAL_PHOTO : null,
-      });
-      ctx.strokeStyle = P.divider;
-      ctx.lineWidth = 2;
-      ctx.strokeRect(PAD, y, photoSlotW, photoSlotH);
-      y += photoSlotH + 8;
-    }
+      /* ── FOTO ────────────────────────────────────────────── */
+      for (let i = 0; i < loadedImgs.length; i++) {
+        drawPhotoCover(ctx, loadedImgs[i], PAD, y, photoSlotW, photoSlotH, {
+          greyscale: newspaperGreyscale,
+          enhance: forPrint ? THERMAL_PHOTO : null,
+        });
+        ctx.strokeStyle = P.divider;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(PAD, y, photoSlotW, photoSlotH);
+        y += photoSlotH + 8;
+      }
 
-    /* ── ITEM & TOTAL ────────────────────────────────────── */
-    // Sengaja ringkas supaya kertas tidak boros: 2 item, masing-masing 1 baris.
-    y += 6;
-    dashed(30);
-    row("Kenangan Kota Solo", `x${loadedImgs.length} GRATIS`);
-    row("Senyum Bahagia", "x99 ABADI", { gap: 16 });
-    double(36);
-    row("TOTAL", "TAK TERHINGGA", { size: 24, gap: 14 });
-    double(34);
+      /* ── ITEM & TOTAL ────────────────────────────────────── */
+      // Sengaja ringkas supaya kertas tidak boros: 2 item, masing-masing 1 baris.
+      y += 6;
+      dashed(30);
+      row('Kenangan Kota Solo', `x${loadedImgs.length} GRATIS`);
+      row('Senyum Bahagia', 'x99 ABADI', { gap: 16 });
+      double(36);
+      row('TOTAL', 'TAK TERHINGGA', { size: 24, gap: 14 });
+      double(34);
 
-    /* ── KUTIPAN ─────────────────────────────────────────── */
-    const quote = newspaperQuote
-      ? `"${newspaperQuote}"`
-      : `"Surakarta, kota seribu warisan budaya yang tak lekang oleh waktu."`;
-    center(quote, { size: 18, italic: true, gap: 24 });
-    y -= 4;
+      /* ── KUTIPAN ─────────────────────────────────────────── */
+      const quote = newspaperQuote
+        ? `"${newspaperQuote}"`
+        : `"Surakarta, kota seribu warisan budaya yang tak lekang oleh waktu."`;
+      center(quote, { size: 18, italic: true, gap: 24 });
+      y -= 4;
 
-    /* ── BARCODE DEKORATIF + FOOTER ──────────────────────── */
-    // batang minimal 2 titik: batang 1 titik tidak kelihatan jelas saat dicetak
-    const bcH = 36;
-    const bcW = Math.round(innerW * 0.86);
-    const bcX = Math.round((W - bcW) / 2);
-    let bx = bcX;
-    let seed = noStruk.split("").reduce((a, c) => a + c.charCodeAt(0), 7);
-    ctx.fillStyle = P.text;
-    while (bx < bcX + bcW - 2) {
-      seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-      const barW = 2 + (seed % 3);
-      const gapW = 2 + ((seed >> 6) % 2);
-      if (bx + barW > bcX + bcW) break;
-      ctx.fillRect(bx, y, barW, bcH);
-      bx += barW + gapW;
-    }
-    y += bcH + 20;
-    center(noStruk, { size: 18, gap: 32 });
+      /* ── BARCODE DEKORATIF + FOOTER ──────────────────────── */
+      // batang minimal 2 titik: batang 1 titik tidak kelihatan jelas saat dicetak
+      const bcH = 36;
+      const bcW = Math.round(innerW * 0.86);
+      const bcX = Math.round((W - bcW) / 2);
+      let bx = bcX;
+      let seed = noStruk.split('').reduce((a, c) => a + c.charCodeAt(0), 7);
+      ctx.fillStyle = P.text;
+      while (bx < bcX + bcW - 2) {
+        seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+        const barW = 2 + (seed % 3);
+        const gapW = 2 + ((seed >> 6) % 2);
+        if (bx + barW > bcX + bcW) break;
+        ctx.fillRect(bx, y, barW, bcH);
+        bx += barW + gapW;
+      }
+      y += bcH + 20;
+      center(noStruk, { size: 18, gap: 32 });
 
-    center("MATUR NUWUN SAMPUN RAWUH", { size: 22, gap: 24 });
-    center("Solo, The Spirit of Java", { size: 18, gap: 6 });
+      center('MATUR NUWUN SAMPUN RAWUH', { size: 22, gap: 24 });
+      center('Solo, The Spirit of Java', { size: 18, gap: 6 });
 
-    /* ── Potong tepat setinggi isi ───────────────────────── */
-    const outH = Math.min(Math.round(y + PAD), H);
-    const out = document.createElement("canvas");
-    out.width = W * scale;
-    out.height = outH * scale;
-    const oc = out.getContext("2d");
-    oc.fillStyle = P.bg;
-    oc.fillRect(0, 0, out.width, out.height);
-    oc.drawImage(off, 0, 0);
-    return out;
-  }, [photos, newspaperTitle, newspaperSub, newspaperQuote, newspaperGreyscale]);
+      /* ── Potong tepat setinggi isi ───────────────────────── */
+      const outH = Math.min(Math.round(y + PAD), H);
+      const out = document.createElement('canvas');
+      out.width = W * scale;
+      out.height = outH * scale;
+      const oc = out.getContext('2d');
+      oc.fillStyle = P.bg;
+      oc.fillRect(0, 0, out.width, out.height);
+      oc.drawImage(off, 0, 0);
+      return out;
+    },
+    [photos, newspaperTitle, newspaperSub, newspaperQuote, newspaperGreyscale]
+  );
 
   const buildReceiptCollage = useCallback(async () => {
-    paintInto(canvasRef.current, await drawReceipt({ scale: 2 }), setFinalCollage);
+    paintInto(
+      canvasRef.current,
+      await drawReceipt({ scale: 2 }),
+      setFinalCollage
+    );
   }, [drawReceipt]);
 
   /* ── Pilih renderer sesuai template cetak ── */
   const buildPrintCollage = useCallback(async () => {
-    if (newspaperTemplate === "surakarta") return buildReceiptCollage();
+    if (newspaperTemplate === 'surakarta') return buildReceiptCollage();
     return buildNewspaperCollage();
   }, [newspaperTemplate, buildReceiptCollage, buildNewspaperCollage]);
 
@@ -1146,7 +1577,17 @@ export default function Photobox() {
       if (useNewspaper) buildPrintCollage();
       else buildCollage();
     }
-  }, [step, selectedColor, selectedApiFrame, useNewspaper, newspaperTitle, newspaperSub, newspaperQuote, newspaperTemplate, newspaperGreyscale]);
+  }, [
+    step,
+    selectedColor,
+    selectedApiFrame,
+    useNewspaper,
+    newspaperTitle,
+    newspaperSub,
+    newspaperQuote,
+    newspaperTemplate,
+    newspaperGreyscale,
+  ]);
 
   /* ── Step 3 → 4 ── */
   const confirmFrame = async () => {
@@ -1154,7 +1595,7 @@ export default function Photobox() {
     if (useNewspaper) await buildPrintCollage();
     else await buildCollage();
     // Grab data URL immediately after build (canvas is synchronously ready)
-    const collageDataUrl = canvasRef.current?.toDataURL("image/png") || null;
+    const collageDataUrl = canvasRef.current?.toDataURL('image/png') || null;
     setStep(4);
     // Upload for QR Code
     setUploadingQr(true);
@@ -1162,19 +1603,19 @@ export default function Photobox() {
     setQrError(null);
     try {
       if (collageDataUrl) {
-        const result = await uploadPhotoboxTemp(collageDataUrl);
+        // 2 foto atau lebih → ikut dikirim supaya backend bisa membuat GIF animasinya
+        const frames = photos.length >= 2 ? await shrinkPhotos(photos) : [];
+        const result = await uploadPhotoboxTemp(collageDataUrl, frames);
         // qr_url dari backend sudah absolut & pakai IP yang bisa diakses HP;
         // fallback ke BASE_URL untuk backend versi lama
         setQrUrl(result.qr_url || `${BASE_URL}${result.download_url}`);
       }
     } catch (err) {
-      setQrError("Gagal generate QR. Download manual tetap tersedia.");
+      setQrError('Gagal generate QR. Download manual tetap tersedia.');
     } finally {
       setUploadingQr(false);
     }
   };
-
-
 
   /* ── Copy link hasil foto ── */
   const copyQrLink = async () => {
@@ -1184,36 +1625,40 @@ export default function Photobox() {
         await navigator.clipboard.writeText(qrUrl);
       } else {
         // fallback: clipboard API hanya tersedia di secure context (https/localhost)
-        const ta = document.createElement("textarea");
+        const ta = document.createElement('textarea');
         ta.value = qrUrl;
-        ta.style.position = "fixed";
-        ta.style.opacity = "0";
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
         document.body.appendChild(ta);
         ta.select();
-        document.execCommand("copy");
+        document.execCommand('copy');
         document.body.removeChild(ta);
       }
       setLinkCopied(true);
       setTimeout(() => setLinkCopied(false), 2000);
     } catch {
-      window.prompt("Salin link ini:", qrUrl);
+      window.prompt('Salin link ini:', qrUrl);
     }
   };
 
   /* ── Download ── */
   const downloadPNG = () => {
     if (!finalCollage) return;
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = finalCollage;
-    a.download = "Trisara_Photobox.png";
+    a.download = 'Trisara_Photobox.png';
     a.click();
   };
   const downloadPDF = () => {
     if (!finalCollage || !canvasRef.current) return;
     const { width, height } = canvasRef.current;
-    const pdf = new jsPDF({ orientation: width > height ? "landscape" : "portrait", unit: "px", format: [width, height] });
-    pdf.addImage(finalCollage, "PNG", 0, 0, width, height);
-    pdf.save("Trisara_Photobox.pdf");
+    const pdf = new jsPDF({
+      orientation: width > height ? 'landscape' : 'portrait',
+      unit: 'px',
+      format: [width, height],
+    });
+    pdf.addImage(finalCollage, 'PNG', 0, 0, width, height);
+    pdf.save('Trisara_Photobox.pdf');
   };
 
   /* ── Print (thermal 58mm) ── */
@@ -1222,7 +1667,8 @@ export default function Photobox() {
     try {
       // Versi cetak digambar ulang dalam satuan titik printer (scale 1), dengan foto
       // yang dicerahkan; soft file tetap versi berwarna yang tajam di layar.
-      const draw = newspaperTemplate === "surakarta" ? drawReceipt : drawNewspaper;
+      const draw =
+        newspaperTemplate === 'surakarta' ? drawReceipt : drawNewspaper;
       const printCanvas = await draw({ scale: 1, forPrint: true });
       if (!printCanvas) return;
       // Titik hitam/putih ditentukan di sini, bukan oleh driver/RawBT
@@ -1231,9 +1677,9 @@ export default function Photobox() {
       // Android (mis. Redmi Pad): Chrome tidak bisa mencetak ke printer thermal
       // Bluetooth lewat dialog print, jadi dikirim ke app RawBT.
       if (/Android/i.test(navigator.userAgent)) printViaRawBT(bitmap);
-      else printViaBrowser(bitmap.toDataURL("image/png"));
+      else printViaBrowser(bitmap.toDataURL('image/png'));
     } catch (err) {
-      console.error("[Photobox] Gagal menyiapkan cetakan:", err);
+      console.error('[Photobox] Gagal menyiapkan cetakan:', err);
     }
   };
 
@@ -1242,9 +1688,10 @@ export default function Photobox() {
     // escpos → Android membuka rawbt:base64,<perintah printer>
     // image  → Android membuka rawbt:data:image/png;base64,<gambar>
     // Kalau RawBT belum terpasang, Chrome membuka halamannya di Play Store.
-    const payload = RAWBT_MODE === "image"
-      ? bitmap.toDataURL("image/png")
-      : `base64,${bytesToBase64(bitmapToEscPos(bitmap, THERMAL_HEAT))}`;
+    const payload =
+      RAWBT_MODE === 'image'
+        ? bitmap.toDataURL('image/png')
+        : `base64,${bytesToBase64(bitmapToEscPos(bitmap, THERMAL_HEAT))}`;
     window.location.href = `intent:${payload}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`;
   };
 
@@ -1253,9 +1700,10 @@ export default function Photobox() {
     // Pakai iframe tersembunyi, bukan window.open:
     //  - tidak kena popup blocker
     //  - tidak ada jendela berkedip di depan pengunjung booth
-    const frame = document.createElement("iframe");
-    frame.setAttribute("aria-hidden", "true");
-    frame.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;";
+    const frame = document.createElement('iframe');
+    frame.setAttribute('aria-hidden', 'true');
+    frame.style.cssText =
+      'position:fixed;right:0;bottom:0;width:0;height:0;border:0;';
     document.body.appendChild(frame);
 
     // Kertas 58mm, tapi area cetak efektif printer thermal 58mm umumnya
@@ -1301,15 +1749,18 @@ export default function Photobox() {
         frame.contentWindow.focus();
         frame.contentWindow.print();
       } catch (err) {
-        console.error("[Photobox] Gagal memanggil dialog cetak:", err);
+        console.error('[Photobox] Gagal memanggil dialog cetak:', err);
       }
       cleanup();
     };
 
     // Tunggu gambar benar-benar ter-render; menebak dengan setTimeout
     // bisa mencetak halaman kosong saat kolase besar.
-    const img = doc.querySelector("img");
-    if (!img) { cleanup(); return; }
+    const img = doc.querySelector('img');
+    if (!img) {
+      cleanup();
+      return;
+    }
     if (img.complete) fire();
     else {
       img.onload = fire;
@@ -1329,11 +1780,11 @@ export default function Photobox() {
     setCountdown(null);
     setIsCapturing(false);
     setUseNewspaper(false);
-    setNewspaperTemplate("general");
+    setNewspaperTemplate('general');
     setNewspaperGreyscale(false);
-    setNewspaperTitle("TRISARA × SIF 2026");
-    setNewspaperSub("Momen Indah Batik Nusantara");
-    setNewspaperQuote("");
+    setNewspaperTitle('TRISARA × SIF 2026');
+    setNewspaperSub('Momen Indah Batik Nusantara');
+    setNewspaperQuote('');
     setQrUrl(null);
     setQrError(null);
     setLinkCopied(false);
@@ -1342,8 +1793,8 @@ export default function Photobox() {
   /* ─── Render ─────────────────────────────────────────── */
   return (
     <>
-    <div style={S.page} className="photobox-page">
-      <style>{`
+      <div style={S.page} className="photobox-page">
+        <style>{`
         .photobox-page * { box-sizing: border-box !important; }
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
         @keyframes pulse-ring { 0%{transform:scale(1);opacity:1} 100%{transform:scale(1.6);opacity:0} }
@@ -1420,426 +1871,713 @@ export default function Photobox() {
         }
       `}</style>
 
-      {/* ─── Header ─── */}
-      <div style={S.header}>
-        <img src="/logo.png" alt="Logo" style={S.logoImage} />
-        <h1 style={S.headerTitle} className="photobox-header-title">
-          <SparklesIcon size={28} color={colors.blue} /> Photobox <span style={{ color: colors.blue }}>Nusantara</span>
-        </h1>
-        <p style={S.headerSub} className="photobox-subtitle">Abadikan momen indah dengan bingkai batik khas Indonesia</p>
-      </div>
-
-      {/* ─── Step Indicator ─── */}
-      <div style={S.stepBar} className="photobox-step-bar">
-        {["Pilih Layout", "Sesi Foto", "Pilih Bingkai", "Simpan & Cetak"].map((label, i) => {
-          const n = i + 1;
-          const done = step > n;
-          const active = step === n;
-          return (
-            <div key={n} style={S.stepItem} className="photobox-step-item">
-              <div style={{ ...S.stepCircle, ...(done ? S.stepDone : active ? S.stepActive : S.stepFuture) }}>
-                {done ? <IconCheck /> : n}
-              </div>
-              <span style={{ ...S.stepLabel, color: active ? colors.blue : done ? colors.textBody : colors.textMuted }}>{label}</span>
-              {i < 3 && <div className="photobox-step-line" style={{ ...S.stepLine, background: done ? colors.blue : colors.border }} />}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ═══ STEP 1: LAYOUT ═══ */}
-      {step === 1 && (
-        <div style={{ ...S.contentBox, animation: "slide-in 0.4s ease" }}>
-          <h2 style={S.sectionTitle}>Pilih Jumlah Foto</h2>
-          <p style={S.sectionSub}>Tentukan berapa banyak foto yang ingin masuk dalam satu bingkai</p>
-          <div style={S.layoutGrid} className="photobox-layout-grid">
-            {LAYOUTS.map(lay => (
-              <div key={lay.count} className="photobox-card" style={S.layoutCard} onClick={() => handleSelectLayout(lay)}>
-                <div style={S.layoutPreview}>{lay.preview()}</div>
-                <div style={S.layoutBadge}>{lay.desc}</div>
-                <h3 style={S.layoutLabel}>{lay.label}</h3>
-              </div>
-            ))}
-          </div>
+        {/* ─── Header ─── */}
+        <div style={S.header}>
+          <img src="/logo.png" alt="Logo" style={S.logoImage} />
+          <h1 style={S.headerTitle} className="photobox-header-title">
+            <SparklesIcon size={28} color={colors.blue} /> Photobox{' '}
+            <span style={{ color: colors.blue }}>Nusantara</span>
+          </h1>
+          <p style={S.headerSub} className="photobox-subtitle">
+            Abadikan momen indah dengan bingkai batik khas Indonesia
+          </p>
         </div>
-      )}
 
-      {/* ═══ STEP 2: CAPTURE ═══ */}
-      {step === 2 && (
-        <div style={{ ...S.captureLayout, animation: "slide-in 0.4s ease" }}>
-          <div style={S.cameraWrap} className="photobox-camera-layout">
-            <div style={S.cameraBox} className="photobox-camera-box">
-              <video ref={videoRef} autoPlay playsInline muted style={S.video} />
-              {countdown !== null && (
-                <div style={S.countdownOverlay}>
-                  <div style={S.countdownNum}>{countdown}</div>
+        {/* ─── Step Indicator ─── */}
+        <div style={S.stepBar} className="photobox-step-bar">
+          {['Pilih Layout', 'Sesi Foto', 'Pilih Bingkai', 'Simpan & Cetak'].map(
+            (label, i) => {
+              const n = i + 1;
+              const done = step > n;
+              const active = step === n;
+              return (
+                <div key={n} style={S.stepItem} className="photobox-step-item">
+                  <div
+                    style={{
+                      ...S.stepCircle,
+                      ...(done
+                        ? S.stepDone
+                        : active
+                        ? S.stepActive
+                        : S.stepFuture),
+                    }}
+                  >
+                    {done ? <IconCheck /> : n}
+                  </div>
+                  <span
+                    style={{
+                      ...S.stepLabel,
+                      color: active
+                        ? colors.blue
+                        : done
+                        ? colors.textBody
+                        : colors.textMuted,
+                    }}
+                  >
+                    {label}
+                  </span>
+                  {i < 3 && (
+                    <div
+                      className="photobox-step-line"
+                      style={{
+                        ...S.stepLine,
+                        background: done ? colors.blue : colors.border,
+                      }}
+                    />
+                  )}
                 </div>
-              )}
-              {flash && <div style={S.flashEffect} />}
-              <div style={S.progressDots}>
-                {Array.from({ length: layout.count }).map((_, i) => (
-                  <div key={i} style={{ ...S.dot, ...(i < photos.length ? S.dotFilled : {}) }} />
-                ))}
-              </div>
-            </div>
-            <div style={S.cameraControls} className="photobox-camera-controls">
-              <button className="btn-secondary" style={S.btnSecondary} onClick={restart}>Batal</button>
-              {photos.length > 0 && (
-                <button className="btn-secondary" style={S.btnSecondary} onClick={retakePhoto} disabled={isCapturing}>
-                  <IconRetake /> &nbsp;Foto Ulang
-                </button>
-              )}
-              <button
-                id="btn-capture"
-                className="capture-btn"
-                style={S.captureBtn}
-                onClick={triggerCountdown}
-                disabled={isCapturing || photos.length >= layout.count}
-              >
-                <IconCamera />
-                <span style={{ marginLeft: 8 }}>
-                  {isCapturing ? "Bersiap..." : `Ambil Foto ${photos.length + 1}/${layout.count}`}
-                </span>
-              </button>
-            </div>
-            <p style={{ textAlign: "center", color: colors.blue, fontSize: "0.85rem", marginTop: 8 }}>
-              Klik tombol lalu bersiaplah — hitung mundur 3 detik akan dimulai
-            </p>
-          </div>
+              );
+            }
+          )}
+        </div>
 
-          {/* Strip preview */}
-          <div style={S.stripPanel} className="photobox-strip-panel">
-            <h3 style={S.stripTitle}>Foto Terambil ({photos.length}/{layout.count})</h3>
-            <div style={S.stripList} className="photobox-strip-list">
-              {Array.from({ length: layout.count }).map((_, i) => (
-                <div key={i} style={S.stripSlot} className="photobox-strip-slot">
-                  {photos[i]
-                    ? <img src={photos[i]} alt={`foto ${i + 1}`} style={S.stripImg} />
-                    : <div style={S.stripEmpty}><IconCamera /><span style={{ fontSize: "0.7rem", marginTop: 4 }}>Foto {i + 1}</span></div>
-                  }
+        {/* ═══ STEP 1: LAYOUT ═══ */}
+        {step === 1 && (
+          <div style={{ ...S.contentBox, animation: 'slide-in 0.4s ease' }}>
+            <h2 style={S.sectionTitle}>Pilih Jumlah Foto</h2>
+            <p style={S.sectionSub}>
+              Tentukan berapa banyak foto yang ingin masuk dalam satu bingkai
+            </p>
+            <div style={S.layoutGrid} className="photobox-layout-grid">
+              {LAYOUTS.map((lay) => (
+                <div
+                  key={lay.count}
+                  className="photobox-card"
+                  style={S.layoutCard}
+                  onClick={() => handleSelectLayout(lay)}
+                >
+                  <div style={S.layoutPreview}>{lay.preview()}</div>
+                  <div style={S.layoutBadge}>{lay.desc}</div>
+                  <h3 style={S.layoutLabel}>{lay.label}</h3>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* ═══ STEP 3: FRAME ═══ */}
-      {step === 3 && (
-        <div style={{ ...S.frameLayout, animation: "slide-in 0.4s ease" }} className="photobox-frame-layout">
-          {/* Preview */}
-          <div style={S.previewPanel} className="photobox-preview-panel">
-            <div style={S.previewBox}>
-              {finalCollage
-                ? <img src={finalCollage} alt="preview" style={S.previewImg} />
-                : <div style={{ color: colors.textMuted, textAlign: "center" }}>Memuat preview...</div>
-              }
+        {/* ═══ STEP 2: CAPTURE ═══ */}
+        {step === 2 && (
+          <div style={{ ...S.captureLayout, animation: 'slide-in 0.4s ease' }}>
+            <div style={S.cameraWrap} className="photobox-camera-layout">
+              <div style={S.cameraBox} className="photobox-camera-box">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  style={S.video}
+                />
+                {countdown !== null && (
+                  <div style={S.countdownOverlay}>
+                    <div style={S.countdownNum}>{countdown}</div>
+                  </div>
+                )}
+                {flash && <div style={S.flashEffect} />}
+                <div style={S.progressDots}>
+                  {Array.from({ length: layout.count }).map((_, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        ...S.dot,
+                        ...(i < photos.length ? S.dotFilled : {}),
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div
+                style={S.cameraControls}
+                className="photobox-camera-controls"
+              >
+                <button
+                  className="btn-secondary"
+                  style={S.btnSecondary}
+                  onClick={restart}
+                >
+                  Batal
+                </button>
+                {photos.length > 0 && (
+                  <button
+                    className="btn-secondary"
+                    style={S.btnSecondary}
+                    onClick={retakePhoto}
+                    disabled={isCapturing}
+                  >
+                    <IconRetake /> &nbsp;Foto Ulang
+                  </button>
+                )}
+                <button
+                  id="btn-capture"
+                  className="capture-btn"
+                  style={S.captureBtn}
+                  onClick={triggerCountdown}
+                  disabled={isCapturing || photos.length >= layout.count}
+                >
+                  <IconCamera />
+                  <span style={{ marginLeft: 8 }}>
+                    {isCapturing
+                      ? 'Bersiap...'
+                      : `Ambil Foto ${photos.length + 1}/${layout.count}`}
+                  </span>
+                </button>
+              </div>
+              <p
+                style={{
+                  textAlign: 'center',
+                  color: colors.blue,
+                  fontSize: '0.85rem',
+                  marginTop: 8,
+                }}
+              >
+                Klik tombol lalu bersiaplah — hitung mundur 3 detik akan dimulai
+              </p>
             </div>
-            <div className="photobox-action-btns" style={{ display: "flex", gap: 12, marginTop: 16 }}>
-              <button className="btn-secondary" style={S.btnSecondary} onClick={restart}><IconRetake />&nbsp;Mulai Ulang</button>
-              <button className="btn-primary" style={S.btnPrimary} onClick={confirmFrame}>
-                Gunakan Bingkai ini →
-              </button>
+
+            {/* Strip preview */}
+            <div style={S.stripPanel} className="photobox-strip-panel">
+              <h3 style={S.stripTitle}>
+                Foto Terambil ({photos.length}/{layout.count})
+              </h3>
+              <div style={S.stripList} className="photobox-strip-list">
+                {Array.from({ length: layout.count }).map((_, i) => (
+                  <div
+                    key={i}
+                    style={S.stripSlot}
+                    className="photobox-strip-slot"
+                  >
+                    {photos[i] ? (
+                      <img
+                        src={photos[i]}
+                        alt={`foto ${i + 1}`}
+                        style={S.stripImg}
+                      />
+                    ) : (
+                      <div style={S.stripEmpty}>
+                        <IconCamera />
+                        <span style={{ fontSize: '0.7rem', marginTop: 4 }}>
+                          Foto {i + 1}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
+        )}
 
-          {/* Frame selector sidebar */}
-          <div style={S.frameSidebar} className="photobox-frame-sidebar">
-            {/* Tab: Standard vs Newspaper */}
-            <div style={{ display: "flex", gap: 8, marginBottom: 18 }}>
-              <button className={`frame-tab ${!useNewspaper ? "active" : ""}`} onClick={() => setUseNewspaper(false)}>
-                Bingkai Warna
-              </button>
-              <button className={`frame-tab ${useNewspaper ? "active" : ""}`} onClick={() => setUseNewspaper(true)}>
-                Template Cetak
-              </button>
+        {/* ═══ STEP 3: FRAME ═══ */}
+        {step === 3 && (
+          <div
+            style={{ ...S.frameLayout, animation: 'slide-in 0.4s ease' }}
+            className="photobox-frame-layout"
+          >
+            {/* Preview */}
+            <div style={S.previewPanel} className="photobox-preview-panel">
+              <div style={S.previewBox}>
+                {finalCollage ? (
+                  <img src={finalCollage} alt="preview" style={S.previewImg} />
+                ) : (
+                  <div style={{ color: colors.textMuted, textAlign: 'center' }}>
+                    Memuat preview...
+                  </div>
+                )}
+              </div>
+              <div
+                className="photobox-action-btns"
+                style={{ display: 'flex', gap: 12, marginTop: 16 }}
+              >
+                <button
+                  className="btn-secondary"
+                  style={S.btnSecondary}
+                  onClick={restart}
+                >
+                  <IconRetake />
+                  &nbsp;Mulai Ulang
+                </button>
+                <button
+                  className="btn-primary"
+                  style={S.btnPrimary}
+                  onClick={confirmFrame}
+                >
+                  Gunakan Bingkai ini →
+                </button>
+              </div>
             </div>
 
-            {!useNewspaper ? (
-              <>
-                <div style={S.sectionHead}>
-                  <h3 style={{ ...S.sidebarTitle, margin: 0 }}>Warna Bingkai</h3>
-                  <span style={S.sectionCount}>{FRAME_COLORS.length} pilihan</span>
-                </div>
-                <div style={S.frameColorGrid} className="photobox-frame-color-grid">
-                  {FRAME_COLORS.map(fc => {
-                    const active = !selectedApiFrame && selectedColor.id === fc.id;
-                    return (
-                      <button
-                        key={fc.id}
-                        type="button"
-                        title={fc.label}
-                        aria-pressed={active}
-                        className={`swatch ${active ? "active" : ""}`}
-                        onClick={() => { setSelectedColor(fc); setSelectedApiFrame(null); }}
-                      >
-                        <span
-                          className="swatch-preview"
-                          style={{
-                            background: fc.color || "#fff",
-                            backgroundImage: fc.color
-                              ? undefined
-                              : "repeating-linear-gradient(45deg, #EEF3FF 0 6px, #ffffff 6px 12px)",
-                            borderColor: fc.border || colors.border,
+            {/* Frame selector sidebar */}
+            <div style={S.frameSidebar} className="photobox-frame-sidebar">
+              {/* Tab: Standard vs Newspaper */}
+              <div style={{ display: 'flex', gap: 8, marginBottom: 18 }}>
+                <button
+                  className={`frame-tab ${!useNewspaper ? 'active' : ''}`}
+                  onClick={() => setUseNewspaper(false)}
+                >
+                  Bingkai Warna
+                </button>
+                <button
+                  className={`frame-tab ${useNewspaper ? 'active' : ''}`}
+                  onClick={() => setUseNewspaper(true)}
+                >
+                  Template Cetak
+                </button>
+              </div>
+
+              {!useNewspaper ? (
+                <>
+                  <div style={S.sectionHead}>
+                    <h3 style={{ ...S.sidebarTitle, margin: 0 }}>
+                      Warna Bingkai
+                    </h3>
+                    <span style={S.sectionCount}>
+                      {FRAME_COLORS.length} pilihan
+                    </span>
+                  </div>
+                  <div
+                    style={S.frameColorGrid}
+                    className="photobox-frame-color-grid"
+                  >
+                    {FRAME_COLORS.map((fc) => {
+                      const active =
+                        !selectedApiFrame && selectedColor.id === fc.id;
+                      return (
+                        <button
+                          key={fc.id}
+                          type="button"
+                          title={fc.label}
+                          aria-pressed={active}
+                          className={`swatch ${active ? 'active' : ''}`}
+                          onClick={() => {
+                            setSelectedColor(fc);
+                            setSelectedApiFrame(null);
                           }}
                         >
-                          <span className={`swatch-photo ${fc.color ? "stack" : ""}`} />
-                          {active && <span className="swatch-check"><IconCheck /></span>}
-                        </span>
-                        <span className="swatch-label">{fc.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {apiFrames.length > 0 && (
-                  <>
-                    <div style={{ ...S.sectionHead, marginTop: 22 }}>
-                      <h3 style={{ ...S.sidebarTitle, margin: 0 }}>Bingkai Custom</h3>
-                      <span style={S.sectionCount}>{apiFrames.length} bingkai</span>
-                    </div>
-                    <div style={S.apiFrameList}>
-                      {apiFrames.map(fr => {
-                        const active = selectedApiFrame?.id === fr.id;
-                        return (
-                          <button
-                            key={fr.id}
-                            type="button"
-                            title={fr.nama}
-                            aria-pressed={active}
-                            className={`frame-card ${active ? "active" : ""}`}
-                            onClick={() => { setSelectedApiFrame(fr); setSelectedColor(FRAME_COLORS[0]); }}
+                          <span
+                            className="swatch-preview"
+                            style={{
+                              background: fc.color || '#fff',
+                              backgroundImage: fc.color
+                                ? undefined
+                                : 'repeating-linear-gradient(45deg, #EEF3FF 0 6px, #ffffff 6px 12px)',
+                              borderColor: fc.border || colors.border,
+                            }}
                           >
-                            <span className="frame-card-thumb">
-                              <img
-                                src={fr.gambar?.startsWith("http") ? fr.gambar : `${BASE_URL}/${fr.gambar}`}
-                                alt={fr.nama}
-                                style={S.apiFrameThumb}
-                              />
-                              {active && <span className="swatch-check"><IconCheck /></span>}
-                            </span>
-                            <span className="swatch-label">{fr.nama}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </>
-                )}
-              </>
-            ) : (
-              /* Newspaper template editor */
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                <div style={S.sectionHead}>
-                  <h3 style={{ ...S.sidebarTitle, margin: 0 }}>Template Cetak</h3>
-                  <span style={S.sectionCount}>2 gaya</span>
-                </div>
-
-                {/* Pilih gaya template */}
-                <div style={{ display: "flex", gap: 8 }}>
-                  <button
-                    type="button"
-                    className={`frame-tab ${newspaperTemplate === "general" ? "active" : ""}`}
-                    style={{ flex: 1, padding: "9px 6px", fontSize: "0.76rem" }}
-                    onClick={() => {
-                      setNewspaperTemplate("general");
-                      setNewspaperTitle("TRISARA × SIF 2026");
-                      setNewspaperSub("Momen Indah Batik Nusantara");
-                    }}
-                  >
-                    Koran
-                  </button>
-                  <button
-                    type="button"
-                    className={`frame-tab ${newspaperTemplate === "surakarta" ? "active" : ""}`}
-                    style={{ flex: 1, padding: "9px 6px", fontSize: "0.76rem" }}
-                    onClick={() => {
-                      setNewspaperTemplate("surakarta");
-                      setNewspaperTitle("KOTA SURAKARTA");
-                      setNewspaperSub("Kota Budaya Jawa Tengah");
-                    }}
-                  >
-                    Struk
-                  </button>
-                </div>
-
-                {/* Mode foto */}
-                <div>
-                  <label style={S.npLabel}>Mode Foto</label>
-                  <div style={S.segment}>
-                    {[{ val: false, label: "Berwarna" }, { val: true, label: "Greyscale" }].map(opt => (
-                      <button
-                        key={String(opt.val)}
-                        type="button"
-                        onClick={() => setNewspaperGreyscale(opt.val)}
-                        style={{
-                          ...S.segmentBtn,
-                          background: newspaperGreyscale === opt.val ? colors.blue : "transparent",
-                          color: newspaperGreyscale === opt.val ? "#fff" : colors.textMuted,
-                          boxShadow: newspaperGreyscale === opt.val ? "0 2px 8px rgba(3,62,238,0.25)" : "none",
-                        }}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
+                            <span
+                              className={`swatch-photo ${
+                                fc.color ? 'stack' : ''
+                              }`}
+                            />
+                            {active && (
+                              <span className="swatch-check">
+                                <IconCheck />
+                              </span>
+                            )}
+                          </span>
+                          <span className="swatch-label">{fc.label}</span>
+                        </button>
+                      );
+                    })}
                   </div>
-                </div>
 
-                <div>
-                  <label style={S.npLabel}>Judul Utama</label>
-                  <input
-                    className="np-input"
-                    value={newspaperTitle}
-                    onChange={e => setNewspaperTitle(e.target.value.slice(0, 40))}
-                    placeholder={newspaperTemplate === "surakarta" ? "KOTA SURAKARTA" : "TRISARA × SIF 2026"}
-                    maxLength={40}
-                  />
-                  {newspaperTitle.length > 32 && <span style={S.npHint}>{newspaperTitle.length}/40</span>}
-                </div>
+                  {apiFrames.length > 0 && (
+                    <>
+                      <div style={{ ...S.sectionHead, marginTop: 22 }}>
+                        <h3 style={{ ...S.sidebarTitle, margin: 0 }}>
+                          Bingkai Custom
+                        </h3>
+                        <span style={S.sectionCount}>
+                          {apiFrames.length} bingkai
+                        </span>
+                      </div>
+                      <div style={S.apiFrameList}>
+                        {apiFrames.map((fr) => {
+                          const active = selectedApiFrame?.id === fr.id;
+                          return (
+                            <button
+                              key={fr.id}
+                              type="button"
+                              title={fr.nama}
+                              aria-pressed={active}
+                              className={`frame-card ${active ? 'active' : ''}`}
+                              onClick={() => {
+                                setSelectedApiFrame(fr);
+                                setSelectedColor(FRAME_COLORS[0]);
+                              }}
+                            >
+                              <span className="frame-card-thumb">
+                                <img
+                                  src={
+                                    fr.gambar?.startsWith('http')
+                                      ? fr.gambar
+                                      : `${BASE_URL}/${fr.gambar}`
+                                  }
+                                  alt={fr.nama}
+                                  style={S.apiFrameThumb}
+                                />
+                                {active && (
+                                  <span className="swatch-check">
+                                    <IconCheck />
+                                  </span>
+                                )}
+                              </span>
+                              <span className="swatch-label">{fr.nama}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                /* Newspaper template editor */
+                <div
+                  style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+                >
+                  <div style={S.sectionHead}>
+                    <h3 style={{ ...S.sidebarTitle, margin: 0 }}>
+                      Template Cetak
+                    </h3>
+                    <span style={S.sectionCount}>2 gaya</span>
+                  </div>
 
-                <div>
-                  <label style={S.npLabel}>{newspaperTemplate === "surakarta" ? "Banner" : "Headline"}</label>
-                  <input
-                    className="np-input"
-                    value={newspaperSub}
-                    onChange={e => setNewspaperSub(e.target.value.slice(0, 60))}
-                    placeholder={newspaperTemplate === "surakarta" ? "Kota Budaya Jawa Tengah" : "Momen Indah Anda"}
-                    maxLength={60}
-                  />
-                  {newspaperSub.length > 48 && <span style={S.npHint}>{newspaperSub.length}/60</span>}
-                </div>
-
-                <div>
-                  <label style={S.npLabel}>Kutipan <span style={S.npOptional}>opsional</span></label>
-                  <textarea
-                    className="np-input"
-                    value={newspaperQuote}
-                    onChange={e => setNewspaperQuote(e.target.value.slice(0, 120))}
-                    placeholder={newspaperTemplate === "surakarta"
-                      ? "Surakarta, kota seribu warisan budaya..."
-                      : "Tuliskan sesuatu yang berkesan..."}
-                    rows={3}
-                    maxLength={120}
-                    style={{ resize: "vertical", minHeight: 62 }}
-                  />
-                  {newspaperQuote.length > 96 && <span style={S.npHint}>{newspaperQuote.length}/120</span>}
-                </div>
-              </div>
-            )}
-
-          </div>
-        </div>
-      )}
-
-      {/* ═══ STEP 4: RESULT ═══ */}
-      {step === 4 && (
-        <div style={{ ...S.resultLayout, animation: "slide-in 0.4s ease" }}>
-          <div style={S.resultBox}>
-            <div style={S.resultBadge}>
-              {useNewspaper ? (newspaperTemplate === "surakarta" ? "Struk Kenangan Siap!" : "Template Koran Siap!") : "Foto Siap Diunduh!"}
-            </div>
-
-            {/* Restart button — prominent, above grid */}
-            <div style={{ width: "100%", display: "flex", justifyContent: "center", marginBottom: 20 }}>
-              <button className="btn-secondary" style={{ ...S.btnSecondary }} onClick={restart}>
-                <IconRetake />&nbsp; Mulai Foto Baru
-              </button>
-            </div>
-
-            {/* Main result flex: preview + QR */}
-            <div className="result-grid" style={{ display: "flex", gap: 28, width: "100%", alignItems: "flex-start", justifyContent: "center", flexWrap: "wrap" }}>
-              {/* Preview */}
-              <div style={{ flex: "1 1 320px", maxWidth: 500 }}>
-                <div style={S.resultImgWrap}>
-                  {finalCollage && <img src={finalCollage} alt="hasil photobox" style={S.resultImg} />}
-                </div>
-                {/* Action buttons */}
-                <div style={S.resultActions}>
-                  <button className="btn-dark" style={S.btnDark} onClick={downloadPNG}>
-                    <IconDownload />&nbsp; Download PNG
-                  </button>
-                  <button className="btn-primary" style={S.btnPrimary} onClick={downloadPDF}>
-                    <IconDownload />&nbsp; Download PDF
-                  </button>
-                </div>
-                {useNewspaper && (
-                  <div style={{ display: "flex", justifyContent: "center", marginTop: 10 }}>
-                    <button className="btn-newspaper" style={S.btnNewspaper} onClick={handlePrint}>
-                      <IconPrint />&nbsp; Cetak ke Printer Thermal
+                  {/* Pilih gaya template */}
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      type="button"
+                      className={`frame-tab ${
+                        newspaperTemplate === 'general' ? 'active' : ''
+                      }`}
+                      style={{
+                        flex: 1,
+                        padding: '9px 6px',
+                        fontSize: '0.76rem',
+                      }}
+                      onClick={() => {
+                        setNewspaperTemplate('general');
+                        setNewspaperTitle('TRISARA × SIF 2026');
+                        setNewspaperSub('Momen Indah Batik Nusantara');
+                      }}
+                    >
+                      Koran
+                    </button>
+                    <button
+                      type="button"
+                      className={`frame-tab ${
+                        newspaperTemplate === 'surakarta' ? 'active' : ''
+                      }`}
+                      style={{
+                        flex: 1,
+                        padding: '9px 6px',
+                        fontSize: '0.76rem',
+                      }}
+                      onClick={() => {
+                        setNewspaperTemplate('surakarta');
+                        setNewspaperTitle('KOTA SURAKARTA');
+                        setNewspaperSub('Kota Budaya Jawa Tengah');
+                      }}
+                    >
+                      Struk
                     </button>
                   </div>
-                )}
+
+                  {/* Mode foto */}
+                  <div>
+                    <label style={S.npLabel}>Mode Foto</label>
+                    <div style={S.segment}>
+                      {[
+                        { val: false, label: 'Berwarna' },
+                        { val: true, label: 'Greyscale' },
+                      ].map((opt) => (
+                        <button
+                          key={String(opt.val)}
+                          type="button"
+                          onClick={() => setNewspaperGreyscale(opt.val)}
+                          style={{
+                            ...S.segmentBtn,
+                            background:
+                              newspaperGreyscale === opt.val
+                                ? colors.blue
+                                : 'transparent',
+                            color:
+                              newspaperGreyscale === opt.val
+                                ? '#fff'
+                                : colors.textMuted,
+                            boxShadow:
+                              newspaperGreyscale === opt.val
+                                ? '0 2px 8px rgba(3,62,238,0.25)'
+                                : 'none',
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={S.npLabel}>Judul Utama</label>
+                    <input
+                      className="np-input"
+                      value={newspaperTitle}
+                      onChange={(e) =>
+                        setNewspaperTitle(e.target.value.slice(0, 40))
+                      }
+                      placeholder={
+                        newspaperTemplate === 'surakarta'
+                          ? 'KOTA SURAKARTA'
+                          : 'TRISARA × SIF 2026'
+                      }
+                      maxLength={40}
+                    />
+                    {newspaperTitle.length > 32 && (
+                      <span style={S.npHint}>{newspaperTitle.length}/40</span>
+                    )}
+                  </div>
+
+                  <div>
+                    <label style={S.npLabel}>
+                      {newspaperTemplate === 'surakarta'
+                        ? 'Banner'
+                        : 'Headline'}
+                    </label>
+                    <input
+                      className="np-input"
+                      value={newspaperSub}
+                      onChange={(e) =>
+                        setNewspaperSub(e.target.value.slice(0, 60))
+                      }
+                      placeholder={
+                        newspaperTemplate === 'surakarta'
+                          ? 'Kota Budaya Jawa Tengah'
+                          : 'Momen Indah Anda'
+                      }
+                      maxLength={60}
+                    />
+                    {newspaperSub.length > 48 && (
+                      <span style={S.npHint}>{newspaperSub.length}/60</span>
+                    )}
+                  </div>
+
+                  <div>
+                    <label style={S.npLabel}>
+                      Kutipan <span style={S.npOptional}>opsional</span>
+                    </label>
+                    <textarea
+                      className="np-input"
+                      value={newspaperQuote}
+                      onChange={(e) =>
+                        setNewspaperQuote(e.target.value.slice(0, 120))
+                      }
+                      placeholder={
+                        newspaperTemplate === 'surakarta'
+                          ? 'Surakarta, kota seribu warisan budaya...'
+                          : 'Tuliskan sesuatu yang berkesan...'
+                      }
+                      rows={3}
+                      maxLength={120}
+                      style={{ resize: 'vertical', minHeight: 62 }}
+                    />
+                    {newspaperQuote.length > 96 && (
+                      <span style={S.npHint}>{newspaperQuote.length}/120</span>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ═══ STEP 4: RESULT ═══ */}
+        {step === 4 && (
+          <div style={{ ...S.resultLayout, animation: 'slide-in 0.4s ease' }}>
+            <div style={S.resultBox}>
+              <div style={S.resultBadge}>
+                {useNewspaper
+                  ? newspaperTemplate === 'surakarta'
+                    ? 'Struk Kenangan Siap!'
+                    : 'Template Koran Siap!'
+                  : 'Foto Siap Diunduh!'}
               </div>
 
-              {/* QR Code Section */}
-              <div className="qr-section" style={S.qrSection}>
-                <div style={S.qrCard}>
-                  <div style={S.qrHeader}>
-                    <IconQR />
-                    <span style={{ marginLeft: 8, fontWeight: 700, fontSize: "0.95rem" }}>Scan & Download</span>
-                  </div>
-                  <p style={S.qrDesc}>
-                    Scan QR dengan HP untuk membuka halaman foto kamu, lalu tekan unduh di sana.
-                  </p>
+              {/* Restart button — prominent, above grid */}
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginBottom: 20,
+                }}
+              >
+                <button
+                  className="btn-secondary"
+                  style={{ ...S.btnSecondary }}
+                  onClick={restart}
+                >
+                  <IconRetake />
+                  &nbsp; Mulai Foto Baru
+                </button>
+              </div>
 
-                  {uploadingQr && (
-                    <div style={S.qrLoading}>
-                      <div style={S.spinner} />
-                      <span style={{ fontSize: "0.82rem", color: colors.textMuted, marginTop: 8 }}>Menyiapkan QR...</span>
-                    </div>
-                  )}
-
-                  {qrUrl && !uploadingQr && (
-                    <div className="qr-box" style={S.qrBox}>
-                      <QRCodeSVG
-                        value={qrUrl}
-                        size={180}
-                        bgColor="#ffffff"
-                        fgColor="#000000"
-                        level="M"
-                        includeMargin={true}
+              {/* Main result flex: preview + QR */}
+              <div
+                className="result-grid"
+                style={{
+                  display: 'flex',
+                  gap: 28,
+                  width: '100%',
+                  alignItems: 'flex-start',
+                  justifyContent: 'center',
+                  flexWrap: 'wrap',
+                }}
+              >
+                {/* Preview */}
+                <div style={{ flex: '1 1 320px', maxWidth: 500 }}>
+                  <div style={S.resultImgWrap}>
+                    {finalCollage && (
+                      <img
+                        src={finalCollage}
+                        alt="hasil photobox"
+                        style={S.resultImg}
                       />
-                    </div>
-                  )}
-
-                  {qrError && !uploadingQr && (
-                    <div style={S.qrError}>{qrError}</div>
-                  )}
-
-                  {qrUrl && (
-                    <div style={S.qrMeta}>
+                    )}
+                  </div>
+                  {/* Action buttons */}
+                  <div style={S.resultActions}>
+                    <button
+                      className="btn-dark"
+                      style={S.btnDark}
+                      onClick={downloadPNG}
+                    >
+                      <IconDownload />
+                      &nbsp; Download PNG
+                    </button>
+                    <button
+                      className="btn-primary"
+                      style={S.btnPrimary}
+                      onClick={downloadPDF}
+                    >
+                      <IconDownload />
+                      &nbsp; Download PDF
+                    </button>
+                  </div>
+                  {useNewspaper && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        marginTop: 10,
+                      }}
+                    >
                       <button
-                        type="button"
-                        className="btn-copy"
-                        style={{
-                          ...S.btnCopy,
-                          ...(linkCopied ? S.btnCopyDone : {}),
-                        }}
-                        onClick={copyQrLink}
+                        className="btn-newspaper"
+                        style={S.btnNewspaper}
+                        onClick={handlePrint}
                       >
-                        {linkCopied ? <><IconCheck /> &nbsp;Link Tersalin</> : <><IconLink /> &nbsp;Copy Link</>}
+                        <IconPrint />
+                        &nbsp; Cetak ke Printer Thermal
                       </button>
-                      <a
-                        href={qrUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={S.qrOpenLink}
-                      >
-                        Buka halaman foto →
-                      </a>
-                      <span style={S.qrExpiry}>Link berlaku <strong>24 jam</strong></span>
                     </div>
                   )}
+                </div>
+
+                {/* QR Code Section */}
+                <div className="qr-section" style={S.qrSection}>
+                  <div style={S.qrCard}>
+                    <div style={S.qrHeader}>
+                      <IconQR />
+                      <span
+                        style={{
+                          marginLeft: 8,
+                          fontWeight: 700,
+                          fontSize: '0.95rem',
+                        }}
+                      >
+                        Scan & Download
+                      </span>
+                    </div>
+                    <p style={S.qrDesc}>
+                      Scan QR dengan HP untuk membuka halaman foto
+                      {photos.length >= 2 ? ' & GIF' : ''} kamu, lalu tekan
+                      unduh di sana.
+                    </p>
+
+                    {uploadingQr && (
+                      <div style={S.qrLoading}>
+                        <div style={S.spinner} />
+                        <span
+                          style={{
+                            fontSize: '0.82rem',
+                            color: colors.textMuted,
+                            marginTop: 8,
+                          }}
+                        >
+                          Menyiapkan QR...
+                        </span>
+                      </div>
+                    )}
+
+                    {qrUrl && !uploadingQr && (
+                      <div className="qr-box" style={S.qrBox}>
+                        <QRCodeSVG
+                          value={qrUrl}
+                          size={180}
+                          bgColor="#ffffff"
+                          fgColor="#000000"
+                          level="M"
+                          includeMargin={true}
+                        />
+                      </div>
+                    )}
+
+                    {qrError && !uploadingQr && (
+                      <div style={S.qrError}>{qrError}</div>
+                    )}
+
+                    {qrUrl && (
+                      <div style={S.qrMeta}>
+                        <button
+                          type="button"
+                          className="btn-copy"
+                          style={{
+                            ...S.btnCopy,
+                            ...(linkCopied ? S.btnCopyDone : {}),
+                          }}
+                          onClick={copyQrLink}
+                        >
+                          {linkCopied ? (
+                            <>
+                              <IconCheck /> &nbsp;Link Tersalin
+                            </>
+                          ) : (
+                            <>
+                              <IconLink /> &nbsp;Copy Link
+                            </>
+                          )}
+                        </button>
+                        <a
+                          href={qrUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={S.qrOpenLink}
+                        >
+                          Buka halaman foto →
+                        </a>
+                        <span style={S.qrExpiry}>
+                          Link berlaku <strong>24 jam</strong>
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Hidden canvas */}
-      <canvas ref={canvasRef} style={{ display: "none" }} />
-    </div>
-    <Footer />
+        {/* Hidden canvas */}
+        <canvas ref={canvasRef} style={{ display: 'none' }} />
+      </div>
+      <Footer />
     </>
   );
 }
@@ -1847,73 +2585,73 @@ export default function Photobox() {
 /* ─── Styles ─────────────────────────────────────────────── */
 const S = {
   page: {
-    minHeight: "100vh",
+    minHeight: '100vh',
     fontFamily: fonts.body,
-    padding: "60px 40px",
-    background: "transparent",
+    padding: '60px 40px',
+    background: 'transparent',
     color: colors.textBody,
-    position: "relative",
-    overflow: "hidden",
+    position: 'relative',
+    overflow: 'hidden',
   },
   header: {
-    textAlign: "center",
-    marginBottom: "40px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    position: "relative",
-    zIndex: 1
+    textAlign: 'center',
+    marginBottom: '40px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    position: 'relative',
+    zIndex: 1,
   },
   logoImage: {
-    height: "55px",
-    width: "auto",
-    marginBottom: "15px",
-    filter: "drop-shadow(0px 4px 10px rgba(10,25,80,0.12))"
+    height: '55px',
+    width: 'auto',
+    marginBottom: '15px',
+    filter: 'drop-shadow(0px 4px 10px rgba(10,25,80,0.12))',
   },
   headerTitle: {
     fontFamily: fonts.heading,
-    fontSize: "2.8rem",
+    fontSize: '2.8rem',
     fontWeight: 700,
     color: colors.textHead,
-    margin: "0 0 10px",
-    paddingTop: "10px",
-    paddingBottom: "10px",
-    lineHeight: "1.3",
+    margin: '0 0 10px',
+    paddingTop: '10px',
+    paddingBottom: '10px',
+    lineHeight: '1.3',
   },
   headerSub: {
     color: colors.textBody,
-    fontSize: "1rem",
+    fontSize: '1rem',
     fontWeight: 500,
     margin: 0,
   },
 
   // Step bar
   stepBar: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 0,
-    margin: "0 auto 40px",
+    margin: '0 auto 40px',
     maxWidth: 700,
-    padding: "0 20px",
+    padding: '0 20px',
   },
   stepItem: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    position: "relative",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    position: 'relative',
     flex: 1,
   },
   stepCircle: {
     width: 36,
     height: 36,
-    borderRadius: "50%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     fontWeight: 700,
-    fontSize: "0.9rem",
-    transition: "all 0.3s",
+    fontSize: '0.9rem',
+    transition: 'all 0.3s',
     zIndex: 1,
   },
   stepActive: {
@@ -1932,73 +2670,73 @@ const S = {
     border: `2px solid ${colors.border}`,
   },
   stepLabel: {
-    fontSize: "0.72rem",
+    fontSize: '0.72rem',
     fontWeight: 600,
     marginTop: 6,
-    whiteSpace: "nowrap",
+    whiteSpace: 'nowrap',
   },
   stepLine: {
-    position: "absolute",
+    position: 'absolute',
     top: 18,
-    left: "50%",
-    width: "100%",
+    left: '50%',
+    width: '100%',
     height: 2,
-    transition: "background 0.3s",
+    transition: 'background 0.3s',
     zIndex: 0,
   },
 
   // Step 1
   contentBox: {
     maxWidth: 860,
-    margin: "0 auto",
-    padding: "0 20px",
-    textAlign: "center",
+    margin: '0 auto',
+    padding: '0 20px',
+    textAlign: 'center',
   },
   sectionTitle: {
     fontFamily: fonts.heading,
-    fontSize: "1.7rem",
+    fontSize: '1.7rem',
     color: colors.textHead,
     marginBottom: 6,
-    paddingTop: "5px",
-    paddingBottom: "5px",
-    lineHeight: "1.3",
+    paddingTop: '5px',
+    paddingBottom: '5px',
+    lineHeight: '1.3',
   },
   sectionSub: {
     color: colors.textBody,
-    fontSize: "0.95rem",
+    fontSize: '0.95rem',
     marginBottom: 32,
   },
   layoutGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
     gap: 20,
   },
   layoutCard: {
     background: colors.surface,
     borderRadius: 20,
-    padding: "32px 20px 24px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    cursor: "pointer",
+    padding: '32px 20px 24px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    cursor: 'pointer',
     border: `1.5px solid ${colors.border}`,
     boxShadow: colors.shadow,
-    transition: "all 0.25s ease",
+    transition: 'all 0.25s ease',
   },
   layoutPreview: { marginBottom: 16 },
   layoutBadge: {
-    fontSize: "0.7rem",
+    fontSize: '0.7rem',
     fontWeight: 700,
-    letterSpacing: "0.1em",
+    letterSpacing: '0.1em',
     color: colors.blue,
     background: colors.blueSoft,
-    padding: "3px 10px",
+    padding: '3px 10px',
     borderRadius: 20,
     marginBottom: 8,
   },
   layoutLabel: {
     color: colors.textHead,
-    fontSize: "1.05rem",
+    fontSize: '1.05rem',
     fontWeight: 700,
     margin: 0,
   },
@@ -2006,137 +2744,142 @@ const S = {
   // Step 2
   captureLayout: {
     maxWidth: 1100,
-    margin: "0 auto",
-    padding: "0 20px",
-    display: "flex",
+    margin: '0 auto',
+    padding: '0 20px',
+    display: 'flex',
     gap: 24,
-    alignItems: "flex-start",
-    flexWrap: "wrap",
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
   },
-  cameraWrap: { flex: "1 1 580px" },
+  cameraWrap: { flex: '1 1 580px' },
   cameraBox: {
-    position: "relative",
-    width: "100%",
-    aspectRatio: "16/9",
-    background: "#111",
+    position: 'relative',
+    width: '100%',
+    aspectRatio: '16/9',
+    background: '#111',
     borderRadius: 20,
-    overflow: "hidden",
+    overflow: 'hidden',
     boxShadow: colors.shadow,
   },
   video: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    transform: "scaleX(-1)",
-    display: "block",
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    transform: 'scaleX(-1)',
+    display: 'block',
   },
   countdownOverlay: {
-    position: "absolute",
+    position: 'absolute',
     inset: 0,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "rgba(0,0,0,0.45)",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'rgba(0,0,0,0.45)',
     zIndex: 10,
   },
   countdownNum: {
-    fontSize: "6rem",
+    fontSize: '6rem',
     fontWeight: 900,
     color: colors.blue,
     fontFamily: fonts.heading,
-    animation: "countdown-pop 0.5s ease",
-    textShadow: "0 4px 20px rgba(3,62,238,0.4)",
+    animation: 'countdown-pop 0.5s ease',
+    textShadow: '0 4px 20px rgba(3,62,238,0.4)',
   },
   flashEffect: {
-    position: "absolute",
+    position: 'absolute',
     inset: 0,
-    background: "white",
-    animation: "flash 0.3s ease forwards",
+    background: 'white',
+    animation: 'flash 0.3s ease forwards',
     zIndex: 20,
-    pointerEvents: "none",
+    pointerEvents: 'none',
   },
   progressDots: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 14,
-    left: "50%",
-    transform: "translateX(-50%)",
-    display: "flex",
+    left: '50%',
+    transform: 'translateX(-50%)',
+    display: 'flex',
     gap: 10,
     zIndex: 5,
   },
   dot: {
     width: 12,
     height: 12,
-    borderRadius: "50%",
-    background: "rgba(255,255,255,0.3)",
-    border: "2px solid rgba(255,255,255,0.6)",
-    transition: "all 0.3s",
+    borderRadius: '50%',
+    background: 'rgba(255,255,255,0.3)',
+    border: '2px solid rgba(255,255,255,0.6)',
+    transition: 'all 0.3s',
   },
   dotFilled: {
     background: colors.blue,
     borderColor: colors.blue,
-    boxShadow: "0 0 8px rgba(3,62,238,0.5)",
+    boxShadow: '0 0 8px rgba(3,62,238,0.5)',
   },
   cameraControls: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 14,
     marginTop: 20,
-    flexWrap: "wrap",
+    flexWrap: 'wrap',
   },
   captureBtn: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     background: colors.blueGradient,
     color: colors.onBlue,
-    border: "none",
-    padding: "14px 32px",
+    border: 'none',
+    padding: '14px 32px',
     borderRadius: 50,
-    fontSize: "1rem",
+    fontSize: '1rem',
     fontWeight: 700,
-    cursor: "pointer",
+    cursor: 'pointer',
     boxShadow: colors.shadowSm,
-    transition: "all 0.2s",
+    transition: 'all 0.2s',
     gap: 8,
   },
 
   // Strip panel
   stripPanel: {
-    flex: "0 0 180px",
+    flex: '0 0 180px',
     background: colors.surface,
     borderRadius: 20,
-    padding: "20px 16px",
+    padding: '20px 16px',
     border: `1px solid ${colors.border}`,
     boxShadow: colors.shadow,
     minWidth: 160,
   },
   stripTitle: {
-    fontSize: "0.85rem",
+    fontSize: '0.85rem',
     fontWeight: 700,
     color: colors.blue,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 14,
-    margin: "0 0 14px",
+    margin: '0 0 14px',
   },
-  stripList: { display: "flex", flexDirection: "column", gap: 12 },
+  stripList: { display: 'flex', flexDirection: 'column', gap: 12 },
   stripSlot: {
-    width: "100%",
-    aspectRatio: "16/9",
+    width: '100%',
+    aspectRatio: '16/9',
     borderRadius: 10,
-    overflow: "hidden",
+    overflow: 'hidden',
     background: colors.surfaceAlt,
     border: `2px dashed ${colors.blueBorder}`,
   },
-  stripImg: { width: "100%", height: "100%", objectFit: "cover", display: "block" },
+  stripImg: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    display: 'block',
+  },
   stripEmpty: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
     color: colors.textMuted,
     opacity: 0.6,
   },
@@ -2144,81 +2887,86 @@ const S = {
   // Step 3
   frameLayout: {
     maxWidth: 1100,
-    margin: "0 auto",
-    padding: "0 20px",
-    display: "flex",
+    margin: '0 auto',
+    padding: '0 20px',
+    display: 'flex',
     gap: 28,
-    alignItems: "flex-start",
-    flexWrap: "wrap",
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
   },
   previewPanel: {
-    flex: "1 1 520px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    flex: '1 1 520px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   previewBox: {
-    width: "100%",
+    width: '100%',
     background: colors.surfaceAlt,
     borderRadius: 20,
-    overflow: "hidden",
+    overflow: 'hidden',
     boxShadow: colors.shadow,
     border: `1px solid ${colors.border}`,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     minHeight: 200,
   },
-  previewImg: { width: "100%", height: "auto", display: "block" },
+  previewImg: { width: '100%', height: 'auto', display: 'block' },
   frameSidebar: {
-    flex: "0 0 280px",
+    flex: '0 0 280px',
     background: colors.surface,
     borderRadius: 20,
-    padding: "22px 18px",
+    padding: '22px 18px',
     border: `1px solid ${colors.border}`,
     boxShadow: colors.shadow,
-    maxHeight: "85vh",
-    overflowY: "auto",
+    maxHeight: '85vh',
+    overflowY: 'auto',
   },
   sidebarTitle: {
-    fontSize: "1rem",
+    fontSize: '1rem',
     fontWeight: 700,
     color: colors.textHead,
     marginBottom: 14,
-    margin: "0 0 14px",
+    margin: '0 0 14px',
     fontFamily: fonts.heading,
   },
   sectionHead: {
-    display: "flex",
-    alignItems: "baseline",
-    justifyContent: "space-between",
+    display: 'flex',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
     gap: 8,
     marginBottom: 12,
   },
   sectionCount: {
-    fontSize: "0.68rem",
+    fontSize: '0.68rem',
     fontWeight: 700,
     color: colors.textMuted,
     background: colors.surfaceAlt,
     border: `1px solid ${colors.border}`,
     borderRadius: 20,
-    padding: "3px 9px",
-    whiteSpace: "nowrap",
+    padding: '3px 9px',
+    whiteSpace: 'nowrap',
   },
   frameColorGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
     gap: 12,
   },
   apiFrameList: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, 1fr)",
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
     gap: 12,
   },
-  apiFrameThumb: { width: "100%", height: "100%", objectFit: "cover", display: "block" },
+  apiFrameThumb: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    display: 'block',
+  },
 
   segment: {
-    display: "flex",
+    display: 'flex',
     background: colors.surfaceAlt,
     border: `1px solid ${colors.border}`,
     borderRadius: 30,
@@ -2228,240 +2976,240 @@ const S = {
   },
   segmentBtn: {
     flex: 1,
-    padding: "7px 0",
+    padding: '7px 0',
     borderRadius: 26,
-    border: "none",
+    border: 'none',
     fontWeight: 700,
-    fontSize: "0.78rem",
-    cursor: "pointer",
-    transition: "all 0.18s",
-    fontFamily: "inherit",
+    fontSize: '0.78rem',
+    cursor: 'pointer',
+    transition: 'all 0.18s',
+    fontFamily: 'inherit',
   },
   npOptional: {
-    fontSize: "0.68rem",
+    fontSize: '0.68rem',
     fontWeight: 600,
     color: colors.textMuted,
   },
 
   // Newspaper inputs
   npLabel: {
-    display: "block",
-    fontSize: "0.78rem",
+    display: 'block',
+    fontSize: '0.78rem',
     fontWeight: 700,
     color: colors.textHead,
     marginBottom: 5,
   },
   npHint: {
-    fontSize: "0.7rem",
+    fontSize: '0.7rem',
     color: colors.textMuted,
-    display: "block",
+    display: 'block',
     marginTop: 3,
-    textAlign: "right",
+    textAlign: 'right',
   },
 
   // Step 4
   resultLayout: {
     maxWidth: 960,
-    margin: "0 auto",
-    padding: "0 20px",
-    display: "flex",
-    justifyContent: "center",
+    margin: '0 auto',
+    padding: '0 20px',
+    display: 'flex',
+    justifyContent: 'center',
   },
   resultBox: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     gap: 0,
   },
   resultBadge: {
     background: colors.blueGradient,
     color: colors.onBlue,
-    padding: "8px 24px",
+    padding: '8px 24px',
     borderRadius: 30,
     fontWeight: 700,
-    fontSize: "0.9rem",
+    fontSize: '0.9rem',
     marginBottom: 24,
     boxShadow: colors.shadowSm,
   },
   resultImgWrap: {
-    width: "100%",
+    width: '100%',
     borderRadius: 16,
-    overflow: "hidden",
+    overflow: 'hidden',
     boxShadow: colors.shadow,
     marginBottom: 18,
     border: `1px solid ${colors.border}`,
   },
-  resultImg: { width: "100%", height: "auto", display: "block" },
+  resultImg: { width: '100%', height: 'auto', display: 'block' },
   resultActions: {
-    display: "flex",
+    display: 'flex',
     gap: 14,
-    flexWrap: "wrap",
-    justifyContent: "center",
+    flexWrap: 'wrap',
+    justifyContent: 'center',
     marginBottom: 10,
   },
 
   // QR Section
   qrSection: {
-    flex: "0 0 240px",
+    flex: '0 0 240px',
     minWidth: 220,
   },
   qrCard: {
     background: colors.surface,
     borderRadius: 20,
-    padding: "22px 18px",
+    padding: '22px 18px',
     border: `1.5px solid ${colors.border}`,
     boxShadow: colors.shadow,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    textAlign: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    textAlign: 'center',
   },
   qrHeader: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
     color: colors.textHead,
     marginBottom: 10,
     fontFamily: fonts.heading,
   },
   qrDesc: {
-    fontSize: "0.8rem",
+    fontSize: '0.8rem',
     color: colors.textBody,
     lineHeight: 1.5,
     marginBottom: 16,
   },
   qrBox: {
     padding: 8,
-    background: "#fff",
+    background: '#fff',
     borderRadius: 12,
     border: `2px solid ${colors.border}`,
     marginBottom: 14,
   },
   qrLoading: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    padding: "24px 0",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '24px 0',
   },
   spinner: {
     width: 36,
     height: 36,
     border: `3px solid ${colors.border}`,
     borderTop: `3px solid ${colors.blue}`,
-    borderRadius: "50%",
-    animation: "spin 0.8s linear infinite",
+    borderRadius: '50%',
+    animation: 'spin 0.8s linear infinite',
   },
   btnCopy: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    padding: "10px 12px",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    padding: '10px 12px',
     borderRadius: 12,
     border: `1.5px solid ${colors.blue}`,
-    background: "#fff",
+    background: '#fff',
     color: colors.blue,
-    fontSize: "0.8rem",
+    fontSize: '0.8rem',
     fontWeight: 700,
-    fontFamily: "inherit",
-    cursor: "pointer",
-    transition: "all 0.18s",
+    fontFamily: 'inherit',
+    cursor: 'pointer',
+    transition: 'all 0.18s',
   },
   btnCopyDone: {
     background: colors.blue,
     borderColor: colors.blue,
-    color: "#fff",
+    color: '#fff',
   },
   qrOpenLink: {
-    display: "block",
+    display: 'block',
     marginTop: 10,
-    fontSize: "0.74rem",
+    fontSize: '0.74rem',
     fontWeight: 600,
     color: colors.blue,
-    textDecoration: "none",
+    textDecoration: 'none',
   },
   qrExpiry: {
-    display: "block",
+    display: 'block',
     marginTop: 8,
-    fontSize: "0.7rem",
+    fontSize: '0.7rem',
     color: colors.textMuted,
   },
   qrError: {
-    background: "#fff0f0",
-    border: "1px solid #ffcccc",
+    background: '#fff0f0',
+    border: '1px solid #ffcccc',
     borderRadius: 10,
-    padding: "10px 14px",
-    fontSize: "0.78rem",
-    color: "#c0392b",
+    padding: '10px 14px',
+    fontSize: '0.78rem',
+    color: '#c0392b',
     marginBottom: 10,
   },
   qrMeta: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     gap: 2,
   },
 
   // Buttons
   btnPrimary: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
     gap: 8,
     background: colors.blueGradient,
     color: colors.onBlue,
-    border: "none",
-    padding: "13px 28px",
+    border: 'none',
+    padding: '13px 28px',
     borderRadius: 50,
-    fontSize: "0.95rem",
+    fontSize: '0.95rem',
     fontWeight: 700,
-    cursor: "pointer",
+    cursor: 'pointer',
     boxShadow: colors.shadowSm,
-    transition: "all 0.2s",
+    transition: 'all 0.2s',
   },
   btnSecondary: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
     gap: 6,
     background: colors.surface,
     color: colors.textBody,
     border: `1.5px solid ${colors.border}`,
-    padding: "13px 22px",
+    padding: '13px 22px',
     borderRadius: 50,
-    fontSize: "0.9rem",
+    fontSize: '0.9rem',
     fontWeight: 700,
-    cursor: "pointer",
-    transition: "all 0.2s",
+    cursor: 'pointer',
+    transition: 'all 0.2s',
   },
   btnDark: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
     gap: 8,
     background: colors.navy,
     color: colors.onBlue,
-    border: "none",
-    padding: "13px 28px",
+    border: 'none',
+    padding: '13px 28px',
     borderRadius: 50,
-    fontSize: "0.95rem",
+    fontSize: '0.95rem',
     fontWeight: 700,
-    cursor: "pointer",
+    cursor: 'pointer',
     boxShadow: colors.shadowSm,
-    transition: "all 0.2s",
+    transition: 'all 0.2s',
   },
   btnNewspaper: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
     gap: 8,
-    background: "#1a1a1a",
-    color: "#ffffff",
-    border: "none",
-    padding: "13px 28px",
+    background: '#1a1a1a',
+    color: '#ffffff',
+    border: 'none',
+    padding: '13px 28px',
     borderRadius: 50,
-    fontSize: "0.95rem",
+    fontSize: '0.95rem',
     fontWeight: 700,
-    cursor: "pointer",
-    boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
-    transition: "all 0.2s",
+    cursor: 'pointer',
+    boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
+    transition: 'all 0.2s',
     fontFamily: "'Georgia', serif",
-    letterSpacing: "0.02em",
+    letterSpacing: '0.02em',
   },
 };
