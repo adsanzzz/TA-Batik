@@ -176,6 +176,67 @@ function drawGreyscale(ctx, img, sx, sy, sw, sh, dx, dy, dw, dh) {
   ctx.drawImage(offscreen, dx, dy, dw, dh);
 }
 
+/* ─── Pengaturan cetak printer thermal 58mm ── */
+// Lebar cetak efektif printer 58mm @203dpi = 384 dot (48mm).
+const THERMAL_DOTS = 384;
+// Atur di sini kalau hasil cetak masih terlalu gelap/terang:
+//  gamma: < 1 lebih terang, > 1 lebih gelap (0.8 = sedikit dicerahkan)
+//  white: turunkan (mis. 215) kalau latar foto masih berbintik
+const THERMAL_TONE = { gamma: 0.8, white: 230 };
+
+/* ─── Helper: ubah gambar jadi bitmap hitam-putih siap printer thermal ── */
+// Printer thermal cuma bisa titik hitam atau putih. Kalau gambar abu-abu dikirim
+// mentah, driver yang menentukan hitam/putihnya → foto jadi gelap pekat dan
+// tepi huruf blobor. Di sini kita yang mengatur:
+//  - gamma < 1 mencerahkan nada tengah (hasil thermal cenderung lebih gelap)
+//  - white: abu-abu terang di atas nilai ini dianggap putih → latar bersih, tidak berbintik
+//  - dithering Atkinson: foto tetap bergradasi, huruf tetap tajam
+function toThermalBitmap(img, width, { gamma = 0.8, white = 230, threshold = 128 } = {}) {
+  const W = width;
+  const H = Math.round((img.height * W) / img.width);
+  const c = document.createElement("canvas");
+  c.width = W;
+  c.height = H;
+  const cx = c.getContext("2d");
+  cx.fillStyle = "#fff";
+  cx.fillRect(0, 0, W, H);
+  cx.imageSmoothingEnabled = true;
+  cx.imageSmoothingQuality = "high";
+  cx.drawImage(img, 0, 0, W, H);
+
+  const imageData = cx.getImageData(0, 0, W, H);
+  const px = imageData.data;
+  const gray = new Float32Array(W * H);
+  for (let i = 0, p = 0; i < gray.length; i++, p += 4) {
+    const lum = (0.299 * px[p] + 0.587 * px[p + 1] + 0.114 * px[p + 2]) / 255;
+    gray[i] = Math.min(255, (255 * Math.pow(lum, gamma) * 255) / white);
+  }
+
+  // Atkinson: sebar 6/8 error ke tetangga → kontras terjaga, area terang tetap bersih
+  const spread = (x, y, err) => {
+    if (x >= 0 && x < W && y < H) gray[y * W + x] += err;
+  };
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const i = y * W + x;
+      const value = gray[i] < threshold ? 0 : 255;
+      const err = (gray[i] - value) / 8;
+      spread(x + 1, y, err);
+      spread(x + 2, y, err);
+      spread(x - 1, y + 1, err);
+      spread(x, y + 1, err);
+      spread(x + 1, y + 1, err);
+      spread(x, y + 2, err);
+
+      const p = i * 4;
+      px[p] = px[p + 1] = px[p + 2] = value;
+      px[p + 3] = 255;
+    }
+  }
+  cx.putImageData(imageData, 0, 0);
+  return c;
+}
+
 /* ─── Main Component ─────────────────────────────────────── */
 export default function Photobox() {
   const [step, setStep] = useState(1); // 1=layout, 2=capture, 3=frame, 4=result
@@ -580,7 +641,7 @@ export default function Photobox() {
     // Digambar ke kanvas offscreen longgar, lalu dipotong tepat setinggi isi
     const off = document.createElement("canvas");
     off.width = W;
-    off.height = 900 + (photoSlotH + 10) * loadedImgs.length;
+    off.height = 1600 + (photoSlotH + 10) * loadedImgs.length;
     const ctx = off.getContext("2d");
     ctx.fillStyle = NC.bg;
     ctx.fillRect(0, 0, off.width, off.height);
@@ -595,11 +656,14 @@ export default function Photobox() {
       y += gap;
     };
 
+    // Semua teks bold & minimal ±17px: kanvas ini diperkecil ke 384 dot saat dicetak
+    // di printer thermal, dan teks tipis/kecil pecah jadi titik-titik.
+
     /* helper: garis ganda ala koran (tebal + tipis) */
     const doubleRule = (gap = 12) => {
       ctx.fillStyle = NC.divider;
-      ctx.fillRect(PAD, y, innerW, 3);
-      ctx.fillRect(PAD, y + 6, innerW, 1);
+      ctx.fillRect(PAD, y, innerW, 4);
+      ctx.fillRect(PAD, y + 8, innerW, 2);
       y += gap;
     };
 
@@ -646,15 +710,18 @@ export default function Photobox() {
       }
       if (cur.length) lines.push(cur);
 
+      const normalSpace = ctx.measureText(" ").width;
       let cy = top;
       for (let i = 0; i < lines.length; i++) {
         const parts = lines[i];
         const isLast = i === lines.length - 1;
-        if (isLast || parts.length === 1) {
+        const textW = parts.reduce((a, w) => a + ctx.measureText(w).width, 0);
+        const space = parts.length > 1 ? (colW - textW) / (parts.length - 1) : 0;
+        // kolom sempit + font besar: kalau jarak antar kata jadi terlalu lebar,
+        // baris itu dibiarkan rata kiri daripada bolong-bolong
+        if (isLast || parts.length === 1 || space > normalSpace * 2.5) {
           ctx.fillText(parts.join(" "), x, cy);
         } else {
-          const textW = parts.reduce((a, w) => a + ctx.measureText(w).width, 0);
-          const space = (colW - textW) / (parts.length - 1);
           let wx = x;
           for (const w of parts) {
             ctx.fillText(w, wx, cy);
@@ -669,39 +736,46 @@ export default function Photobox() {
     const isSurakarta = newspaperTemplate === "surakarta";
 
     /* ── MASTHEAD: SPECIAL EDITION | JUDUL | DAILY REPORT ── */
-    const sideW = 74;
+    const sideW = 92;
     ctx.fillStyle = NC.text;
-    ctx.font = `bold 12px ${SERIF}`;
+    ctx.font = `bold 17px ${SERIF}`;
     ctx.textAlign = "left";
-    ctx.fillText("SPECIAL", PAD, y + 14);
-    ctx.fillText("EDITION", PAD, y + 28);
+    ctx.fillText("SPECIAL", PAD, y + 17);
+    ctx.fillText("EDITION", PAD, y + 38);
     ctx.textAlign = "right";
-    ctx.fillText("DAILY", W - PAD, y + 14);
-    ctx.fillText("REPORT", W - PAD, y + 28);
+    ctx.fillText("DAILY", W - PAD, y + 17);
+    ctx.fillText("REPORT", W - PAD, y + 38);
 
     const mastTxt = (newspaperTitle || "TRISARA × SIF 2026").trim();
-    const mast = fitLines(mastTxt, innerW - sideW * 2 - 16, 1, 34, 13, "bold");
+    const mast = fitLines(mastTxt, innerW - sideW * 2 - 16, 1, 36, 17, "bold");
     ctx.font = `bold ${mast.size}px ${DISPLAY}`;
     ctx.textAlign = "center";
-    ctx.fillText(mast.lines[0], W / 2, y + 27);
-    y += 40;
+    ctx.fillText(mast.lines[0], W / 2, y + 33);
+    y += 50;
 
-    doubleRule(14);
+    doubleRule(18);
 
-    /* ── BARIS TAG: KATEGORI · SLOGAN · TANGGAL ── */
+    /* ── BARIS TAG: KATEGORI · TANGGAL, lalu SLOGAN di baris sendiri ── */
     const today = new Date();
     const dateStr = today.toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase();
     ctx.fillStyle = NC.text;
-    ctx.font = `bold 9.5px ${SERIF}`;
+    ctx.font = `bold 17px ${SERIF}`;
     ctx.textAlign = "left";
-    ctx.fillText(isSurakarta ? "KOTA SURAKARTA" : "BATIK NUSANTARA", PAD, y + 10);
-    ctx.textAlign = "center";
-    ctx.fillText(isSurakarta ? "KOTA BUDAYA JAWA TENGAH" : "WARISAN BUDAYA TAK BENDA UNESCO", W / 2, y + 10);
+    ctx.fillText(isSurakarta ? "KOTA SURAKARTA" : "BATIK NUSANTARA", PAD, y + 17);
     ctx.textAlign = "right";
-    ctx.fillText(dateStr, W - PAD, y + 10);
-    y += 18;
+    ctx.fillText(dateStr, W - PAD, y + 17);
+    y += 27;
 
-    rule(2.5, 16);
+    const slogan = fitLines(
+      isSurakarta ? "KOTA BUDAYA JAWA TENGAH" : "WARISAN BUDAYA TAK BENDA UNESCO",
+      innerW, 1, 17, 15, "bold", SERIF
+    );
+    ctx.font = `bold ${slogan.size}px ${SERIF}`;
+    ctx.textAlign = "center";
+    ctx.fillText(slogan.lines[0], W / 2, y + 17);
+    y += 29;
+
+    rule(3, 18);
 
     /* ── HEADLINE BESAR ── */
     const headline = (newspaperSub || "MOMEN INDAH ANDA").toUpperCase();
@@ -714,9 +788,9 @@ export default function Photobox() {
       y += headLineH;
       ctx.fillText(line, W / 2, y);
     }
-    y += 14;
+    y += 16;
 
-    rule(2.5, 12);
+    rule(3, 14);
 
     /* ── FOTO ── */
     for (let i = 0; i < loadedImgs.length; i++) {
@@ -733,68 +807,75 @@ export default function Photobox() {
       ctx.restore();
 
       ctx.strokeStyle = NC.divider;
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 3;
       ctx.strokeRect(PAD, y, photoSlotW, photoSlotH);
-      y += photoSlotH + (i === loadedImgs.length - 1 ? 0 : 8);
+      y += photoSlotH + (i === loadedImgs.length - 1 ? 0 : 10);
     }
-    y += 16;
+    y += 18;
 
     /* ── KUTIPAN ── */
-    rule(1.5, 10);
+    rule(2, 10);
     const defaultQuote = isSurakarta
       ? `"Surakarta, kota seribu warisan budaya yang tak lekang oleh waktu."`
       : `"Mengabadikan momen indah bersama dalam kenangan yang abadi."`;
     const quoteTxt = (newspaperQuote ? `"${newspaperQuote}"` : defaultQuote).toUpperCase();
-    const q = fitLines(quoteTxt, innerW - 10, 3, 15, 10, "bold", SERIF);
+    const q = fitLines(quoteTxt, innerW - 10, 4, 20, 17, "bold", SERIF);
     ctx.font = `bold ${q.size}px ${SERIF}`;
     ctx.fillStyle = NC.accent;
     ctx.textAlign = "center";
-    const qLineH = Math.round(q.size * 1.45);
+    const qLineH = Math.round(q.size * 1.35);
     for (const line of q.lines) {
       y += qLineH;
       ctx.fillText(line, W / 2, y);
     }
-    y += 10;
-    rule(2.5, 16);
+    y += 14;
+    rule(3, 20);
 
-    /* ── 3 KOLOM ARTIKEL (rata kanan-kiri) ── */
+    /* ── 2 KOLOM ARTIKEL (rata kanan-kiri) ── */
+    // 2 kolom, bukan 3: dengan font yang terbaca di thermal, 3 kolom cuma muat
+    // ±12 huruf per baris
     const articleSet = isSurakarta ? SURAKARTA_ARTICLES : BATIK_ARTICLES;
-    const numCols = 3;
-    const colGap = 12;
+    const numCols = 2;
+    const colGap = 18;
     const colW = (innerW - colGap * (numCols - 1)) / numCols;
-    const bodyLineH = 12.5;
+    const bodyLineH = 23;
 
     let colBottom = y;
     for (let c = 0; c < numCols; c++) {
       const cx = PAD + c * (colW + colGap);
-      ctx.font = `9px ${SERIF}`;
+      ctx.font = `bold 17px ${SERIF}`;
       ctx.fillStyle = NC.text;
-      colBottom = Math.max(colBottom, drawJustified(articleSet[c] || articleSet[0], cx, y + 9, colW, bodyLineH));
+      colBottom = Math.max(colBottom, drawJustified(articleSet[c] || articleSet[0], cx, y + 17, colW, bodyLineH));
     }
 
     // garis pemisah antar kolom, seragam setinggi kolom terpanjang
-    const colRuleH = colBottom - y - bodyLineH + 6;
+    const colRuleH = colBottom - y - bodyLineH + 8;
     ctx.fillStyle = NC.divider;
     for (let c = 0; c < numCols - 1; c++) {
       const cx = PAD + c * (colW + colGap);
-      ctx.fillRect(cx + colW + colGap / 2 - 0.5, y, 1, colRuleH);
+      ctx.fillRect(cx + colW + colGap / 2 - 1, y, 2, colRuleH);
     }
-    y = colBottom + 4;
+    y = colBottom + 2;
 
     /* ── FOOTER MASTHEAD ── */
-    doubleRule(18);
+    doubleRule(22);
     ctx.fillStyle = NC.text;
-    ctx.font = `bold 10px ${SERIF}`;
     ctx.textAlign = "center";
-    ctx.fillText(
-      isSurakarta ? "SOLO, THE SPIRIT OF JAVA  ·  MATUR NUWUN" : "BATIK NUSANTARA  ·  TERIMA KASIH ATAS KUNJUNGAN ANDA",
-      W / 2, y + 10
+    const thanks = fitLines(
+      isSurakarta ? "SOLO, THE SPIRIT OF JAVA · MATUR NUWUN" : "TERIMA KASIH ATAS KUNJUNGAN ANDA",
+      innerW, 1, 17, 15, "bold", SERIF
     );
-    y += 18;
-    ctx.font = `italic 9px ${SERIF}`;
-    ctx.fillText(`EDISI KHUSUS ${dateStr}  ·  ${loadedImgs.length} LEMBAR FOTO`, W / 2, y + 8);
-    y += 14;
-    rule(3, 6);
+    ctx.font = `bold ${thanks.size}px ${SERIF}`;
+    ctx.fillText(thanks.lines[0], W / 2, y + 17);
+    y += 26;
+    const edition = fitLines(
+      `EDISI KHUSUS ${dateStr} · ${loadedImgs.length} LEMBAR FOTO`,
+      innerW, 1, 17, 15, "bold", SERIF
+    );
+    ctx.font = `bold ${edition.size}px ${SERIF}`;
+    ctx.fillText(edition.lines[0], W / 2, y + 17);
+    y += 30;
+    rule(4, 6);
 
     /* ── Potong kanvas tepat setinggi isi ── */
     const canvas = canvasRef.current;
@@ -815,7 +896,8 @@ export default function Photobox() {
     const W = 580;
     const PAD = 26;
     const innerW = W - PAD * 2;
-    const MONO = "'Courier New', 'Consolas', monospace";
+    // Monospace tanpa kait (serif): kaitnya Courier New pecah jadi titik di printer thermal
+    const MONO = "Consolas, 'Roboto Mono', 'Droid Sans Mono', monospace";
     const P = PAPER;
 
     // Load images first
@@ -829,12 +911,12 @@ export default function Photobox() {
 
     const photoSlotW = innerW;
     const photoSlotH = Math.round(photoSlotW * 3 / 4); // slot 4:3
-    const photoH = photoSlotH * loadedImgs.length + 34 * loadedImgs.length;
+    const photoH = photoSlotH * loadedImgs.length + 44 * loadedImgs.length;
 
     // Digambar dulu ke kanvas offscreen yang longgar, lalu dipotong sesuai isi
     const off = document.createElement("canvas");
     off.width = W;
-    off.height = 1500 + photoH;
+    off.height = 2000 + photoH;
     const ctx = off.getContext("2d");
     ctx.fillStyle = P.bg;
     ctx.fillRect(0, 0, off.width, off.height);
@@ -842,30 +924,34 @@ export default function Photobox() {
 
     let y = PAD;
 
+    // Ukuran teks di template ini diatur untuk printer thermal: saat dicetak kanvas
+    // 580px diperkecil ke 384 dot, dan tes cetak menunjukkan teks baru terbaca
+    // kalau bold dan minimal ±17px. Teks tipis/kecil pecah jadi titik-titik.
+
     /* helper: garis putus-putus ala struk */
-    const dashed = (gap = 18) => {
+    const dashed = (gap = 22) => {
       ctx.save();
       ctx.strokeStyle = P.divider;
-      ctx.lineWidth = 1.4;
-      ctx.setLineDash([5, 4]);
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([9, 6]);
       ctx.beginPath();
-      ctx.moveTo(PAD, y + 0.5);
-      ctx.lineTo(W - PAD, y + 0.5);
+      ctx.moveTo(PAD, y + 1);
+      ctx.lineTo(W - PAD, y + 1);
       ctx.stroke();
       ctx.restore();
       y += gap;
     };
 
     /* helper: garis ganda (===) */
-    const double = (gap = 20) => {
+    const double = (gap = 26) => {
       ctx.fillStyle = P.divider;
-      ctx.fillRect(PAD, y, innerW, 2);
-      ctx.fillRect(PAD, y + 5, innerW, 2);
+      ctx.fillRect(PAD, y, innerW, 3);
+      ctx.fillRect(PAD, y + 7, innerW, 3);
       y += gap;
     };
 
     /* helper: baris kiri – kanan */
-    const row = (left, right, { size = 12.5, bold = false, gap = 21 } = {}) => {
+    const row = (left, right, { size = 17, bold = true, gap = 26 } = {}) => {
       ctx.font = `${bold ? "bold " : ""}${size}px ${MONO}`;
       ctx.fillStyle = P.text;
       ctx.textAlign = "left";
@@ -876,7 +962,7 @@ export default function Photobox() {
     };
 
     /* helper: baris item (nama – qty – harga) */
-    const itemRow = (name, qty, price, { size = 12.5, bold = false, gap = 21 } = {}) => {
+    const itemRow = (name, qty, price, { size = 17, bold = true, gap = 26 } = {}) => {
       ctx.font = `${bold ? "bold " : ""}${size}px ${MONO}`;
       ctx.fillStyle = P.text;
       ctx.textAlign = "left";
@@ -889,7 +975,7 @@ export default function Photobox() {
     };
 
     /* helper: teks tengah, otomatis wrap */
-    const center = (text, { size = 12.5, bold = false, italic = false, gap = 19 } = {}) => {
+    const center = (text, { size = 17, bold = true, italic = false, gap = 24 } = {}) => {
       ctx.font = `${italic ? "italic " : ""}${bold ? "bold " : ""}${size}px ${MONO}`;
       ctx.fillStyle = P.text;
       ctx.textAlign = "center";
@@ -910,37 +996,38 @@ export default function Photobox() {
     };
 
     /* ── KOP STRUK ───────────────────────────────────────── */
-    y += 16;
-    center("*** SUGENG RAWUH ING SOLO ***", { size: 12, bold: true, gap: 30 });
+    y += 20;
+    center("*** SUGENG RAWUH ING SOLO ***", { gap: 40 });
 
     // Judul besar: menyusut otomatis agar selalu pas selebar struk
     const titleTxt = (newspaperTitle || "KOTA SURAKARTA").toUpperCase();
-    let titleSize = 30;
+    let titleSize = 32;
     ctx.font = `bold ${titleSize}px ${MONO}`;
-    while (ctx.measureText(titleTxt).width > innerW && titleSize > 13) {
+    while (ctx.measureText(titleTxt).width > innerW && titleSize > 17) {
       titleSize -= 1;
       ctx.font = `bold ${titleSize}px ${MONO}`;
     }
-    center(titleTxt, { size: titleSize, bold: true, gap: 30 });
+    center(titleTxt, { size: titleSize, gap: 34 });
 
-    center("Kota Budaya Jawa Tengah", { size: 11.5, gap: 17 });
-    center("Keraton Kasunanan · Pura Mangkunegaran", { size: 11, gap: 17 });
-    center("Berdiri 17 Februari 1745", { size: 11.5, gap: 24 });
-    dashed();
+    center("Kota Budaya Jawa Tengah");
+    center("Keraton Kasunanan · Pura Mangkunegaran");
+    center("Berdiri 17 Februari 1745", { gap: 30 });
+    dashed(30);
 
     /* ── META TRANSAKSI ──────────────────────────────────── */
     const now = new Date();
     const p2 = n => String(n).padStart(2, "0");
     const noStruk = `SKA-${String(now.getFullYear()).slice(2)}${p2(now.getMonth() + 1)}${p2(now.getDate())}-${p2(now.getHours())}${p2(now.getMinutes())}${p2(now.getSeconds())}`;
-    row("No. Struk", noStruk, { size: 11.5 });
-    row("Tanggal", `${p2(now.getDate())}/${p2(now.getMonth() + 1)}/${now.getFullYear()}  ${p2(now.getHours())}:${p2(now.getMinutes())}`, { size: 11.5 });
-    row("Lokasi", "SOLO, JAWA TENGAH", { size: 11.5 });
-    row("Lembar", `${loadedImgs.length} FOTO KENANGAN`, { size: 11.5, gap: 24 });
-    double(24);
+    row("No. Struk", noStruk);
+    row("Tanggal", `${p2(now.getDate())}/${p2(now.getMonth() + 1)}/${now.getFullYear()}  ${p2(now.getHours())}:${p2(now.getMinutes())}`);
+    row("Lokasi", "SOLO, JAWA TENGAH");
+    row("Lembar", `${loadedImgs.length} FOTO KENANGAN`, { gap: 20 });
+    double(40);
 
     /* ── BANNER ──────────────────────────────────────────── */
-    center(`** ${(newspaperSub || "Kota Budaya Jawa Tengah").toUpperCase()} **`, { size: 15, bold: true, gap: 24 });
-    double(26);
+    center(`** ${(newspaperSub || "Kota Budaya Jawa Tengah").toUpperCase()} **`, { size: 20, gap: 28 });
+    y -= 4;
+    double(30);
 
     /* ── FOTO ────────────────────────────────────────────── */
     for (let i = 0; i < loadedImgs.length; i++) {
@@ -957,47 +1044,46 @@ export default function Photobox() {
       ctx.restore();
 
       ctx.strokeStyle = P.divider;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 3;
       ctx.strokeRect(PAD, y, photoSlotW, photoSlotH);
-      y += photoSlotH + 15;
+      y += photoSlotH + 24;
 
-      ctx.font = `10.5px ${MONO}`;
+      ctx.font = `bold 17px ${MONO}`;
       ctx.fillStyle = P.text;
       ctx.textAlign = "left";
       ctx.fillText(`FOTO ${i + 1}/${loadedImgs.length}`, PAD, y);
       ctx.textAlign = "right";
       ctx.fillText(newspaperGreyscale ? "MODE B/W" : "MODE WARNA", W - PAD, y);
-      y += 19;
+      y += 20;
     }
-    dashed();
+    dashed(30);
 
     /* ── RINCIAN "TRANSAKSI" ─────────────────────────────── */
-    itemRow("ITEM", "QTY", "HARGA", { size: 11, bold: true, gap: 17 });
-    dashed();
+    itemRow("ITEM", "QTY", "HARGA", { gap: 14 });
+    dashed(30);
     itemRow("Kenangan Kota Solo", `x${loadedImgs.length}`, "GRATIS");
     for (const it of RECEIPT_ITEMS) itemRow(it.name, it.qty, it.price);
-    y += 3;
-    dashed();
-    row("SUBTOTAL", "Rp 0", { size: 12 });
-    row("DISKON KEBAHAGIAAN", "100%", { size: 12 });
-    row("PPN KENANGAN", "Rp 0", { size: 12, gap: 24 });
-    double(26);
-    row("TOTAL", "TAK TERHINGGA", { size: 17, bold: true, gap: 28 });
-    double(24);
-    row("TUNAI", "SENYUM & TAWA", { size: 12 });
-    row("KEMBALI", "KENANGAN ABADI", { size: 12, gap: 24 });
-    dashed(22);
+    dashed(30);
+    row("SUBTOTAL", "Rp 0");
+    row("DISKON KEBAHAGIAAN", "100%");
+    row("PPN KENANGAN", "Rp 0", { gap: 20 });
+    double(40);
+    row("TOTAL", "TAK TERHINGGA", { size: 22, gap: 18 });
+    double(40);
+    row("TUNAI", "SENYUM & TAWA");
+    row("KEMBALI", "KENANGAN ABADI", { gap: 20 });
+    dashed(32);
 
     /* ── KUTIPAN ─────────────────────────────────────────── */
     const quote = newspaperQuote
       ? `"${newspaperQuote}"`
       : `"Surakarta, kota seribu warisan budaya yang tak lekang oleh waktu."`;
-    center(quote, { size: 12.5, italic: true, bold: true, gap: 20 });
-    y += 6;
-    dashed(24);
+    center(quote, { italic: true, gap: 25 });
+    dashed(28);
 
     /* ── BARCODE DEKORATIF + FOOTER ──────────────────────── */
-    const bcH = 54;
+    // batang minimal 2px: setelah diperkecil ke 384 dot, batang 1px hilang saat dicetak
+    const bcH = 60;
     const bcW = Math.round(innerW * 0.82);
     const bcX = Math.round((W - bcW) / 2);
     let bx = bcX;
@@ -1005,20 +1091,20 @@ export default function Photobox() {
     ctx.fillStyle = P.text;
     while (bx < bcX + bcW - 2) {
       seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-      const barW = 1 + (seed % 4);
-      const gapW = 1 + ((seed >> 6) % 3);
+      const barW = 2 + (seed % 4);
+      const gapW = 2 + ((seed >> 6) % 3);
       if (bx + barW > bcX + bcW) break;
       ctx.fillRect(bx, y, barW, bcH);
       bx += barW + gapW;
     }
-    y += bcH + 17;
-    center(noStruk, { size: 11, gap: 26 });
+    y += bcH + 24;
+    center(noStruk, { gap: 36 });
 
-    center("MATUR NUWUN SAMPUN RAWUH", { size: 12.5, bold: true, gap: 20 });
-    center("Terima kasih telah berkunjung ke Solo", { size: 11, gap: 17 });
-    center("Solo, The Spirit of Java", { size: 11, gap: 22 });
-    dashed(16);
-    center("*** BUKTI KENANGAN, BUKAN BUKTI BAYAR ***", { size: 10, gap: 12 });
+    center("MATUR NUWUN SAMPUN RAWUH", { size: 19, gap: 26 });
+    center("Terima kasih telah berkunjung ke Solo");
+    center("Solo, The Spirit of Java", { gap: 20 });
+    dashed(30);
+    center("*** BUKTI KENANGAN, BUKAN BUKTI BAYAR ***", { gap: 10 });
 
     /* ── Potong kanvas sesuai tinggi isi ─────────────────── */
     const canvas = canvasRef.current;
@@ -1116,41 +1202,31 @@ export default function Photobox() {
   /* ── Print (thermal 58mm) ── */
   const handlePrint = () => {
     if (!finalCollage) return;
-    // Android (mis. Redmi Pad): Chrome tidak bisa mencetak ke printer thermal
-    // Bluetooth lewat dialog print, jadi dikirim ke app RawBT.
-    if (/Android/i.test(navigator.userAgent)) printViaRawBT();
-    else printViaBrowser();
-  };
-
-  /* ── Cetak via RawBT (Android + printer thermal Bluetooth) ── */
-  const printViaRawBT = () => {
     const img = new Image();
     img.onload = () => {
-      // 384 dot = lebar cetak printer 58mm @203dpi (setara PRINT_WIDTH_MM 48mm).
-      // Dikirim sudah seukuran printer + JPEG hitam-putih supaya data URL-nya
-      // kecil; intent URL yang terlalu panjang bisa ditolak browser.
-      const W = 384;
-      const H = Math.round((img.height * W) / img.width);
-      const c = document.createElement("canvas");
-      c.width = W;
-      c.height = H;
-      const cx = c.getContext("2d");
-      cx.fillStyle = "#fff";
-      cx.fillRect(0, 0, W, H);
-      cx.filter = "grayscale(100%) contrast(1.15)";
-      cx.drawImage(img, 0, 0, W, H);
-      const jpeg = c.toDataURL("image/jpeg", 0.9);
+      // Titik hitam/putih ditentukan di sini (lihat toThermalBitmap), bukan oleh
+      // driver, jadi hasilnya sama di RawBT maupun printer laptop.
+      // PNG, bukan JPEG: kompresi JPEG merusak pola titik & bikin huruf berbayang.
+      const bitmapUrl = toThermalBitmap(img, THERMAL_DOTS, THERMAL_TONE).toDataURL("image/png");
 
-      // Dibuka Android sebagai rawbt:data:image/jpeg;base64,... → RawBT langsung cetak.
-      // Kalau RawBT belum terpasang, Chrome membuka halamannya di Play Store.
-      window.location.href = `intent:${jpeg}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`;
+      // Android (mis. Redmi Pad): Chrome tidak bisa mencetak ke printer thermal
+      // Bluetooth lewat dialog print, jadi dikirim ke app RawBT.
+      if (/Android/i.test(navigator.userAgent)) printViaRawBT(bitmapUrl);
+      else printViaBrowser(bitmapUrl);
     };
     img.onerror = (err) => console.error("[Photobox] Gagal menyiapkan gambar cetak:", err);
     img.src = finalCollage;
   };
 
+  /* ── Cetak via RawBT (Android + printer thermal Bluetooth) ── */
+  const printViaRawBT = (bitmapUrl) => {
+    // Dibuka Android sebagai rawbt:data:image/png;base64,... → RawBT langsung cetak.
+    // Kalau RawBT belum terpasang, Chrome membuka halamannya di Play Store.
+    window.location.href = `intent:${bitmapUrl}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`;
+  };
+
   /* ── Cetak via dialog print browser (laptop/PC dengan driver printer) ── */
-  const printViaBrowser = () => {
+  const printViaBrowser = (bitmapUrl) => {
     // Pakai iframe tersembunyi, bukan window.open:
     //  - tidak kena popup blocker
     //  - tidak ada jendela berkedip di depan pengunjung booth
@@ -1185,12 +1261,12 @@ export default function Photobox() {
             height: auto;
             display: block;
             margin: 0 auto;   /* ketengahkan di kertas 58mm */
-            /* printer thermal hanya hitam-putih; kontras dinaikkan agar tidak pudar */
-            filter: grayscale(100%) contrast(1.15);
+            /* bitmap sudah 384 dot hitam-putih; jangan dihaluskan saat diskalakan */
+            image-rendering: pixelated;
           }
         </style>
       </head>
-      <body><img src="${finalCollage}" alt=""></body>
+      <body><img src="${bitmapUrl}" alt=""></body>
       </html>
     `);
     doc.close();
