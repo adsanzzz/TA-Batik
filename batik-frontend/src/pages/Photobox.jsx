@@ -1116,7 +1116,41 @@ export default function Photobox() {
   /* ── Print (thermal 58mm) ── */
   const handlePrint = () => {
     if (!finalCollage) return;
+    // Android (mis. Redmi Pad): Chrome tidak bisa mencetak ke printer thermal
+    // Bluetooth lewat dialog print, jadi dikirim ke app RawBT.
+    if (/Android/i.test(navigator.userAgent)) printViaRawBT();
+    else printViaBrowser();
+  };
 
+  /* ── Cetak via RawBT (Android + printer thermal Bluetooth) ── */
+  const printViaRawBT = () => {
+    const img = new Image();
+    img.onload = () => {
+      // 384 dot = lebar cetak printer 58mm @203dpi (setara PRINT_WIDTH_MM 48mm).
+      // Dikirim sudah seukuran printer + JPEG hitam-putih supaya data URL-nya
+      // kecil; intent URL yang terlalu panjang bisa ditolak browser.
+      const W = 384;
+      const H = Math.round((img.height * W) / img.width);
+      const c = document.createElement("canvas");
+      c.width = W;
+      c.height = H;
+      const cx = c.getContext("2d");
+      cx.fillStyle = "#fff";
+      cx.fillRect(0, 0, W, H);
+      cx.filter = "grayscale(100%) contrast(1.15)";
+      cx.drawImage(img, 0, 0, W, H);
+      const jpeg = c.toDataURL("image/jpeg", 0.9);
+
+      // Dibuka Android sebagai rawbt:data:image/jpeg;base64,... → RawBT langsung cetak.
+      // Kalau RawBT belum terpasang, Chrome membuka halamannya di Play Store.
+      window.location.href = `intent:${jpeg}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`;
+    };
+    img.onerror = (err) => console.error("[Photobox] Gagal menyiapkan gambar cetak:", err);
+    img.src = finalCollage;
+  };
+
+  /* ── Cetak via dialog print browser (laptop/PC dengan driver printer) ── */
+  const printViaBrowser = () => {
     // Pakai iframe tersembunyi, bukan window.open:
     //  - tidak kena popup blocker
     //  - tidak ada jendela berkedip di depan pengunjung booth
