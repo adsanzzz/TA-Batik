@@ -115,19 +115,11 @@ const FRAME_COLORS = [
   { id: "indigo", label: "Biru Nusantara", color: "#2d3a6b", border: "#1a2350", textColor: "#e8ecff" },
 ];
 
-/* ─── Teks kolom koran — Batik Nusantara ─── */
-const BATIK_ARTICLES = [
-  "Batik merupakan warisan budaya Indonesia yang telah diakui UNESCO sebagai Warisan Budaya Tak Benda sejak 2 Oktober 2009. Motif batik mengandung filosofi mendalam tentang kehidupan, alam, dan nilai-nilai luhur nenek moyang.",
-  "Setiap helai kain batik menyimpan cerita panjang tentang keindahan dan kearifan lokal. Proses pembuatannya yang teliti dengan canting atau cap mencerminkan kesabaran dan ketelitian pengrajin batik Indonesia.",
-  "Trisara hadir sebagai jembatan digital yang menghubungkan kekayaan batik tradisional dengan teknologi modern. Dengan kecerdasan buatan, kami membantu melestarikan dan memperkenalkan batik kepada generasi muda Indonesia.",
-];
-
-/* ─── Teks kolom koran — Surakarta Edition ─── */
-const SURAKARTA_ARTICLES = [
-  "Surakarta, dikenal sebagai Kota Solo, adalah salah satu kota tertua di Pulau Jawa. Didirikan pada tahun 1745, kota ini tumbuh di bawah naungan Keraton Kasunanan Surakarta yang menjadi pusat kebudayaan Jawa selama berabad-abad.",
-  "Kota Solo menyimpan kekayaan seni dan tradisi yang luar biasa. Wayang kulit, gamelan, tari Bedhaya, serta upacara adat Sekaten menjadi warisan leluhur yang terus dilestarikan warga Solo dengan penuh kebanggaan hingga hari ini.",
-  "Kuliner Solo terkenal di seluruh nusantara. Nasi liwet, serabi, timlo, dan sate kere adalah sajian khas yang mencerminkan keramahan dan kekayaan cita rasa lokal masyarakat Surakarta yang hangat dan bersahaja.",
-];
+/* ─── Teks singkat di bawah kutipan koran ─── */
+const NEWSPAPER_BLURB = {
+  general: "Batik adalah warisan budaya Indonesia yang diakui UNESCO sejak 2 Oktober 2009.",
+  surakarta: "Surakarta, kota budaya Jawa yang berdiri sejak 1745 di bawah Keraton Kasunanan.",
+};
 
 /* ─── Palet tunggal template cetak: putih klasik (optimal printer thermal) ─── */
 const PAPER = { bg: "#ffffff", text: "#000000", accent: "#000000", divider: "#000000" };
@@ -925,31 +917,19 @@ export default function Photobox() {
     y += 12;
     rule(3, 4);
 
-    /* ── ARTIKEL: 1 paragraf, rata kiri ──
-       Cukup satu paragraf supaya kertas tidak boros. */
-    const articleSet = isSurakarta ? SURAKARTA_ARTICLES : BATIK_ARTICLES;
-    const bodyLineH = 24;
+    /* ── KETERANGAN SINGKAT: 1 kalimat, huruf lebih kecil dari kutipan ── */
+    const bodyLineH = 20;
     ctx.fillStyle = NC.text;
-    ctx.font = `bold 18px ${SERIF}`;
-    y = drawParagraph(articleSet[0], PAD, y + 20, innerW, bodyLineH) - bodyLineH + 8;
+    ctx.font = `bold 15px ${SERIF}`;
+    y = drawParagraph(NEWSPAPER_BLURB[isSurakarta ? "surakarta" : "general"], PAD, y + 18, innerW, bodyLineH) - bodyLineH + 8;
 
-    /* ── FOOTER MASTHEAD ── */
+    /* ── PENUTUP ── */
     doubleRule(20);
     ctx.fillStyle = NC.text;
     ctx.textAlign = "center";
-    const thanks = fitLines(
-      isSurakarta ? "SOLO, THE SPIRIT OF JAVA · MATUR NUWUN" : "TERIMA KASIH ATAS KUNJUNGAN ANDA",
-      innerW, 1, 16, 14, "bold", SERIF
-    );
+    const thanks = fitLines("TERIMA KASIH ATAS KUNJUNGAN ANDA", innerW, 1, 16, 14, "bold", SERIF);
     ctx.font = `bold ${thanks.size}px ${SERIF}`;
     ctx.fillText(thanks.lines[0], W / 2, y + 16);
-    y += 24;
-    const edition = fitLines(
-      `EDISI KHUSUS ${dateStr} · ${loadedImgs.length} LEMBAR FOTO`,
-      innerW, 1, 16, 14, "bold", SERIF
-    );
-    ctx.font = `bold ${edition.size}px ${SERIF}`;
-    ctx.fillText(edition.lines[0], W / 2, y + 16);
     y += 26;
     rule(3, 0);
 
@@ -984,7 +964,8 @@ export default function Photobox() {
 
     const loadedImgs = await loadImages(photos);
     const photoSlotW = innerW;
-    const photoSlotH = Math.round(photoSlotW * 3 / 4); // slot 4:3
+    // 1–2 foto: 4:3. 3 foto ke atas: 16:9 supaya struk tidak kepanjangan
+    const photoSlotH = Math.round(photoSlotW * (loadedImgs.length <= 2 ? 3 / 4 : 9 / 16));
 
     const H = 2200 + (photoSlotH + 44) * loadedImgs.length;
     const off = document.createElement("canvas");
@@ -1096,21 +1077,15 @@ export default function Photobox() {
       ctx.strokeStyle = P.divider;
       ctx.lineWidth = 2;
       ctx.strokeRect(PAD, y, photoSlotW, photoSlotH);
-      y += photoSlotH + 22;
-
-      ctx.font = `bold 18px ${MONO}`;
-      ctx.fillStyle = P.text;
-      ctx.textAlign = "left";
-      ctx.fillText(`FOTO ${i + 1}/${loadedImgs.length}`, PAD, y);
-      ctx.textAlign = "right";
-      ctx.fillText(newspaperGreyscale ? "MODE B/W" : "MODE WARNA", W - PAD, y);
-      y += 18;
+      y += photoSlotH + 8;
     }
 
-    /* ── TOTAL ───────────────────────────────────────────── */
-    // Bagian bawah foto sengaja ringkas supaya kertas tidak boros
-    // (rincian item, subtotal, tunai/kembali dihapus).
-    y += 8;
+    /* ── ITEM & TOTAL ────────────────────────────────────── */
+    // Sengaja ringkas supaya kertas tidak boros: 2 item, masing-masing 1 baris.
+    y += 6;
+    dashed(30);
+    row("Kenangan Kota Solo", `x${loadedImgs.length} GRATIS`);
+    row("Senyum Bahagia", "x99 ABADI", { gap: 16 });
     double(36);
     row("TOTAL", "TAK TERHINGGA", { size: 24, gap: 14 });
     double(34);
