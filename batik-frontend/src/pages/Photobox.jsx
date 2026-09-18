@@ -334,7 +334,7 @@ const NEWSPAPER_BLURB = {
   general:
     'SIF bertujuan untuk menjembatani dunia akademik dengan industri, serta mendorong pengembangan wawasan, keterampilan, dan inovasi teknologi di kalangan generasi muda.',
   surakarta:
-    'Surakarta, kota budaya Jawa yang berdiri sejak 1745 di bawah Keraton Kasunanan.',
+    'SIF bertujuan untuk menjembatani dunia akademik dengan industri, serta mendorong pengembangan wawasan, keterampilan, dan inovasi teknologi di kalangan generasi muda.',
 };
 
 /* ─── Palet tunggal template cetak: putih klasik (optimal printer thermal) ─── */
@@ -1279,9 +1279,7 @@ export default function Photobox() {
 
       /* ── KUTIPAN ── */
       rule(2, 4);
-      const defaultQuote = isSurakarta
-        ? `"Surakarta, kota seribu warisan budaya yang tak lekang oleh waktu."`
-        : `"DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE"`;
+      const defaultQuote = `"DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE"`;
       const quoteTxt = (
         newspaperQuote ? `"${newspaperQuote}"` : defaultQuote
       ).toUpperCase();
@@ -1451,7 +1449,9 @@ export default function Photobox() {
       center('*** SUGENG RAWUH ING SOLO ***', { size: 18, gap: 36 });
 
       // Judul besar: menyusut otomatis agar pas selebar struk
-      const titleTxt = (newspaperTitle || 'KOTA SURAKARTA').toUpperCase();
+      const titleTxt = (
+        newspaperTitle || 'SMART IT FESTIVAL 2026'
+      ).toUpperCase();
       let titleSize = 34;
       ctx.font = `bold ${titleSize}px ${MONO}`;
       while (ctx.measureText(titleTxt).width > innerW && titleSize > 20) {
@@ -1460,26 +1460,14 @@ export default function Photobox() {
       }
       center(titleTxt, { size: titleSize, gap: 30 });
 
-      center('Kota Budaya Jawa Tengah', { size: 18, gap: 23 });
       center('Balai Kota Surakarta', { size: 18, gap: 23 });
       center('19-20 September 2026', { size: 18, gap: 22 });
       dashed(30);
 
       /* ── META TRANSAKSI ──────────────────────────────────── */
-      const now = new Date();
-      const p2 = (n) => String(n).padStart(2, '0');
-      const noStruk = `SKA-${String(now.getFullYear()).slice(2)}${p2(
-        now.getMonth() + 1
-      )}${p2(now.getDate())}-${p2(now.getHours())}${p2(now.getMinutes())}${p2(
-        now.getSeconds()
-      )}`;
+      const noStruk = 'SKA-260919-260920';
       row('No. Struk', noStruk);
-      row(
-        'Tanggal',
-        `${p2(now.getDate())}/${p2(
-          now.getMonth() + 1
-        )}/${now.getFullYear()} ${p2(now.getHours())}:${p2(now.getMinutes())}`
-      );
+      row('Tanggal', '19/20/2026 13:04');
       row('Lokasi', 'SOLO, JAWA TENGAH');
       row('Lembar', `${loadedImgs.length} FOTO KENANGAN`, { gap: 16 });
       double(36);
@@ -1508,7 +1496,7 @@ export default function Photobox() {
       // Sengaja ringkas supaya kertas tidak boros: 2 item, masing-masing 1 baris.
       y += 6;
       dashed(30);
-      row('Kenangan Kota Solo', `x${loadedImgs.length} GRATIS`);
+      row('Kenangan SIF 2026', `x${loadedImgs.length} GRATIS`);
       row('Senyum Bahagia', 'x99 ABADI', { gap: 16 });
       double(36);
       row('TOTAL', 'TAK TERHINGGA', { size: 24, gap: 14 });
@@ -1517,7 +1505,7 @@ export default function Photobox() {
       /* ── KUTIPAN ─────────────────────────────────────────── */
       const quote = newspaperQuote
         ? `"${newspaperQuote}"`
-        : `"Surakarta, kota seribu warisan budaya yang tak lekang oleh waktu."`;
+        : `"DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE"`;
       center(quote, { size: 18, italic: true, gap: 24 });
       y -= 4;
 
@@ -2271,7 +2259,7 @@ export default function Photobox() {
                       }}
                       onClick={() => {
                         setNewspaperTemplate('surakarta');
-                        setNewspaperTitle('KOTA SURAKARTA');
+                        setNewspaperTitle('SMART IT FESTIVAL 2026');
                         setNewspaperSub('Kota Budaya Jawa Tengah');
                       }}
                     >
@@ -2321,11 +2309,7 @@ export default function Photobox() {
                       onChange={(e) =>
                         setNewspaperTitle(e.target.value.slice(0, 40))
                       }
-                      placeholder={
-                        newspaperTemplate === 'surakarta'
-                          ? 'KOTA SURAKARTA'
-                          : 'SIF 2026'
-                      }
+                      placeholder="SMART IT FESTIVAL 2026"
                       maxLength={40}
                     />
                     {newspaperTitle.length > 32 && (
@@ -2367,11 +2351,7 @@ export default function Photobox() {
                       onChange={(e) =>
                         setNewspaperQuote(e.target.value.slice(0, 120))
                       }
-                      placeholder={
-                        newspaperTemplate === 'surakarta'
-                          ? 'Surakarta, kota seribu warisan budaya...'
-                          : 'DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE'
-                      }
+                      placeholder="DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE"
                       rows={3}
                       maxLength={120}
                       style={{ resize: 'vertical', minHeight: 62 }}
