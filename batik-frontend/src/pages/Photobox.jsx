@@ -1325,22 +1325,6 @@ export default function Photobox() {
       ctx.fillText(isSurakarta ? dateStr : '19-20 SEP 2026', W - PAD, y + 16);
       y += 24;
 
-      const slogan = fitLines(
-        isSurakarta
-          ? 'KOTA BUDAYA JAWA TENGAH'
-          : 'WARISAN BUDAYA TAK BENDA UNESCO',
-        innerW,
-        1,
-        16,
-        14,
-        'bold',
-        SERIF
-      );
-      ctx.font = `bold ${slogan.size}px ${SERIF}`;
-      ctx.textAlign = 'center';
-      ctx.fillText(slogan.lines[0], W / 2, y + 16);
-      y += 26;
-
       rule(3, 10);
 
       /* ── HEADLINE BESAR ── */
@@ -1373,7 +1357,7 @@ export default function Photobox() {
 
       /* ── KUTIPAN ── */
       rule(2, 4);
-      const defaultQuote = `"DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE"`;
+      const defaultQuote = `"Lincah Beradaptasi, Cerdas Berinovasi, Seimbang Bertransformasi"`;
       const quoteTxt = (
         newspaperQuote ? `"${newspaperQuote}"` : defaultQuote
       ).toUpperCase();
@@ -1540,7 +1524,7 @@ export default function Photobox() {
 
       /* ── KOP STRUK ───────────────────────────────────────── */
       y += 18;
-      center('*** SUGENG RAWUH ING SOLO ***', { size: 18, gap: 36 });
+      center('*** SELAMAT DATANG ***', { size: 18, gap: 36 });
 
       // Judul besar: menyusut otomatis agar pas selebar struk
       const titleTxt = (
@@ -1568,10 +1552,10 @@ export default function Photobox() {
 
       /* ── BANNER ──────────────────────────────────────────── */
       center(
-        `** ${(newspaperSub || 'Kota Budaya Jawa Tengah').toUpperCase()} **`,
-        { size: 20, gap: 24 }
+        `** ${(newspaperSub || 'DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE').toUpperCase()} **`,
+        { size: 15, gap: 20 }
       );
-      y -= 6;
+      y -= 4;
       double(26);
 
       /* ── FOTO ────────────────────────────────────────────── */
@@ -1599,8 +1583,8 @@ export default function Photobox() {
       /* ── KUTIPAN ─────────────────────────────────────────── */
       const quote = newspaperQuote
         ? `"${newspaperQuote}"`
-        : `"DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE"`;
-      center(quote, { size: 18, italic: true, gap: 24 });
+        : `"Lincah Beradaptasi, Cerdas Berinovasi, Seimbang Bertransformasi"`;
+      center(quote, { size: 15, italic: true, gap: 20 });
       y -= 4;
 
       /* ── BARCODE DEKORATIF + FOOTER ──────────────────────── */
@@ -1622,8 +1606,8 @@ export default function Photobox() {
       y += bcH + 20;
       center(noStruk, { size: 18, gap: 32 });
 
-      center('MATUR NUWUN SAMPUN RAWUH', { size: 22, gap: 24 });
-      center('Solo, The Spirit of Java', { size: 18, gap: 6 });
+      center('SAMPAI JUMPA LAGI', { size: 22, gap: 24 });
+      center('Smart IT Festival 2027', { size: 18, gap: 6 });
 
       /* ── Potong tepat setinggi isi ───────────────────────── */
       const outH = Math.min(Math.round(y + PAD), H);
@@ -2413,7 +2397,9 @@ export default function Photobox() {
                       onClick={() => {
                         setNewspaperTemplate('surakarta');
                         setNewspaperTitle('SMART IT FESTIVAL 2026');
-                        setNewspaperSub('Kota Budaya Jawa Tengah');
+                        setNewspaperSub(
+                          'DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE'
+                        );
                       }}
                     >
                       Struk
@@ -2484,7 +2470,7 @@ export default function Photobox() {
                       }
                       placeholder={
                         newspaperTemplate === 'surakarta'
-                          ? 'Kota Budaya Jawa Tengah'
+                          ? 'DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE'
                           : 'SMART IT FESTIVAL 2026'
                       }
                       maxLength={60}
@@ -2504,7 +2490,7 @@ export default function Photobox() {
                       onChange={(e) =>
                         setNewspaperQuote(e.target.value.slice(0, 120))
                       }
-                      placeholder="DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE"
+                      placeholder="Lincah Beradaptasi, Cerdas Berinovasi, Seimbang Bertransformasi"
                       rows={3}
                       maxLength={120}
                       style={{ resize: 'vertical', minHeight: 62 }}
