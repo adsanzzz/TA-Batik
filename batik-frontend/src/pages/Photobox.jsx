@@ -332,7 +332,7 @@ const FRAME_COLORS = [
 /* ─── Teks singkat di bawah kutipan koran ─── */
 const NEWSPAPER_BLURB = {
   general:
-    'Batik adalah warisan budaya Indonesia yang diakui UNESCO sejak 2 Oktober 2009.',
+    'SIF bertujuan untuk menjembatani dunia akademik dengan industri, serta mendorong pengembangan wawasan, keterampilan, dan inovasi teknologi di kalangan generasi muda.',
   surakarta:
     'Surakarta, kota budaya Jawa yang berdiri sejak 1745 di bawah Keraton Kasunanan.',
 };
@@ -657,9 +657,9 @@ export default function Photobox() {
   // "general" | "surakarta"
   const [newspaperTemplate, setNewspaperTemplate] = useState('general');
   const [newspaperGreyscale, setNewspaperGreyscale] = useState(false);
-  const [newspaperTitle, setNewspaperTitle] = useState('TRISARA × SIF 2026');
+  const [newspaperTitle, setNewspaperTitle] = useState('SIF 2026');
   const [newspaperSub, setNewspaperSub] = useState(
-    'Momen Indah Batik Nusantara'
+    'SMART IT FESTIVAL 2026'
   );
   const [newspaperQuote, setNewspaperQuote] = useState('');
 
@@ -1201,7 +1201,7 @@ export default function Photobox() {
       ctx.fillText('DAILY', W - PAD, y + 15);
       ctx.fillText('REPORT', W - PAD, y + 32);
 
-      const mastTxt = (newspaperTitle || 'TRISARA × SIF 2026').trim();
+      const mastTxt = (newspaperTitle || 'SIF 2026').trim();
       const mast = fitLines(mastTxt, innerW - sideW * 2 - 8, 1, 30, 16, 'bold');
       ctx.font = `bold ${mast.size}px ${DISPLAY}`;
       ctx.textAlign = 'center';
@@ -1223,12 +1223,12 @@ export default function Photobox() {
       ctx.font = `bold 16px ${SERIF}`;
       ctx.textAlign = 'left';
       ctx.fillText(
-        isSurakarta ? 'KOTA SURAKARTA' : 'BATIK NUSANTARA',
+        isSurakarta ? 'KOTA SURAKARTA' : 'BALAI KOTA SURAKARTA',
         PAD,
         y + 16
       );
       ctx.textAlign = 'right';
-      ctx.fillText(dateStr, W - PAD, y + 16);
+      ctx.fillText(isSurakarta ? dateStr : '19-20 SEP 2026', W - PAD, y + 16);
       y += 24;
 
       const slogan = fitLines(
@@ -1250,7 +1250,7 @@ export default function Photobox() {
       rule(3, 10);
 
       /* ── HEADLINE BESAR ── */
-      const headline = (newspaperSub || 'MOMEN INDAH ANDA').toUpperCase();
+      const headline = (newspaperSub || 'SMART IT FESTIVAL 2026').toUpperCase();
       const head = fitLines(headline, innerW - 4, 3, 42, 22, 'bold');
       ctx.font = `bold ${head.size}px ${DISPLAY}`;
       ctx.fillStyle = NC.accent;
@@ -1281,7 +1281,7 @@ export default function Photobox() {
       rule(2, 4);
       const defaultQuote = isSurakarta
         ? `"Surakarta, kota seribu warisan budaya yang tak lekang oleh waktu."`
-        : `"Mengabadikan momen indah bersama dalam kenangan yang abadi."`;
+        : `"DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE"`;
       const quoteTxt = (
         newspaperQuote ? `"${newspaperQuote}"` : defaultQuote
       ).toUpperCase();
@@ -1461,9 +1461,8 @@ export default function Photobox() {
       center(titleTxt, { size: titleSize, gap: 30 });
 
       center('Kota Budaya Jawa Tengah', { size: 18, gap: 23 });
-      center('Keraton Kasunanan', { size: 18, gap: 23 });
-      center('Pura Mangkunegaran', { size: 18, gap: 23 });
-      center('Berdiri 17 Februari 1745', { size: 18, gap: 22 });
+      center('Balai Kota Surakarta', { size: 18, gap: 23 });
+      center('19-20 September 2026', { size: 18, gap: 22 });
       dashed(30);
 
       /* ── META TRANSAKSI ──────────────────────────────────── */
@@ -1782,8 +1781,8 @@ export default function Photobox() {
     setUseNewspaper(false);
     setNewspaperTemplate('general');
     setNewspaperGreyscale(false);
-    setNewspaperTitle('TRISARA × SIF 2026');
-    setNewspaperSub('Momen Indah Batik Nusantara');
+    setNewspaperTitle('SIF 2026');
+    setNewspaperSub('SMART IT FESTIVAL 2026');
     setNewspaperQuote('');
     setQrUrl(null);
     setQrError(null);
@@ -2254,8 +2253,8 @@ export default function Photobox() {
                       }}
                       onClick={() => {
                         setNewspaperTemplate('general');
-                        setNewspaperTitle('TRISARA × SIF 2026');
-                        setNewspaperSub('Momen Indah Batik Nusantara');
+                        setNewspaperTitle('SIF 2026');
+                        setNewspaperSub('SMART IT FESTIVAL 2026');
                       }}
                     >
                       Koran
@@ -2325,7 +2324,7 @@ export default function Photobox() {
                       placeholder={
                         newspaperTemplate === 'surakarta'
                           ? 'KOTA SURAKARTA'
-                          : 'TRISARA × SIF 2026'
+                          : 'SIF 2026'
                       }
                       maxLength={40}
                     />
@@ -2349,7 +2348,7 @@ export default function Photobox() {
                       placeholder={
                         newspaperTemplate === 'surakarta'
                           ? 'Kota Budaya Jawa Tengah'
-                          : 'Momen Indah Anda'
+                          : 'SMART IT FESTIVAL 2026'
                       }
                       maxLength={60}
                     />
@@ -2371,7 +2370,7 @@ export default function Photobox() {
                       placeholder={
                         newspaperTemplate === 'surakarta'
                           ? 'Surakarta, kota seribu warisan budaya...'
-                          : 'Tuliskan sesuatu yang berkesan...'
+                          : 'DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE'
                       }
                       rows={3}
                       maxLength={120}
