@@ -1357,7 +1357,7 @@ export default function Photobox() {
 
       /* ── KUTIPAN ── */
       rule(2, 4);
-      const defaultQuote = `"Lincah Beradaptasi, Cerdas Berinovasi, Seimbang Bertransformasi"`;
+      const defaultQuote = `"DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE"`;
       const quoteTxt = (
         newspaperQuote ? `"${newspaperQuote}"` : defaultQuote
       ).toUpperCase();
@@ -2490,7 +2490,11 @@ export default function Photobox() {
                       onChange={(e) =>
                         setNewspaperQuote(e.target.value.slice(0, 120))
                       }
-                      placeholder="Lincah Beradaptasi, Cerdas Berinovasi, Seimbang Bertransformasi"
+                      placeholder={
+                        newspaperTemplate === 'surakarta'
+                          ? 'Lincah Beradaptasi, Cerdas Berinovasi, Seimbang Bertransformasi'
+                          : 'DRIVING INNOVATION FOR A HUMAN-CENTERED AI FUTURE'
+                      }
                       rows={3}
                       maxLength={120}
                       style={{ resize: 'vertical', minHeight: 62 }}
