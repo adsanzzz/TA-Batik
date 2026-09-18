@@ -4,6 +4,8 @@ import { QRCodeSVG } from 'qrcode.react';
 import jsPDF from 'jspdf';
 import Footer from '../components/Footer';
 import { colors, fonts } from '../theme';
+import sifFrameKuning from '../assets/frames/sif-2026-kuning.png';
+import sifFrameBiru from '../assets/frames/sif-2026-biru.png';
 
 /* ─── Icons ─────────────────────────────────────────────── */
 const IconCamera = () => (
@@ -485,6 +487,80 @@ function loadImages(urls) {
   );
 }
 
+/* ─── Bingkai tema: PNG dengan lubang transparan untuk foto ── */
+// Posisi kotak foto dideteksi otomatis dari area transparan (findPhotoSlots),
+// jadi menambah bingkai baru cukup taruh PNG-nya di assets/frames lalu daftarkan di sini.
+const THEME_FRAMES = [
+  { id: 'sif-kuning', label: 'SIF 2026 Kuning', src: sifFrameKuning, slots: 3 },
+  { id: 'sif-biru', label: 'SIF 2026 Biru', src: sifFrameBiru, slots: 3 },
+];
+
+/* ─── Helper: cari kotak foto (area transparan besar) di bingkai tema ── */
+const slotCache = new Map();
+function findPhotoSlots(frameImg) {
+  if (slotCache.has(frameImg.src)) return slotCache.get(frameImg.src);
+
+  const W = frameImg.width;
+  const H = frameImg.height;
+  const c = document.createElement('canvas');
+  c.width = W;
+  c.height = H;
+  const cx = c.getContext('2d');
+  cx.drawImage(frameImg, 0, 0);
+  const px = cx.getImageData(0, 0, W, H).data;
+
+  // dicek tiap STEP piksel: kotak foto berukuran ratusan piksel, jadi cukup & cepat
+  const STEP = 4;
+  const gw = Math.ceil(W / STEP);
+  const gh = Math.ceil(H / STEP);
+  const open = new Uint8Array(gw * gh);
+  for (let gy = 0; gy < gh; gy++) {
+    for (let gx = 0; gx < gw; gx++) {
+      open[gy * gw + gx] = px[(gy * STEP * W + gx * STEP) * 4 + 3] < 128 ? 1 : 0;
+    }
+  }
+
+  const seen = new Uint8Array(gw * gh);
+  const slots = [];
+  for (let start = 0; start < open.length; start++) {
+    if (!open[start] || seen[start]) continue;
+    let minX = gw, minY = gh, maxX = 0, maxY = 0, count = 0;
+    const stack = [start];
+    seen[start] = 1;
+    while (stack.length) {
+      const i = stack.pop();
+      const x = i % gw;
+      const y = (i / gw) | 0;
+      count++;
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+      const next = [x > 0 && i - 1, x < gw - 1 && i + 1, y > 0 && i - gw, y < gh - 1 && i + gw];
+      for (const j of next) {
+        if (j !== false && open[j] && !seen[j]) {
+          seen[j] = 1;
+          stack.push(j);
+        }
+      }
+    }
+    // abaikan celah transparan kecil di tepi/ornamen (< 3% luas bingkai)
+    if (count < gw * gh * 0.03) continue;
+    // diperlebar 2 langkah: foto sedikit masuk ke bawah bingkai, jadi tidak ada celah
+    const x0 = Math.max(0, (minX - 2) * STEP);
+    const y0 = Math.max(0, (minY - 2) * STEP);
+    slots.push({
+      x: x0,
+      y: y0,
+      w: Math.min(W, (maxX + 3) * STEP) - x0,
+      h: Math.min(H, (maxY + 3) * STEP) - y0,
+    });
+  }
+  slots.sort((a, b) => a.y - b.y || a.x - b.x);
+  slotCache.set(frameImg.src, slots);
+  return slots;
+}
+
 /* ─── Helper: perkecil foto jadi JPEG untuk bahan GIF ── */
 // Foto mentah dari kamera berupa PNG besar; GIF-nya cuma 480px, jadi cukup
 // kirim JPEG 640px supaya upload cepat.
@@ -652,6 +728,7 @@ export default function Photobox() {
   const [selectedColor, setSelectedColor] = useState(FRAME_COLORS[0]);
   const [apiFrames, setApiFrames] = useState([]);
   const [selectedApiFrame, setSelectedApiFrame] = useState(null);
+  const [selectedTheme, setSelectedTheme] = useState(null); // bingkai tema (THEME_FRAMES)
   const [finalCollage, setFinalCollage] = useState(null);
   const [useNewspaper, setUseNewspaper] = useState(false);
   // "general" | "surakarta"
@@ -785,6 +862,23 @@ export default function Photobox() {
     if (photos.length === 0 || !canvasRef.current) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
+
+    /* ── Bingkai tema: foto dipasang di kotak transparan, bingkai ditumpuk di atas ──
+       (stiker & tulisan bingkai sengaja menimpa sebagian foto) */
+    if (selectedTheme) {
+      const [frameImg, ...shots] = await loadImages([selectedTheme.src, ...photos]);
+      const slots = findPhotoSlots(frameImg);
+      canvas.width = frameImg.width;
+      canvas.height = frameImg.height;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      slots.forEach((slot, i) => {
+        drawPhotoCover(ctx, shots[i % shots.length], slot.x, slot.y, slot.w, slot.h);
+      });
+      ctx.drawImage(frameImg, 0, 0);
+      setFinalCollage(canvas.toDataURL('image/png'));
+      return;
+    }
 
     const currentLayout = layoutRef.current;
     if (!currentLayout) return;
@@ -1073,7 +1167,7 @@ export default function Photobox() {
     }
 
     setFinalCollage(canvas.toDataURL('image/png'));
-  }, [photos, selectedColor, selectedApiFrame]);
+  }, [photos, selectedColor, selectedApiFrame, selectedTheme]);
 
   /* ── Template Koran Nusantara ──
      Digambar dalam satuan titik printer (lebar THERMAL_DOTS = 384):
@@ -1568,6 +1662,7 @@ export default function Photobox() {
     step,
     selectedColor,
     selectedApiFrame,
+    selectedTheme,
     useNewspaper,
     newspaperTitle,
     newspaperSub,
@@ -1764,6 +1859,7 @@ export default function Photobox() {
     setFinalCollage(null);
     setSelectedColor(FRAME_COLORS[0]);
     setSelectedApiFrame(null);
+    setSelectedTheme(null);
     setCountdown(null);
     setIsCapturing(false);
     setUseNewspaper(false);
@@ -2112,6 +2208,59 @@ export default function Photobox() {
 
               {!useNewspaper ? (
                 <>
+                  {/* Bingkai tema: berisi kotak foto dengan jumlah tertentu */}
+                  <div style={S.sectionHead}>
+                    <h3 style={{ ...S.sidebarTitle, margin: 0 }}>
+                      Bingkai Tema
+                    </h3>
+                    <span style={S.sectionCount}>SIF 2026</span>
+                  </div>
+                  {layout?.count !== 3 && (
+                    <p style={S.themeNote}>
+                      Khusus layout 3 foto. Pilih "3 foto" di langkah awal untuk
+                      memakai bingkai ini.
+                    </p>
+                  )}
+                  <div style={{ ...S.apiFrameList, marginBottom: 22 }}>
+                    {THEME_FRAMES.map((tf) => {
+                      const usable = layout?.count === tf.slots;
+                      const active = selectedTheme?.id === tf.id;
+                      return (
+                        <button
+                          key={tf.id}
+                          type="button"
+                          title={tf.label}
+                          aria-pressed={active}
+                          disabled={!usable}
+                          className={`frame-card ${active ? 'active' : ''}`}
+                          style={usable ? undefined : S.themeCardDisabled}
+                          onClick={() => {
+                            setSelectedTheme(tf);
+                            setSelectedApiFrame(null);
+                            setSelectedColor(FRAME_COLORS[0]);
+                          }}
+                        >
+                          <span
+                            className="frame-card-thumb"
+                            style={S.themeThumbBox}
+                          >
+                            <img
+                              src={tf.src}
+                              alt={tf.label}
+                              style={S.themeThumb}
+                            />
+                            {active && (
+                              <span className="swatch-check">
+                                <IconCheck />
+                              </span>
+                            )}
+                          </span>
+                          <span className="swatch-label">{tf.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
                   <div style={S.sectionHead}>
                     <h3 style={{ ...S.sidebarTitle, margin: 0 }}>
                       Warna Bingkai
@@ -2126,7 +2275,9 @@ export default function Photobox() {
                   >
                     {FRAME_COLORS.map((fc) => {
                       const active =
-                        !selectedApiFrame && selectedColor.id === fc.id;
+                        !selectedApiFrame &&
+                        !selectedTheme &&
+                        selectedColor.id === fc.id;
                       return (
                         <button
                           key={fc.id}
@@ -2137,6 +2288,7 @@ export default function Photobox() {
                           onClick={() => {
                             setSelectedColor(fc);
                             setSelectedApiFrame(null);
+                            setSelectedTheme(null);
                           }}
                         >
                           <span
@@ -2188,6 +2340,7 @@ export default function Photobox() {
                               className={`frame-card ${active ? 'active' : ''}`}
                               onClick={() => {
                                 setSelectedApiFrame(fr);
+                                setSelectedTheme(null);
                                 setSelectedColor(FRAME_COLORS[0]);
                               }}
                             >
@@ -2891,7 +3044,24 @@ const S = {
     justifyContent: 'center',
     minHeight: 200,
   },
-  previewImg: { width: '100%', height: 'auto', display: 'block' },
+  // strip/struk bisa sangat tinggi: dibatasi tinggi layar supaya tidak perlu scroll jauh
+  previewImg: {
+    maxWidth: '100%',
+    maxHeight: '75vh',
+    width: 'auto',
+    height: 'auto',
+    display: 'block',
+    margin: '0 auto',
+  },
+  themeNote: {
+    margin: '0 0 10px',
+    fontSize: '0.72rem',
+    lineHeight: 1.45,
+    color: colors.textMuted,
+  },
+  themeThumbBox: { aspectRatio: '1 / 2', background: '#0B1430' },
+  themeThumb: { width: '100%', height: '100%', objectFit: 'contain', display: 'block' },
+  themeCardDisabled: { opacity: 0.45, cursor: 'not-allowed', filter: 'grayscale(0.6)' },
   frameSidebar: {
     flex: '0 0 280px',
     background: colors.surface,
